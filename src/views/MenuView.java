@@ -1,10 +1,16 @@
 package views;
 
 import main.SalsaView;
-
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * MenuView class that extends the SalsaView class. This class represents the main menu screen of this MVC
+ * application
+ *
+ * @author Gareth Iguasnia
+ * @date 30/01/2020
+ */
 public class MenuView extends SalsaView {
 
     private String SIMULATION = "simulation";
@@ -16,6 +22,13 @@ public class MenuView extends SalsaView {
     int BUTTON_WIDTH = 400;
     int SPACES_BETWEEN_BUTTONS = 50;
 
+    /**
+     * Constructor for the MenuView Class. This object will hold details on the view of the main menu
+     * of the MVC application. This will be the first panel displayed when the MVC application is run.
+     *
+     * @param name A String object representing the name of the view
+     * @param dimension A Dimension object representing the size of this JPanel
+     */
     public MenuView(String name, Dimension dimension) {
         super(name, dimension, true);
         setupButtons();

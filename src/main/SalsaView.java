@@ -109,9 +109,12 @@ public abstract class SalsaView extends JPanel{
      */
     public String getGRAPHICS() { return GRAPHICS; }
 
-    public Dimension getDimension() {
-        return dimension;
-    }
+    /**
+     * Method returns the field dimension
+     *
+     * @return A Dimension object that represents the size of the JPanel
+     */
+    public Dimension getDimension() { return dimension; }
 
     /* Helper method: Sets up the layout of the JPanel */
     private void setupLayout() {

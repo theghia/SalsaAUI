@@ -55,10 +55,6 @@ public class MainFrame extends JFrame {
         this.setVisible(true);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        //System.out.println(getContentPane().getHeight());
-        //System.out.println(panels.get(MAIN).getSize());
-        //System.out.println(panels.get(MAIN).getHeight()/2);
-        //System.out.println((int) getContentPane().getSize().getHeight()/2);
     }
 
     /**
@@ -111,19 +107,15 @@ public class MainFrame extends JFrame {
 
     /* Helper Method to initialise the views */
     private void setupMultipleViews() {
-        //SalsaView menu = new MenuView(MAIN, WIDTH, HEIGHT);
         SalsaView menu = new MenuView(MAIN, this.getContentPane().getSize());
         setupOneView(menu);
 
-        //SalsaView simulation = new SimulationView(SIMULATION, WIDTH, HEIGHT);
         SalsaView simulation = new SimulationView(SIMULATION, this.getContentPane().getSize());
         setupOneView(simulation);
 
-        //SalsaView tutorial = new TutorialView(TUTORIAL, WIDTH, HEIGHT);
         SalsaView tutorial = new TutorialView(TUTORIAL, this.getContentPane().getSize());
         setupOneView(tutorial);
 
-        //SalsaView justifiedUserProfile = new JustifiedUserProfileView(JUP, WIDTH, HEIGHT);
         SalsaView justifiedUserProfile = new JustifiedUserProfileView(JUP, this.getContentPane().getSize());
         setupOneView(justifiedUserProfile);
 
