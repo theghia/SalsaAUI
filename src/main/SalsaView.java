@@ -1,7 +1,7 @@
 package main;
 
 import javax.swing.*;
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,9 +20,11 @@ public abstract class SalsaView extends JPanel{
     // Every view must be labelled so that the user knows where in the application they are at
     private JLabel viewLabel;
 
+    // To be used to organise the GUI components dynamically
+    private SpringLayout panelLayout;
+
     // The size of every view
-    private final int width;
-    private final int height;
+    private Dimension dimension;
 
     // Each view should be able to navigate through the MVC application
     private Map<String, JButton> navigationButtons = new HashMap<String, JButton>();
@@ -31,23 +33,29 @@ public abstract class SalsaView extends JPanel{
     private boolean isMenuView;
     private String MAIN = "main";
 
+    // File path
+    private final String GRAPHICS = "src/assets/graphics/";
+
+    // Home Button dimensions
+    private final int WIDTH_HOME = 100;
+    private final int HEIGHT_HOME = 100;
+
     /**
-     * Constructor for abstract class SalsaView.
+     * Constructor for the abstract class SalsaView
      * This will only be used when the subclass calls the super() method.
      *
      * @param viewName String variable representing the name of the view
+     * @param dimension Dimension object representing the size needed for the JPanel to fit the JFrame
+     * @param isMenuView Boolean variable indicating whether the view is the main menu screen (True for yes)
      */
-    public SalsaView(String viewName, int width, int height, boolean isMenuView) {
+    public SalsaView(String viewName, Dimension dimension, boolean isMenuView) {
         this.viewName = viewName;
-        this.width = width;
-        this.height = height;
-
-        // If bool is true then setup button
+        this.dimension = dimension;
         this.isMenuView = isMenuView;
-        setupHomeButton();
 
-        // Setting up the JPanel
+        // If isMenuView is not true, include a "Home" button
         setupLayout();
+        setupHomeButton();
     }
 
     /**
@@ -78,21 +86,12 @@ public abstract class SalsaView extends JPanel{
     }
 
     /**
-     * Method returns the width of the view
+     * Method to get the panelLayout field
      *
-     * @return An integer value representing the width of the JPanel
+     * @return The SpringLayout object of that will be used for the JPanel
      */
-    public int getWIDTH() {
-        return this.width;
-    }
-
-    /**
-     * Method returns the height of the view
-     *
-     * @return An integer value representing the height of the JPanel
-     */
-    public int getHEIGHT() {
-        return this.height;
+    public SpringLayout getPanelLayout() {
+        return panelLayout;
     }
 
     /**
@@ -103,20 +102,47 @@ public abstract class SalsaView extends JPanel{
      */
     public Map<String, JButton> getNavigationButtons() { return navigationButtons; }
 
+    /**
+     * Method to return the final field GRAPHICS
+     *
+     * @return A String object representing the file path containing the images needed for the view
+     */
+    public String getGRAPHICS() { return GRAPHICS; }
+
+    public Dimension getDimension() {
+        return dimension;
+    }
+
     /* Helper method: Sets up the layout of the JPanel */
     private void setupLayout() {
-        // Needed so that we can specify the position and size of the JButtons
-        this.setLayout(null);
-        // Size of every view must be the same
-        this.setSize(this.width, this.height);
+        this.panelLayout = new SpringLayout();
+        this.setLayout(panelLayout);
+
+        // Size of every panel must be the same
+        this.setPreferredSize(dimension);
     }
 
     /* Helper method: Sets up a "Home" button if the view is not the MenuView */
+    // SHOULD THIS BE DONE IN THE THREAD THING FOR THREAD SAFETY?
     private void setupHomeButton() {
         if (!this.isMenuView) {
-            JButton main = new JButton("Main");
-            main.setBounds(685, 655, 100, 100);
+            // Scaling the home png file
+            ImageIcon home = new ImageIcon(GRAPHICS + "home.png");
+            Image scaled = home.getImage().getScaledInstance(WIDTH_HOME - 40,HEIGHT_HOME - 40, Image.SCALE_SMOOTH);
+            ImageIcon scaledHome = new ImageIcon(scaled);
+
+            // Creating a button with the scaled home png file
+            JButton main = new JButton(scaledHome);
+            main.setPreferredSize(new Dimension(WIDTH_HOME,HEIGHT_HOME));
+
+            // Setting the Home button
+            panelLayout.putConstraint(SpringLayout.EAST, main, -25, SpringLayout.EAST, this);
+            panelLayout.putConstraint(SpringLayout.SOUTH, main, -25, SpringLayout.SOUTH, this);
+
+            // To make it clickable
             main.setEnabled(true);
+
+            // Adding the button to the view and JPanel
             this.navigationButtons.put(MAIN, main);
             this.add(main); main.setBackground(null);
         }

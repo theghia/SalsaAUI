@@ -28,7 +28,6 @@ public class MainFrame extends JFrame {
     private final int HEIGHT = 800;
 
     // File paths
-    private final String GRAPHICS = "src/assets/graphics/";
     private final String BACKGROUND = "src/assets/graphics/salsa_background.jpg"; //Resize object
 
     // Name of the views - for the navigation controller too?
@@ -45,6 +44,7 @@ public class MainFrame extends JFrame {
      * of the application
      */
     public MainFrame() {
+        //SHOULD THIS BE DONE IN A THREAD SAFETY THING
         // This could be one method - Set up frame
         setupFrame();
 
@@ -55,6 +55,10 @@ public class MainFrame extends JFrame {
         this.setVisible(true);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
+        //System.out.println(getContentPane().getHeight());
+        //System.out.println(panels.get(MAIN).getSize());
+        //System.out.println(panels.get(MAIN).getHeight()/2);
+        //System.out.println((int) getContentPane().getSize().getHeight()/2);
     }
 
     /**
@@ -107,16 +111,20 @@ public class MainFrame extends JFrame {
 
     /* Helper Method to initialise the views */
     private void setupMultipleViews() {
-        SalsaView menu = new MenuView(MAIN, WIDTH, HEIGHT);
+        //SalsaView menu = new MenuView(MAIN, WIDTH, HEIGHT);
+        SalsaView menu = new MenuView(MAIN, this.getContentPane().getSize());
         setupOneView(menu);
 
-        SalsaView simulation = new SimulationView(SIMULATION, WIDTH, HEIGHT);
+        //SalsaView simulation = new SimulationView(SIMULATION, WIDTH, HEIGHT);
+        SalsaView simulation = new SimulationView(SIMULATION, this.getContentPane().getSize());
         setupOneView(simulation);
 
-        SalsaView tutorial = new TutorialView(TUTORIAL, WIDTH, HEIGHT);
+        //SalsaView tutorial = new TutorialView(TUTORIAL, WIDTH, HEIGHT);
+        SalsaView tutorial = new TutorialView(TUTORIAL, this.getContentPane().getSize());
         setupOneView(tutorial);
 
-        SalsaView justifiedUserProfile = new JustifiedUserProfileView(JUP, WIDTH, HEIGHT);
+        //SalsaView justifiedUserProfile = new JustifiedUserProfileView(JUP, WIDTH, HEIGHT);
+        SalsaView justifiedUserProfile = new JustifiedUserProfileView(JUP, this.getContentPane().getSize());
         setupOneView(justifiedUserProfile);
 
         // Adding the cards to the frame
@@ -133,6 +141,7 @@ public class MainFrame extends JFrame {
     private void setupFrame() {
         this.getContentPane().setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.pack();
         this.setSize(WIDTH,HEIGHT);
 
         // Centering the JFrame

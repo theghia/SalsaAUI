@@ -73,7 +73,10 @@ public class NavigationController extends SalsaController {
         goToView(main.getNavigationButtons().get(mainFrame.getTUTORIAL()), mainFrame.getTUTORIAL());
 
         // Initialises the ActionListener for the "justified_user_profile" button
-        goToView(main.getNavigationButtons().get(mainFrame.getJUP()), mainFrame.getJUP()); // NULL POINTER HERE
+        goToView(main.getNavigationButtons().get(mainFrame.getJUP()), mainFrame.getJUP());
+
+        // Caching the result of the current view
+        this.getSalsaModel().setCurrentView(mainFrame.getMAIN());
     }
 
     /* Helper method to add an ActionListener to the "Home" buttons */
@@ -84,6 +87,8 @@ public class NavigationController extends SalsaController {
                 CardLayout cardLayout = (CardLayout) mainFrame.getCards().getLayout();
                 // Displaying the home page
                 cardLayout.show(mainFrame.getCards(), panel);
+                // Caching the result of the current view
+                getSalsaModel().setCurrentView(panel);
             }
         };
         navigationButton.addActionListener(gotoMain);

@@ -46,6 +46,10 @@ public class SalsaPanel extends JPanel {
         setUpPanel();
         setUpLayout();
         setUpListeners();
+
+        // Needed so that we can specify the position and size of the JButtons
+        //this.setLayout(null);
+        //this.setSize(this.width, this.height);
     }
 
     private void setUpLayout() {
