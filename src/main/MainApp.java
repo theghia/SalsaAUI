@@ -1,6 +1,8 @@
 package main;
 
 import controllers.NavigationController;
+import controllers.SimulationController;
+import views.SimulationView;
 
 public class MainApp {
 
@@ -9,6 +11,10 @@ public class MainApp {
         MainFrame start = new MainFrame();
 
         SalsaModel model = new SalsaModel();
+
         SalsaController control1 = new NavigationController(model, "navigation", start);
+
+        SimulationView simulationView = (SimulationView) start.getPanels().get("simulation");
+        SalsaController control2 = new SimulationController(model, "simulation", simulationView);
     }
 }
