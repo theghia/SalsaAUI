@@ -1,5 +1,7 @@
 package main;
 
+import components.State;
+
 public class SalsaModel {
 
     // Name of the user of the application
@@ -7,6 +9,9 @@ public class SalsaModel {
 
     // To cache the current view
     private String currentView = null;
+
+    // To know what the current state the simulation is at when it is running
+    private State currentState;
 
     /**
      * Method sets the field currentView with a String object representing the current view
