@@ -29,4 +29,17 @@ public enum Instrument {
         this.value = value;
         this.name = name;
     }
+
+    public int getValue() {
+        return value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public static void main(String[] args) {
+        Instrument hu = Instrument.PIANO;
+        int gh = hu.value;
+    }
 }

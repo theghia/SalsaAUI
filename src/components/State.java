@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class State {
 
     private BPM bpm;
-    private Instrument[] instruments;
+    private ArrayList<Instrument> instruments;
 
     // This is data held from when the simulation ran on this State.
     // Will be reset every time this State is revisited.
@@ -26,7 +26,7 @@ public class State {
     // A check to ensure that error values have been added to this state
     private boolean hasBeenSimulated;
 
-    public State (BPM bpm, Instrument[] instruments) {
+    public State (BPM bpm, ArrayList<Instrument> instruments) {
         this.bpm = bpm;
         this.instruments = instruments;
         this.hasBeenExplored = false;
@@ -46,7 +46,7 @@ public class State {
         return bpm;
     }
 
-    public Instrument[] getInstruments() {
+    public ArrayList<Instrument> getInstruments() {
         return instruments;
     }
 
