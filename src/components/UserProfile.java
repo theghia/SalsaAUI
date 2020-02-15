@@ -2,10 +2,7 @@ package components;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 public class UserProfile {
     //Here we will need to add neighbours to the states and make a connected graph
@@ -15,7 +12,7 @@ public class UserProfile {
     // So get the total number of instruments and then use the combinatorics to get an array of numbers
     // and then use this to label the states with the instruments (since they have their own assigned values)
 
-    private HashMap<String, State> states;
+    private Map<String, State> states = new HashMap<String, State>();
 
     public UserProfile() {
         initStates();
@@ -24,6 +21,35 @@ public class UserProfile {
 
     private void addNeighbours() {
 
+        for (Map.Entry<String, State> entry : states.entrySet()) {
+
+            //System.out.println(entry.getKey() + " = " + entry.getValue());
+        }
+    }
+
+    private ArrayList<State> getNeigbours(String id) {
+        String instruments = id.substring(0, id.length() -1);
+        String tempo = id.substring(id.length() - 1);
+
+        // ADDING AN INSTRUMENT
+        // Convert instruments into int[] + 1 to add an extra instrument
+        // Then create a {1,2,...} and loop through this. Use asArray to use the contains!
+        // if bool comes false, then we can add that instrument
+        // Sort that int[] and convert back into a string and add the tempo back on
+
+        // CHANGING TEMPO
+        // Loop through {a, b, c...} and find the index of the tempo on that list. Now -1 and +1 but index
+        // cannot be less than 0 and more than {}.length - 1
+
+        // REMOVING ONE INSTRUMENT
+        // Loop through the String instruments and remove one and add to tempo
+
+        // SWAP OUT ONE INSTRUMENT
+        // First we need to get an Int[] of instruments we currently do not have (can create a function for this
+        // to use with ADDING...)
+        // Then we loop through the int[] of instruments we do have and swap each out with one of the instruments
+        // we do not have, add the tempo, and then find the state
+        return null;
     }
 
     private void initStates() {
@@ -58,7 +84,7 @@ public class UserProfile {
             combination.add(convertIntToInstrument(value));
         }
 
-        return null;
+        return combination;
     }
 
     private Instrument convertIntToInstrument(int value) {
@@ -144,7 +170,11 @@ public class UserProfile {
         System.out.println(ed3);
 
         char ni = 'a';
-        System.out.println(ed3 + ni);
+        String ed4 = ed3 + ni;
+        System.out.println(ed4);
 
+        System.out.println(ed4.substring(ed4.length() - 1));
+        System.out.println('b' > 'a');
+        System.out.println(ed4.substring(0, ed4.length() - 1));
     }
 }
