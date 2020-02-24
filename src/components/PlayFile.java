@@ -52,13 +52,15 @@ public class PlayFile extends Thread {
         }
     }
 
+    // ACTUALLY - should we get this info in milliseconds instead of microseconds?
     /**
      * Method to get the length of the WAV file being played
      *
      * @return A long object representing the length of the WAV file in microseconds
      */
-    public long getMicrosecondLength() {
-        return this.clip.getMicrosecondLength();
+    public long getMillisecondLength() {
+        // 1000 Microseconds = 1 Milliseconds
+        return this.clip.getMicrosecondLength()/1000;
     }
 
     /* Method to convert the WAV file into a clip */

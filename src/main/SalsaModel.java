@@ -52,7 +52,6 @@ public class SalsaModel {
         this.clipInfoListener = clipInfoListener;
     }
 
-    // Or just keep 2 separate methods for beat and state...and then the controller can fire off the events
     public void setCurrentState(State currentState) {
         this.currentState = currentState;
     }
@@ -77,6 +76,8 @@ public class SalsaModel {
             simulationListener.onSimulationStartedEvent(e);
     }
 
+    // The fire method for fireClipInfoReadyEvent(long 123clip, long salsa1) --> onInitClipInfoReadyEvent
+    //
 
     /**
      * Method gets the UserProfile associated with the user.

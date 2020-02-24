@@ -58,12 +58,27 @@ public class SimulationController extends SalsaController implements ClipInforma
 
     @Override
     public void onInitClipInfoReadyEvent(ClipInformationEvent e) {
+        // Connected to the method fireClipInfoReadyEvent (model) that is called in the SimulationMusicController
+        // Start the thread that sets the flag in the model "hasClickedOnce" to false at each time calculated in
+        // the ClipInformationEvent - Divide the Salsa Bar into 4 and determine when a new 8-beat bar should finish and
+        // start so that the thread can at that time set the flag to false to allow the user click again to avoid
+        // multiple inputs
+        // This information should be in the controller so that we can also determine what time the requested beat
+        // will occur
 
+        // This method takes into account the 123 clip (the difference between the bottom one)
+        // so a thread would turn hasClickedOnce in false once the 123 clip has finished
     }
 
     @Override
     public void onClipInfoReadyEvent(ClipInformationEvent e) {
-
+        // Connected to the method fireClipInfoReadyEvent (model) that is called in the SimulationMusicController
+        // Start the thread that sets the flag in the model "hasClickedOnce" to false at each time calculated in
+        // the ClipInformationEvent - Divide the Salsa Bar into 4 and determine when a new 8-beat bar should finish and
+        // start so that the thread can at that time set the flag to false to allow the user click again to avoid
+        // multiple inputs
+        // This information should be in the controller so that we can also determine what time the requested beat
+        // will occur
     }
 
     private void initButtonClicker() {
