@@ -19,5 +19,5 @@ public interface ErrorFunction {
      * @param correctTimeStamp The timestamp in which the correct beat actually occurred
      * @return A Double object representing the "goodness" of the user's input
      */
-    public double calculateErrorValue(long clickTimeStamp, long correctTimeStamp);
+    double calculateErrorValue(long clickTimeStamp, long correctTimeStamp);
 }

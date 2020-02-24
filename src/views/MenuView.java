@@ -17,6 +17,10 @@ public class MenuView extends SalsaView {
     private String TUTORIAL = "tutorial";
     private String JUSTIFIED_USER_MODEL = "justified_user_profile";
 
+    private JButton simulation;
+    private JButton tutorial;
+    private JButton justified_user_model;
+
     // Dimensions for buttons and spacing
     int BUTTON_HEIGHT = 100;
     int BUTTON_WIDTH = 400;
@@ -32,36 +36,39 @@ public class MenuView extends SalsaView {
     public MenuView(String name, Dimension dimension) {
         super(name, dimension, true);
         setupButtons();
+        layoutButtons();
     }
 
     // Helper method to start up the buttons on the screen
     private void setupButtons() {
 
         // Button to move to the simulation view
-        JButton simulation = new JButton("Simulation");
+        this.simulation = new JButton("Simulation");
         //btnWhereTo.setIcon(new ImageIcon(ASSETS + "salsa_background.jpg"));
         //btnWhereTo.setBorder(null);
         //btnWhereTo.setForeground(new Color(0,0,0,0));
         //btnWhereTo.setDisabledIcon(new ImageIcon(ASSETS + "salsa_background.jpg"));
-        simulation.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        simulation.setEnabled(true);
+        this.simulation.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        this.simulation.setEnabled(true);
         this.getNavigationButtons().put(SIMULATION, simulation);
         this.add(simulation); simulation.setBackground(null);
 
         // Button to move to the tutorial view
-        JButton tutorial = new JButton("Tutorial");
-        tutorial.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        tutorial.setEnabled(true);
+        this.tutorial = new JButton("Tutorial");
+        this.tutorial.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        this.tutorial.setEnabled(true);
         this.getNavigationButtons().put(TUTORIAL, tutorial);
         this.add(tutorial); tutorial.setBackground(null);
 
         // Button to move to the justified_user_model view
-        JButton justified_user_model = new JButton("Track Record");
-        justified_user_model.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        justified_user_model.setEnabled(true);
+        this.justified_user_model = new JButton("Track Record");
+        this.justified_user_model.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        this.justified_user_model.setEnabled(true);
         this.getNavigationButtons().put(JUSTIFIED_USER_MODEL, justified_user_model);
         this.add(justified_user_model); justified_user_model.setBackground(null);
+    }
 
+    private void layoutButtons() {
         // Getting dimensions ready
         int panelHeight = (int) getDimension().getHeight();
         int panelWidth = (int) getDimension().getWidth();
