@@ -79,6 +79,7 @@ public class PlayFile extends Thread {
 
     public static void main(String[] args) throws InterruptedException {
 
+        // Moving the music into assets -> Please note that
         String piano1 = "C:\\Users\\User\\Desktop\\music\\180\\piano\\piano1.wav";
         String clave_piano = "C:\\Users\\User\\Desktop\\music\\200\\clave_piano\\son-clave_piano4.wav";
 

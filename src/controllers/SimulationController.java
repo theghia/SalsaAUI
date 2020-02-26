@@ -58,7 +58,11 @@ public class SimulationController extends SalsaController implements ClipInforma
 
     @Override
     public void onInitClipInfoReadyEvent(ClipInformationEvent e) {
-        // Connected to the method fireClipInfoReadyEvent (model) that is called in the SimulationMusicController
+        // Connected to the method fireClipInfoReadyEvent (model) that is called in the SimulationMusicController - YES
+
+        // So we have
+
+
         // Start the thread that sets the flag in the model "hasClickedOnce" to false at each time calculated in
         // the ClipInformationEvent - Divide the Salsa Bar into 4 and determine when a new 8-beat bar should finish and
         // start so that the thread can at that time set the flag to false to allow the user click again to avoid
@@ -118,12 +122,6 @@ public class SimulationController extends SalsaController implements ClipInforma
 
                 // Fire off the event
                 getSalsaModel().fireSimulationStartEvent();
-
-                // Will it be a method in the model that throws the event...and it is just called here?
-                //model.setErrorValue(...)
-                //model.fireSimulationStartEvent(...)
-
-                // Throw the event SimulationStartedEvent - onSimulationStartedEvent
             }
         };
         simulationView.getStartButton().addActionListener(start);

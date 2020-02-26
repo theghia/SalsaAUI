@@ -46,5 +46,7 @@ public class MainApp {
         model.addSimulationListener((SimulationListener) simulationGUIController);
         model.addSimulationListener((SimulationListener) simulationMusicController);
         model.addClipInformationListener((ClipInformationListener) simulationController);
+
     }
+
 }

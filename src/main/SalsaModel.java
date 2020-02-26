@@ -2,6 +2,7 @@ package main;
 
 import components.State;
 import components.UserProfile;
+import events.ClipInformationEvent;
 import events.ClipInformationListener;
 import events.SimulationEvent;
 import events.SimulationListener;
@@ -68,6 +69,10 @@ public class SalsaModel {
         userProfile.getStates().get(id).getErrorValues().add(errorValue);
     }
 
+    public State getCurrentState() {
+        return currentState;
+    }
+
     public void fireSimulationStartEvent() {
         SimulationEvent e = new SimulationEvent(this);
 
@@ -77,7 +82,23 @@ public class SalsaModel {
     }
 
     // The fire method for fireClipInfoReadyEvent(long 123clip, long salsa1) --> onInitClipInfoReadyEvent
-    //
+    public void fireClipInfoReadyEvent(long clip123, long clipSalsa) {
+        ClipInformationEvent e = new ClipInformationEvent(this, clip123, clipSalsa);
+
+        // The listener will execute whatever logic it has implemented
+        this.clipInfoListener.onInitClipInfoReadyEvent(e);
+    }
+
+    public void fireClipInfoReadyEvent(long clipSalsa) {
+        ClipInformationEvent e = new ClipInformationEvent(this, clipSalsa);
+
+        // The listener will execute whatever logic it has implemented
+        this.clipInfoListener.onClipInfoReadyEvent(e);
+    }
+
+    public void fireNewStateEvent() {
+        //simListeners.onNewStateEvent(e);
+    }
 
     /**
      * Method gets the UserProfile associated with the user.

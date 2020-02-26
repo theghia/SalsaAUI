@@ -1,5 +1,8 @@
 package events;
 
+import components.State;
+import main.SalsaModel;
+
 import java.util.EventObject;
 
 /**
@@ -44,6 +47,12 @@ public class SimulationEvent extends EventObject {
      */
     public double getErrorValue() {
         return errorValue;
+    }
+
+    public State getCurrentState() {
+        SalsaModel model = (SalsaModel) this.source;
+
+        return model.getCurrentState();
     }
 
     // All objects that will be passed through here are going to be MODELSSSS
