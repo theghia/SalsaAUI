@@ -15,7 +15,7 @@ public class SalsaModel {
     private String nameOfUser;
 
     // To cache the current view
-    private String currentView = null;
+    private String currentView;
 
     // Holds information on the user's ability in finding timing on the different combinations of instruments and tempo
     private UserProfile userProfile;
@@ -24,8 +24,20 @@ public class SalsaModel {
     private State currentState;
 
     // To keep track of what beats we require the user to find
-    private int currentBeat = -1;
-    private int nextBeat = -1;
+    private int currentBeat;
+    private int nextBeat;
+
+    // Keeping track whether the user has previously clicked before during each 8-beat bar of music
+    private boolean hasClickedOnce;
+
+    // To keep track of the number of State objects we have transitioned
+    private int numTransitionedStates;
+
+    // A beat timeline so that we can use the error function to compare the user's input to the correct timing
+    private ArrayList<Long> beatTimeline;
+
+    // To normalise the timestamp of the user's input
+    private long timeAccumulation;
 
     // An ArrayList of SimulationListeners associated with the SimulationGUIController class and the
     // SimulationMusicController class
@@ -43,6 +55,16 @@ public class SalsaModel {
 
         // Initialise the ArrayList to be able to add Listeners
         simListeners = new ArrayList<SimulationListener>(2);
+
+        // The beats will only be from 1 to 8. -1 used as they can never be that number
+        this.currentBeat = -1;
+        this.nextBeat = -1;
+
+        // Default will be false as the user would not have clicked the beat button before the simulation has started
+        this.hasClickedOnce = false;
+
+        // Default will be 0
+        this.timeAccumulation = 0;
     }
 
     public void addSimulationListener(SimulationListener simulationListener) {
@@ -67,6 +89,10 @@ public class SalsaModel {
         String id = userProfile.createID(currentState.getBpm(), currentState.getInstruments());
         // Put the error value in...
         userProfile.getStates().get(id).getErrorValues().add(errorValue);
+    }
+
+    public void setBeatTimeline(ArrayList<Long> beatTimeline) {
+        this.beatTimeline = beatTimeline;
     }
 
     public State getCurrentState() {
@@ -98,6 +124,14 @@ public class SalsaModel {
 
     public void fireNewStateEvent() {
         //simListeners.onNewStateEvent(e);
+    }
+
+    public void fireNewBeatEvent() {
+        //simListeners.onNewBeatEvent(e)
+    }
+
+    public void fireSimulationFinishedEvent() {
+        //simListeners.onSimulationFinished;
     }
 
     /**
@@ -133,5 +167,31 @@ public class SalsaModel {
 
     public String getNameOfUser() {
         return nameOfUser;
+    }
+
+    // Should never reach below 0
+    public void decreaseNumTransitionedStates() {
+        this.numTransitionedStates--;
+    }
+
+    public int getNumTransitionedStates() {
+        return numTransitionedStates;
+    }
+
+    public void setNumTransitionedStates(int numTransitionedStates) {
+        this.numTransitionedStates = numTransitionedStates;
+    }
+
+    public void resetHasClickedOnce() {
+        this.hasClickedOnce = false;
+    }
+
+    public void addToTimeAccumulated(long add) {
+        this.timeAccumulation += add;
+    }
+
+    public void resetModel() {
+        // Default is 0
+        this.timeAccumulation = 0;
     }
 }

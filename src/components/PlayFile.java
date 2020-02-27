@@ -52,11 +52,10 @@ public class PlayFile extends Thread {
         }
     }
 
-    // ACTUALLY - should we get this info in milliseconds instead of microseconds?
     /**
-     * Method to get the length of the WAV file being played
+     * Method to get the length of the WAV file being played in Milliseconds
      *
-     * @return A long object representing the length of the WAV file in microseconds
+     * @return A long object representing the length of the WAV file in milliseconds
      */
     public long getMillisecondLength() {
         // 1000 Microseconds = 1 Milliseconds
@@ -76,25 +75,4 @@ public class PlayFile extends Thread {
             ex.printStackTrace();
         }
     }
-
-    public static void main(String[] args) throws InterruptedException {
-
-        // Moving the music into assets -> Please note that
-        String piano1 = "C:\\Users\\User\\Desktop\\music\\180\\piano\\piano1.wav";
-        String clave_piano = "C:\\Users\\User\\Desktop\\music\\200\\clave_piano\\son-clave_piano4.wav";
-
-        PlayFile file1 = new PlayFile(piano1);
-        //PlayFile file2 = new PlayFile(clave_piano);
-
-        file1.start();
-        file1.join();
-        // Then here is where we can write some code so that after a certain amount of time,
-        // we calculate the next state
-
-        PlayFile file2 = new PlayFile(clave_piano);
-        file2.start();
-        file2.join();
-    }
-
-
 }

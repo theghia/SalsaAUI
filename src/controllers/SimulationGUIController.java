@@ -52,4 +52,10 @@ public class SimulationGUIController extends SalsaController implements Simulati
         // Logic here will be to move the gauge needle accordingly with the error value
 
     }
+
+    @Override
+    public void onSimulationFinished(SimulationEvent e) {
+        // Hide the button clicker and all of the instrument GUI and set the beat number
+        // to blank and then make the start button visible and switch the panel to the start screen
+    }
 }

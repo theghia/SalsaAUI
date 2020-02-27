@@ -5,13 +5,10 @@ import events.ClipInformationEvent;
 import events.ClipInformationListener;
 import main.SalsaController;
 import main.SalsaModel;
-import views.JustifiedUserProfileView;
 import views.SimulationView;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -115,6 +112,9 @@ public class SimulationController extends SalsaController implements ClipInforma
 
                 // Choose a random int
                 int firstBeat = randomGenerator.nextInt(8) + 1;
+
+                // Only 15 different State objects will be visited
+                getSalsaModel().setNumTransitionedStates(15);
 
                 // Update the model
                 getSalsaModel().setCurrentState(randState);

@@ -37,4 +37,12 @@ public interface SimulationListener extends EventListener {
      *          listeners.
      */
     void onNewErrorValue(SimulationEvent e);
+
+    /**
+     * This method deals with the event of when the Simulation has finished. Cleans up the GUI ready for the next
+     * time the simulation is started again.
+     *
+     * @param e A SimulationEvent object that will be used to reset the model (except the UserProfile) back to default
+     */
+    void onSimulationFinished(SimulationEvent e);
 }

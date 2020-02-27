@@ -103,12 +103,22 @@ public class SimulationMusicController extends SalsaController implements Simula
     }
 
     /**
-     * NOT EVENT
+     * NOT USED
      *
-     * @param e NOT EVENT
+     * @param e NOT USED
      */
     @Override
     public void onNewErrorValue(SimulationEvent e) {
+        // Nothing needed here
+    }
+
+    /**
+     * NOT USED
+     *
+     * @param e NOT USED
+     */
+    @Override
+    public void onSimulationFinished(SimulationEvent e) {
         // Nothing needed here
     }
 
