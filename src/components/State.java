@@ -2,6 +2,13 @@ package components;
 
 import java.util.ArrayList;
 
+/**
+ * State Class that holds the information of the recorded inputs of the user trying to find the requested beats to
+ * the Salsa music being played. This will be an extension of the model.
+ *
+ * @author Gareth Iguasnia
+ * @date 01/03/2020
+ */
 public class State {
 
     private BPM bpm;
@@ -15,7 +22,7 @@ public class State {
     private ArrayList<Double> averageErrorValues;
 
     // The average error value calculated from averageErrorValues
-    private float currentAverageErrorValue;
+    private double currentAverageErrorValue;
 
     // A list of possible neighbours
     private ArrayList<State> neighbours;
@@ -44,42 +51,6 @@ public class State {
         // Value of -1 assigned since it can never be that value when calculated with an Error Function
         // This will be an indicator as to whether there is an error value associated to the State object
         this.currentAverageErrorValue = -1;
-    }
-
-    /* Switch hasBeenSimulated for hasBeenExplored -> if there are error values in errorValues
-    public void calculateCurrentAverageErrorValue() {
-        if (hasBeenSimulated) {
-            recalculateAverageErrorValues();
-
-            // Calculating to total average error value
-            currentAverageErrorValue = getAverage(averageErrorValues);
-        }
-    }*/
-
-
-    /* Helper method to calculate the average error value from the simulation */
-    /*private void recalculateAverageErrorValues() {
-        // Calculating the average
-        float average = getAverage(errorValues);
-
-        // Adding the averaged error value to the State's data
-        this.averageErrorValues.add(average);
-
-        // Resetting the values to be used again the next time this State is visited
-        this.errorValues = null;
-    }*/
-
-    /* Helper method to calculate the average value in an ArrayList<Float> */
-    private float getAverage(ArrayList<Float> values) {
-        float average = 0;
-
-        for (float value: values) {
-            average += value;
-        }
-
-        average /= values.size();
-
-        return average;
     }
 
     public ArrayList<Double> getErrorValues() {
@@ -113,8 +84,6 @@ public class State {
         return instruments;
     }
 
-    // So in the JUP, they can delete a previous attempt but the system will include that
-    // State in the next run
     /**
      * Method returns all of the averaged error value that the State object has recorded. These all will be factored
      * into the currentAverageErrorValue field
@@ -130,7 +99,7 @@ public class State {
      *
      * @return A float representing the current average value of the State
      */
-    public float getCurrentAverageErrorValue() {
+    public double getCurrentAverageErrorValue() {
         return currentAverageErrorValue;
     }
 
@@ -141,5 +110,31 @@ public class State {
      */
     public ArrayList<State> getNeighbours() {
         return neighbours;
+    }
+
+    /**
+     * Method removes any recorded error values so that if the State is visited again, we can record another average
+     * again
+     */
+    public void resetErrorValue() {
+        this.errorValues = new ArrayList<Double>();
+    }
+
+    /**
+     * Method sets the value of currentAverageErrorValue
+     *
+     * @param currentAverageErrorValue A double representing the total average error value of the State
+     */
+    public void setCurrentAverageErrorValue(double currentAverageErrorValue) {
+        this.currentAverageErrorValue = currentAverageErrorValue;
+    }
+
+    /**
+     * Method sets the boolean value for the field hasBeenExplored
+     *
+     * @param hasBeenExplored A boolean variable representing whether the State has been explored
+     */
+    public void setHasBeenExplored(boolean hasBeenExplored) {
+        this.hasBeenExplored = hasBeenExplored;
     }
 }

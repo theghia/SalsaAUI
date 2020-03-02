@@ -7,7 +7,8 @@ import java.util.EventObject;
 
 /**
  * SimulationEvent Class that extends the EventObject Class. This event will be used in the scenarios where we are
- * notifying listeners about updates to the SalsaModel such as: New state, new next beat and new error value
+ * notifying listeners about updates to the SalsaModel such as: New state, new next beat and new error value. This
+ * event will be used with SimulationListeners and SimulationGUIListeners.
  *
  * @author Gareth Iguasnia
  * @date 24/02/2020
@@ -15,7 +16,10 @@ import java.util.EventObject;
 public class SimulationEvent extends EventObject {
 
     // To simplify the retrieval of the most recent error value added to the UserProfile object
-    double errorValue;
+    private double errorValue;
+
+    // To create simple getter methods for the EventObject
+    private SalsaModel model;
 
     /**
      * Constructor 1: Creates the SimulationEvent object that will be used by the SimulationMusicController Class and
@@ -25,6 +29,7 @@ public class SimulationEvent extends EventObject {
      */
     public SimulationEvent(Object source) {
         super(source);
+        this.model = (SalsaModel) source;
     }
 
     /**
@@ -38,6 +43,7 @@ public class SimulationEvent extends EventObject {
     public SimulationEvent(Object source, double errorValue) {
         super(source);
         this.errorValue = errorValue;
+        this.model = (SalsaModel) source;
     }
 
     /**
@@ -50,9 +56,15 @@ public class SimulationEvent extends EventObject {
     }
 
     public State getCurrentState() {
-        SalsaModel model = (SalsaModel) this.source;
-
         return model.getCurrentState();
+    }
+
+    public int getCurrentBeat() {
+        return model.getCurrentBeat();
+    }
+
+    public int getNextBeat() {
+        return model.getNextBeat();
     }
 
     // All objects that will be passed through here are going to be MODELSSSS

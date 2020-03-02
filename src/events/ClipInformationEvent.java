@@ -59,14 +59,4 @@ public class ClipInformationEvent extends EventObject {
     public long getClip123() {
         return clip123;
     }
-
-    // logic here should split the information up accordingly so that the onInitClipInfoReadyEvent(ClipInformationEvent e)
-    // in the SimulationController can just grab the data and start the thread/s
-    // Or...for MVC sake...this logic should be done in the SimulationController
-
-    // Should hold information on the clip information
-    // Here (or in the SimulationController), logic will split up the time that it will take for the clip to play
-    // into 4 equal parts to determine the length of each 8 beat bar of music.
-
-    // YES -> Save the logic for the controller
 }

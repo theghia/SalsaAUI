@@ -5,6 +5,7 @@ import events.ClipInformationEvent;
 import events.ClipInformationListener;
 import main.SalsaController;
 import main.SalsaModel;
+import timers.ClickOnce;
 import views.SimulationView;
 
 import java.awt.event.ActionEvent;
@@ -13,8 +14,17 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * SimulationController Class extends the SalsaController Class and implements the ClipInformationListener interface.
+ * This Class deals with the user's input and controls the flow of the Simulation by making sure that the appropriate
+ * events are fired at specific times so that the SimulationGUIController and the SimulationMusicController can also
+ * execute their logic.
+ *
+ * @author Gareth Iguasnia
+ * @date 02/03/2020
+ */
 public class SimulationController extends SalsaController implements ClipInformationListener {
-
+    // To have access to the buttons in the SimulationView Class
     private SimulationView simulationView;
 
     // As we are programming to an interface, we can switch out the ErrorFunction and GameStatusFunction with ease
@@ -25,10 +35,13 @@ public class SimulationController extends SalsaController implements ClipInforma
     // and to find a starting state
     private Random randomGenerator;
 
-    private long simulationStart;
-    private long oneMinute;
-    //A boolean to check whether you are good to use the error function...or in the Model?
-
+    /**
+     * Constructor for the SimulationController.
+     *
+     * @param salsaModel A SalsaModel object that contains the data of the MVC application
+     * @param controllerName A String representing the name of the controller
+     * @param simulationView The view that this controller will be interacting with
+     */
     public SimulationController(SalsaModel salsaModel, String controllerName, SimulationView simulationView) {
         super(salsaModel, controllerName);
         this.simulationView = simulationView;
@@ -38,71 +51,103 @@ public class SimulationController extends SalsaController implements ClipInforma
 
         initButtonClicker();
         initStartButton();
-
-        // test -- Not really needed tbh. The issue is with the function
-        // Actually - this is good but should be in a separate function and not constructor
-        this.simulationStart = System.currentTimeMillis();
-        this.oneMinute = 10*1000;
-
-        // Play the 321 clip here -- Initiate the PlayFile[] here then?
     }
 
-    // This controller should observe model so that any updates on things like "a new clip should be played" will
-    // mean that this controller will calculate the average value and then calculate the overall average value
-    // and then use the current average value along with the state movement to determine which state to move on to
-    // next. Once that has been chosen, then we can then create another PlayFile object from the finite
-    // PlayFile[] and join it to the queue...?
-
+    /**
+     * This method deals with the necessary logic when the fireClipInfoReadyEvent(...) method is called in the
+     * SimulationMusicController. This method will fire events for every new 8-beat bar and when both the countdown
+     * and Salsa audio clip have finished
+     *
+     * @param e A ClipInformationEvent that will pass on information to the ClickOnce object on the length of the clip
+     *          of the countdown and salsa audio clip
+     */
     @Override
     public void onInitClipInfoReadyEvent(ClipInformationEvent e) {
-        // Connected to the method fireClipInfoReadyEvent (model) that is called in the SimulationMusicController - YES
-
-        // So we have
-
-
-        // Start the thread that sets the flag in the model "hasClickedOnce" to false at each time calculated in
-        // the ClipInformationEvent - Divide the Salsa Bar into 4 and determine when a new 8-beat bar should finish and
-        // start so that the thread can at that time set the flag to false to allow the user click again to avoid
-        // multiple inputs
-        // This information should be in the controller so that we can also determine what time the requested beat
-        // will occur
-
-        // This method takes into account the 123 clip (the difference between the bottom one)
-        // so a thread would turn hasClickedOnce in false once the 123 clip has finished
+        // Creates a Timer thread that will execute logic found in the ClickOnce class at every new 8-beat bar and when
+        // both the countdown and Salsa audio clip have finished
+        new ClickOnce(this, e.getClip123(), e.getClipSalsa());
     }
 
+    /**
+     * This method deals with the necessary logic when the fireClipInfoReadyEvent(...) method is called in the
+     * SimulationMusicController. This method will fire events for every new 8-beat bar and when the Salsa audio clip
+     * has finished as well
+     *
+     * @param e A ClipInformationEvent object that will pass information to ClickOnce on the length of the clip of the
+     *          Salsa audio clip.
+     */
     @Override
     public void onClipInfoReadyEvent(ClipInformationEvent e) {
-        // Connected to the method fireClipInfoReadyEvent (model) that is called in the SimulationMusicController
-        // Start the thread that sets the flag in the model "hasClickedOnce" to false at each time calculated in
-        // the ClipInformationEvent - Divide the Salsa Bar into 4 and determine when a new 8-beat bar should finish and
-        // start so that the thread can at that time set the flag to false to allow the user click again to avoid
-        // multiple inputs
-        // This information should be in the controller so that we can also determine what time the requested beat
-        // will occur
+        // Creates a Timer thread that will execute logic found in the ClickOnce class at every new 8-beat bar and when
+        // the Salsa audio clip have finished
+        new ClickOnce(this, e.getClipSalsa());
     }
 
+    /**
+     * Method to get the GameStatusFunction that is being used in the MVC application. This will be called by the
+     * ClickOnce Class in order to choose the next state that the application will move on to next.
+     *
+     * @return A GameStatusFunction object which will be used to determine the next State object that will be visited
+     */
+    public GameStatusFunction getGameStatusFunction() {
+        return gameStatusFunction;
+    }
+
+    /* Helper method to add an ActionListener to the button to be used by the user to input their try */
     private void initButtonClicker() {
         ActionListener click = new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                //Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                //System.out.println(timestamp.getTime());
-                //System.out.println(test);
-                //System.out.println(gef.calculateErrorValue(timestamp.getTime(), test));
-                long clickTSNormalised = System.currentTimeMillis() - simulationStart;
-                System.out.println(clickTSNormalised);
-                double errorValue = errorFunction.calculateErrorValue(clickTSNormalised, oneMinute);
-                System.out.println(errorValue);
-                // Here a check needs to happen if the next clip is going to play
-                // Another check also needs to happen to ensure the user clicks once every 8 beats
-                // No, this should only worry about getting the error value and adding it to the error
-                // values of the State and that is it
+            public synchronized void actionPerformed(ActionEvent e) {
+                /*System.out.println("Button Clicker Tracker: " + getSalsaModel().getButtonClickerTracker());
+                System.out.println("hasClickedOnce1: " + getSalsaModel().hasClickedOnce1());
+                System.out.println("hasClickedOnce2: " + getSalsaModel().hasClickedOnce2());*/
+
+                // If a Salsa audio clip is currently playing, then proceed
+                if (!getSalsaModel().isCountdownCurrentlyPlaying()) {
+                    // Checking if has previously clicked in the assigned time windows
+                    System.out.println("Button Clicker: " + getSalsaModel().getButtonClickerTracker());
+                    System.out.println("hasClickedOnce1: " + getSalsaModel().hasClickedOnce1());
+                    System.out.println("hasClickedOnce2: " + getSalsaModel().hasClickedOnce2());
+
+                    if (getSalsaModel().getButtonClickerTracker() == 1 && !getSalsaModel().hasClickedOnce1()) {
+                        getSalsaModel().setHasClickedOnce1(true);
+                        getSalsaModel().increaseButtonClickerTracker();
+                        calculateErrorValue();
+                        System.out.println("I have been printed");System.out.println();
+                    }
+
+                    else if (getSalsaModel().getButtonClickerTracker() == 2 && !getSalsaModel().hasClickedOnce2()) {
+                        getSalsaModel().setHasClickedOnce2(true);
+                        getSalsaModel().decreaseButtonClickerTracker();
+                        calculateErrorValue();
+                        System.out.println("I have been printed");System.out.println();
+                    }
+                }
             }
         };
         simulationView.getBeatClicker().addActionListener(click);
     }
 
+    /* Helper method to calculate the error value when the user is trying to find the requested beat */
+    private void calculateErrorValue() {
+        // Normalising the time stamp of the user's input
+        long clickTSNormalised = System.currentTimeMillis() - getSalsaModel().getTimeAccumulation();
+
+        // getTimeAccumulated? Do we need to add the system
+        System.out.println(clickTSNormalised);
+
+        // Error value calculated using the error function and then added to the UserProfile
+        int barNumber = getSalsaModel().getBarNumber();
+        int currentBeat = getSalsaModel().getCurrentBeat();
+        long requiredBeatTime = getSalsaModel().getBeatTimeline().get(currentBeat - 1 + 8*(barNumber - 1));
+        double errorValue = errorFunction.calculateErrorValue(clickTSNormalised, requiredBeatTime );
+        getSalsaModel().setErrorValue(errorValue);
+
+        // New error value event fired so that the GUI can display it
+        getSalsaModel().fireNewErrorValueEvent();
+    }
+
+    /* Helper method to set up an ActionListener for the Start button on the SimulationView */
     private void initStartButton() {
         ActionListener start = new ActionListener() {
             @Override
@@ -110,8 +155,8 @@ public class SimulationController extends SalsaController implements ClipInforma
                 // Choose a starting State
                 State randState = chooseStartingState();
 
-                // Choose a random int
-                int firstBeat = randomGenerator.nextInt(8) + 1;
+                // Choose a random int between [4, 8]
+                int firstBeat = randomGenerator.nextInt(5) + 4;
 
                 // Only 15 different State objects will be visited
                 getSalsaModel().setNumTransitionedStates(15);
@@ -119,9 +164,11 @@ public class SimulationController extends SalsaController implements ClipInforma
                 // Update the model
                 getSalsaModel().setCurrentState(randState);
                 getSalsaModel().setNextBeat(firstBeat);
+                getSalsaModel().addToTimeAccumulated(System.currentTimeMillis());
 
-                // Fire off the event
+                // Fire off the events
                 getSalsaModel().fireSimulationStartEvent();
+                getSalsaModel().fireNewBeatEvent();
             }
         };
         simulationView.getStartButton().addActionListener(start);
@@ -159,6 +206,4 @@ public class SimulationController extends SalsaController implements ClipInforma
         }
         return randState;
     }
-
-
 }

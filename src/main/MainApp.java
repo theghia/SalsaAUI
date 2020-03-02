@@ -6,6 +6,7 @@ import controllers.SimulationController;
 import controllers.SimulationGUIController;
 import controllers.SimulationMusicController;
 import events.ClipInformationListener;
+import events.SimulationGUIListener;
 import events.SimulationListener;
 import views.SimulationView;
 
@@ -46,7 +47,7 @@ public class MainApp {
         model.addSimulationListener((SimulationListener) simulationGUIController);
         model.addSimulationListener((SimulationListener) simulationMusicController);
         model.addClipInformationListener((ClipInformationListener) simulationController);
-
+        model.addSimulationGUIListener((SimulationGUIListener) simulationGUIController);
     }
 
 }

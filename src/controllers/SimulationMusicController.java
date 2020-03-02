@@ -55,30 +55,20 @@ public class SimulationMusicController extends SalsaController implements Simula
      */
     @Override
     public void onSimulationStartedEvent(SimulationEvent e) {
-        // Create the clip to play the countdown WAV file
+        // Create the clip to play the countdown WAV file and join it to the queue
         String countdownFilePath = sounds + "countdown/countdown_5-0.wav";
         PlayFile countdown = new PlayFile(countdownFilePath);
+        initSoundClip(countdown);
 
         // Get a music file that represents the current state
         State currentState = e.getCurrentState();
         PlayFile salsaAudio = getSalsaAudio(currentState);
 
-        // Play the countdown clip and join it to the queue and then do the same for the salsa audio clip
-        initSoundClip(countdown);
+        // Play the Salsa audio clip and join it to the queue
         initSoundClip(salsaAudio);
 
         // Fire off the event to let SimulationController know about the Clip information
         getSalsaModel().fireClipInfoReadyEvent(countdown.getMillisecondLength(), salsaAudio.getMillisecondLength());
-    }
-
-    /**
-     * NOT USED
-     *
-     * @param e NOT USED
-     */
-    @Override
-    public void onNewBeatEvent(SimulationEvent e) {
-        // Nothing needed here
     }
 
     /**
@@ -102,28 +92,8 @@ public class SimulationMusicController extends SalsaController implements Simula
         getSalsaModel().fireClipInfoReadyEvent(salsaAudio.getMillisecondLength());
     }
 
-    /**
-     * NOT USED
-     *
-     * @param e NOT USED
-     */
-    @Override
-    public void onNewErrorValue(SimulationEvent e) {
-        // Nothing needed here
-    }
-
-    /**
-     * NOT USED
-     *
-     * @param e NOT USED
-     */
-    @Override
-    public void onSimulationFinished(SimulationEvent e) {
-        // Nothing needed here
-    }
-
     /* Helper method that allows the Clips to be played one after the other during the simulation */
-    private void initSoundClip( PlayFile clip ) {
+    private synchronized void initSoundClip( PlayFile clip ) {
         new Thread(new Runnable() {
             @Override
             public void run() {
