@@ -140,6 +140,8 @@ public class ClickOnce {
 
                 // Setting the next beat in the model
                 simCon.getSalsaModel().setNextBeat(nextBeats.get(barNumber - 1));
+                System.out.println("The index of nextBeats in ClickOnce: " + (barNumber-1));
+                System.out.println("Setting the next beat: " + nextBeats.get(barNumber - 1));
 
                 // Next bar
                 simCon.getSalsaModel().setBarNumber(barNumber);
@@ -198,7 +200,7 @@ public class ClickOnce {
         // Number of beats in a group of 4 8-beat bars
         int numBeatsPerState = 32;
 
-        ArrayList<Long> beatTimeline = new ArrayList<Long>(numBeatsPerState);
+        ArrayList<Long> beatTimeline = new ArrayList<>(numBeatsPerState);
 
         // Beat 1 of a new group of 4 8-beat bars is 0
         long beatTime = 0;
@@ -218,7 +220,7 @@ public class ClickOnce {
     /* The next beats that the simulation will request the user to identify in the music */
     private ArrayList<Integer> createNextBeats() {
         // ArrayList for the next 4 beats in the simulation
-        ArrayList<Integer> nextBeats = new ArrayList<Integer>(4);
+        ArrayList<Integer> nextBeats = new ArrayList<>(4);
 
         for (int i = 0; i < 4; i++) {
             // 2nd and 3rd bar of the 4 8-beat bar Salsa audio clip

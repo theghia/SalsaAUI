@@ -27,7 +27,7 @@ public abstract class SalsaView extends JPanel{
     private Dimension dimension;
 
     // Each view should be able to navigate through the MVC application
-    private Map<String, JButton> navigationButtons = new HashMap<String, JButton>();
+    private Map<String, JButton> navigationButtons = new HashMap<>();
 
     // Every view except the MenuView needs to have a home button
     private boolean isMenuView;
@@ -115,6 +115,15 @@ public abstract class SalsaView extends JPanel{
      * @return A Dimension object that represents the size of the JPanel
      */
     public Dimension getDimension() { return dimension; }
+
+    /**
+     * Method returns the field MAIN
+     *
+     * @return A string that represents the home button
+     */
+    public String getMAIN() {
+        return MAIN;
+    }
 
     /* Helper method: Sets up the layout of the JPanel */
     private void setupLayout() {

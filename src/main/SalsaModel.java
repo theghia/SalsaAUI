@@ -61,7 +61,7 @@ public class SalsaModel {
         userProfile = new UserProfile();
 
         // Initialise the ArrayList to be able to add Listeners
-        simListeners = new ArrayList<SimulationListener>(2);
+        simListeners = new ArrayList<>(2);
 
         // The beats will only be from 1 to 8. -1 used as they can never be that number
         this.currentBeat = -1;
@@ -175,9 +175,37 @@ public class SalsaModel {
         this.timeAccumulation += add;
     }
 
+    /**
+     * Method to be called at the end of a simulation run to reset the model's variables used in order to note down the
+     * necessary information on the user's performance in identifying the correct timing
+     */
     public void resetModel() {
+        // Default is -1
+        this.currentBeat = -1;
+        this.nextBeat = -1;
+
+        // No State as simulation is not running
+        this.currentState = null;
+
+        // Bar number begins at 1
+        this.barNumber = 1;
+
+        // ClickedOnce flags default is true
+        this.hasClickedOnce1 = true;
+        this.hasClickedOnce2 = true;
+
+        // These trackers are default set to 1
+        this.windowTracker = 1;
+        this.buttonClickerTracker = 1;
+
+        // No beat timeline as the simulation is not running
+        this.beatTimeline = null;
+
         // Default is 0
         this.timeAccumulation = 0;
+
+        // Default is true, ready for when the simulation is played again
+        this.countdownCurrentlyPlaying = true;
     }
 
     public synchronized void increaseWindowTracker() {

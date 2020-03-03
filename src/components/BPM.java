@@ -8,21 +8,25 @@ package components;
  * @date 12/02/2020
  */
 public enum BPM {
-    SLOW(180, 'a'),
-    MEDIUM(200, 'b'),
-    FAST(220, 'c');
+    SLOW(180, 'a', "Slow"),
+    MEDIUM(200, 'b', "Medium"),
+    FAST(220, 'c', "Fast");
 
     private int BPM;
     private char id;
+    private String name;
 
     /**
      * Constructor for the BPM Enum class
      *
      * @param tempo Integer representing the beats per minute
+     * @param id The ID assigned to the BPM object
+     * @param name String description of the BPM object
      */
-    BPM(int tempo, char id) {
+    BPM(int tempo, char id, String name) {
         this.BPM = tempo;
         this.id = id;
+        this.name = name;
     }
 
     /**
@@ -41,5 +45,14 @@ public enum BPM {
      */
     public char getId() {
         return id;
+    }
+
+    /**
+     * Method returns the description speed of the tempo in a String format
+     *
+     * @return A String representing the speed of the tempo
+     */
+    public String getName() {
+        return name;
     }
 }

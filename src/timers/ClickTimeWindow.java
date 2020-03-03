@@ -73,7 +73,7 @@ public class ClickTimeWindow {
             if (repeat > 0) {
                 // We want this to run only once
                 repeat--;
-                System.out.println("Window Tracker:  "  + model.getWindowTracker());
+                //System.out.println("Window Tracker:  "  + model.getWindowTracker());
 
                 // We will be using two flags as the time windows can overlap in some cases
                 if ( model.getWindowTracker() == 1 ) {
