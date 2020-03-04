@@ -1,5 +1,6 @@
 package views;
 
+import components.Gauge;
 import components.Instrument;
 import main.SalsaView;
 
@@ -26,6 +27,10 @@ public class SimulationView extends SalsaView {
     // JPanel that will hold 3 JLabels representing the different tempos that the MVC application will use
     private JPanel tempos;
 
+    // Gauge
+    private Gauge gauge;
+    private JLabel gaugeGUI;
+
     public SimulationView(String name, Dimension dimension) {
         super(name, dimension, false);
 
@@ -44,10 +49,13 @@ public class SimulationView extends SalsaView {
         setupJLabelsText();
         setupButtons();
         setupJLabelsInstruments();
+        setupGauge();
+
         layoutTempo();
         layoutButtons();
         layoutDigitalNumbers();
         layoutInstruments();
+        layoutGauge();
     }
 
     /**
@@ -92,6 +100,34 @@ public class SimulationView extends SalsaView {
 
     public JPanel getTempos() {
         return tempos;
+    }
+
+    public Gauge getGauge() {
+        return gauge;
+    }
+
+    private void setupGauge() {
+        this.gauge = new Gauge();
+        this.gauge.setPreferredSize(new Dimension(10,10));
+        this.add(gauge);
+
+        //ImageIcon instrumentGUI = new ImageIcon(getGRAPHICS() + instrument.getName() + ".png");
+        //Image scaled = instrumentGUI.getImage().getScaledInstance(125,125, Image.SCALE_SMOOTH);
+        //ImageIcon scaledInsGUI = new ImageIcon(scaled);
+        //JLabel insGUI = new JLabel(scaledInsGUI);
+        ImageIcon imgGauge = new ImageIcon(getGRAPHICS() + "gauge.png");
+        Image scaled = imgGauge.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        ImageIcon scaledImgGUI = new ImageIcon(scaled);
+        this.gaugeGUI = new JLabel(scaledImgGUI);
+        this.gaugeGUI.setOpaque(false);
+        this.add(gaugeGUI);
+    }
+
+    private void layoutGauge() {
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, gauge, 400,
+                SpringLayout.WEST, instrumentsGUI.get(0));
+        this.getPanelLayout().putConstraint(SpringLayout.WEST, gauge, 200,
+                SpringLayout.WEST, this);
     }
 
     /* Helper method to set up the buttons in this view */

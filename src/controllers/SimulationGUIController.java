@@ -44,6 +44,9 @@ public class SimulationGUIController extends SalsaController implements Simulati
         // Makes the Start button disappear so that it can be clicked on once
         simulationView.getStartButton().setVisible(false);
 
+        //simulationView.getGauge().rotateNeedleOne();
+        simulationView.getGauge().rotateNeedle();
+
     }
 
     /**

@@ -67,12 +67,4 @@ public class SimulationEvent extends EventObject {
         return model.getNextBeat();
     }
 
-
-    // All objects that will be passed through here are going to be MODELSSSS
-    // so that the model does not have to be involved with any logic bar:
-    // SimulationEvent e = new SimulationEvent(this); BUUUT this is the modelllllll
-    // this.listener...onSimulationStartEvent(e);
-    // This is good because the listener object will not be able to access the model as it is a Listener and not
-    // a controller. So the only access it will have to the model is via the event.
-
 }

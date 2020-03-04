@@ -6,6 +6,12 @@ import events.*;
 
 import java.util.ArrayList;
 
+/**
+ * SalsaModel Class that represents the single Model in this MVC application
+ *
+ * @author Gareth Iguasnia
+ * @date 03/03/2020
+ */
 public class SalsaModel {
 
     // Name of the user of the application
@@ -54,7 +60,8 @@ public class SalsaModel {
     private SimulationGUIListener simGUIListener;
 
     /**
-     * Constructor of the SalsaModel Class
+     * Constructor of the SalsaModel Class. The fields are given their default values when the object is
+     * constructed
      */
     public SalsaModel() {
         // Initialise all of the States along with their respective neighbours
@@ -85,21 +92,39 @@ public class SalsaModel {
 
     /* Methods to add listeners to the Model */
 
+    /**
+     * Method adds a SimulationListener to this model
+     *
+     * @param simulationListener A Class that has implemented the SimulationListener interface
+     */
     public void addSimulationListener(SimulationListener simulationListener) {
         this.simListeners.add(simulationListener);
     }
 
+    /**
+     * Method adds a ClipInformationListener to this model
+     *
+     * @param clipInfoListener A Class that has implemented the ClipInformationListener interface
+     */
     public void addClipInformationListener(ClipInformationListener clipInfoListener) {
         this.clipInfoListener = clipInfoListener;
     }
 
+    /**
+     * Method adds a SimulationGUIListener to this model
+     *
+     * @param simGUIListener A Class that has implemented the SimulationGUIListener interface
+     */
     public void addSimulationGUIListener(SimulationGUIListener simGUIListener) {
         this.simGUIListener = simGUIListener;
     }
 
-
     /* FIRE EVENT METHODS */
 
+    /**
+     * Method start the onSimulationStartedEvent(...) method for the SimulationListeners of this model. This will be
+     * called at the start of each simulation run
+     */
     public void fireSimulationStartEvent() {
         SimulationEvent e = new SimulationEvent(this);
 
@@ -108,7 +133,14 @@ public class SalsaModel {
             simulationListener.onSimulationStartedEvent(e);
     }
 
-    // The fire method for fireClipInfoReadyEvent(long 123clip, long salsa1) --> onInitClipInfoReadyEvent
+    /**
+     * Method starts the onInitClipInfoReadyEvent(...) method for the ClipInformationListener of this model. This will
+     * be called at the start of each simulation run and allows the SimulationController know the timings of the music
+     * to act accordingly with the countdown audio clip and the first Salsa audio clip to be played.
+     *
+     * @param clip123 The length of the countdown audio clip
+     * @param clipSalsa The length of the Salsa audio clip
+     */
     public void fireClipInfoReadyEvent(long clip123, long clipSalsa) {
         ClipInformationEvent e = new ClipInformationEvent(this, clip123, clipSalsa);
 
@@ -116,6 +148,13 @@ public class SalsaModel {
         this.clipInfoListener.onInitClipInfoReadyEvent(e);
     }
 
+    /**
+     * Method starts the onClipInfoReadyEvent(...) method for the ClipInformationListener of this model. This will be
+     * called for every new State object traversed bar the first one and allows the SimulationController know the
+     * timings of the Salsa audio clip to act accordingly.
+     *
+     * @param clipSalsa The length of the Salsa audio clip
+     */
     public void fireClipInfoReadyEvent(long clipSalsa) {
         ClipInformationEvent e = new ClipInformationEvent(this, clipSalsa);
 
@@ -123,6 +162,10 @@ public class SalsaModel {
         this.clipInfoListener.onClipInfoReadyEvent(e);
     }
 
+    /**
+     * Method starts the onNewStateEvent(...) method for all of the SimulationListeners of this model. This will be
+     * called whenever a new State object will traversed after the first one.
+     */
     public void fireNewStateEvent() {
         SimulationEvent e = new SimulationEvent(this);
 
@@ -131,6 +174,10 @@ public class SalsaModel {
             simulationListener.onNewStateEvent(e);
     }
 
+    /**
+     * Method starts the onNewBeatEvent(...) method for the SimulationGUIListener of this model. This will be called
+     * whenever the simulation proceeds to a new 8-beat bar of music.
+     */
     public void fireNewBeatEvent() {
         SimulationEvent e = new SimulationEvent(this);
 
@@ -138,6 +185,10 @@ public class SalsaModel {
         this.simGUIListener.onNewBeatEvent(e);
     }
 
+    /**
+     * Method starts the onSimulationFinishedEvent(...) method for the SimulationGUIListener of this model. This will
+     * be called whenever the simulation run has ended.
+     */
     public void fireSimulationFinishedEvent() {
         SimulationEvent e = new SimulationEvent(this);
 
@@ -145,6 +196,10 @@ public class SalsaModel {
         this.simGUIListener.onSimulationFinishedEvent(e);
     }
 
+    /**
+     * Method starts the onNewErrorValueEvent(...) method for the SimulationGUIListener of this model. This will be
+     * called every time the user's input was successfully recorded during the simulation.
+     */
     public void fireNewErrorValueEvent() {
         SimulationEvent e = new SimulationEvent(this);
 
@@ -152,25 +207,44 @@ public class SalsaModel {
         this.simGUIListener.onNewErrorValueEvent(e);
     }
 
+    /**
+     * Method starts the onCountdownStartedEvent(...) method for the SimulationGUIListener of this model. This will be
+     * called once the start button has been clicked to begin the countdown to the simulation run.
+     *
+     * @param clip123 The length of the countdown audio clip
+     * @param clipSalsa The length of the Salsa audio clip
+     */
     public void fireCountdownStartedEvent(long clip123, long clipSalsa) {
         ClipInformationEvent e = new ClipInformationEvent(this, clip123, clipSalsa);
 
         // The listener will execute whatever logic that has been implemented by the SimGUIController
         this.simGUIListener.onCountdownStartedEvent(e);
-
     }
 
+    /**
+     * Method starts the onCountdownFinishedEvent(...) method for the SimulationGUIListener of this model. This will be
+     * called after the countdown audio clip has finished to display the relevant GUI for the simulation.
+     */
     public void fireCountdownFinishedEvent() {
         this.simGUIListener.onCountdownFinishedEvent();
     }
 
     /* CHANGE MODEL STATE */
 
-    // Should never reach below 0
+    /**
+     * Method decreases the value numTransitionedStates by 1 to represent that a State object has been traversed
+     */
     public void decreaseNumTransitionedStates() {
+        // Should never reach below 0
         this.numTransitionedStates--;
     }
 
+    /**
+     * Method adds the time of the audio clips being played so that we can normalise the timestamp taken when the user
+     * clicks the beat-clicker
+     *
+     * @param add A long value representing the length of an audio clip that has been played in the simulation
+     */
     public void addToTimeAccumulated(long add) {
         this.timeAccumulation += add;
     }
@@ -208,20 +282,32 @@ public class SalsaModel {
         this.countdownCurrentlyPlaying = true;
     }
 
+    /**
+     * Method increases the windowTracker by 1 iff windowTracker currently has a value of 1
+     */
     public synchronized void increaseWindowTracker() {
         if (this.windowTracker == 1)
             this.windowTracker++;
     }
 
+    /**
+     * Method decreases the windowTracker by 1 iff windowTracker currently has a value of 2
+     */
     public synchronized void decreaseWindowTracker() {
         if (this.windowTracker == 2)
             this.windowTracker--;
     }
 
+    /**
+     * Method sets the buttonClickerTracker to 2
+     */
     public synchronized void increaseButtonClickerTracker() {
         this.buttonClickerTracker = 2;
     }
 
+    /**
+     * Method sets the buttonClickerTracker to 1
+     */
     public synchronized void decreaseButtonClickerTracker() {
         this.buttonClickerTracker = 1;
     }
@@ -237,23 +323,50 @@ public class SalsaModel {
         this.currentView = currentView;
     }
 
+    /**
+     * Method sets the number of transitioned States that the simulation will traverse for one simulation run
+     *
+     * @param numTransitionedStates Integer representing the number of States to traverse
+     */
     public void setNumTransitionedStates(int numTransitionedStates) {
         this.numTransitionedStates = numTransitionedStates;
     }
 
+    /**
+     * Method sets the name of the user of this MVC instance
+     *
+     * @param nameOfUser String representing the name of the user
+     */
     public void setNameOfUser(String nameOfUser) {
         this.nameOfUser = nameOfUser;
     }
 
+    /**
+     * Method sets the current State that the application is currently on. This will only be called during a simulation
+     * run and when the simulation needs to traverse a new State.
+     *
+     * @param currentState A State object that the simulation has currently selected to traverse
+     */
     public void setCurrentState(State currentState) {
         this.currentState = currentState;
     }
 
+    /**
+     * Method sets the the next beat that the user will be requested to find in the music. This will only be called
+     * during the simulation after every one 8-beat bar of music has played.
+     *
+     * @param nextBeat Integer representing the next beat that the system will test the user on
+     */
     public void setNextBeat(int nextBeat) {
         this.currentBeat = this.nextBeat;
         this.nextBeat = nextBeat;
     }
 
+    /**
+     * Method records the error value from the user's input and adds it to the UserProfile
+     *
+     * @param errorValue Double representing the error value of the user
+     */
     public void setErrorValue(double errorValue) {
         // This will only be called if the user clicks appropriately
         String id = userProfile.createID(currentState.getBpm(), currentState.getInstruments());
@@ -262,22 +375,52 @@ public class SalsaModel {
         userProfile.getStates().get(id).getErrorValues().add(errorValue);
     }
 
+    /**
+     * Method sets the beat timeline for the current 4 8-beat bars of Salsa music. Each value will be a long that
+     * shows when that beat in time should occur
+     *
+     * @param beatTimeline An ArrayList of Long values representing when in time each beat (index + 1 ) should
+     *                     have occurred
+     */
     public void setBeatTimeline(ArrayList<Long> beatTimeline) {
         this.beatTimeline = beatTimeline;
     }
 
+    /**
+     * Method sets the countdownCurrentlyPlaying flag with a boolean variable. This will be true once the simulation
+     * has ended and false once the countdown clip has finished playing
+     *
+     * @param countdownCurrentlyPlaying Boolean flag representing whether the countdown audio clip has finished playing
+     */
     public void setCountdownCurrentlyPlaying(boolean countdownCurrentlyPlaying) {
         this.countdownCurrentlyPlaying = countdownCurrentlyPlaying;
     }
 
+    /**
+     * Method sets the hasClickedOnce1 flag with the boolean parameter. This will be true if the user has clicked in
+     * the time window or there is no time window currently open for this flag.
+     *
+     * @param hasClickedOnce1 Boolean variable indicating whether the system will take the user's input
+     */
     public synchronized void setHasClickedOnce1(boolean hasClickedOnce1) {
         this.hasClickedOnce1 = hasClickedOnce1;
     }
 
+    /**
+     * Method sets the hasClickedOnce2 flag with the boolean parameter. This will be true if the user has clicked in
+     * the time window or there is no time window currently open for this flag.
+     *
+     * @param hasClickedOnce2 Boolean variable indicating whether the system will take the user's input
+     */
     public synchronized void setHasClickedOnce2(boolean hasClickedOnce2) {
         this.hasClickedOnce2 = hasClickedOnce2;
     }
 
+    /**
+     * Method sets a value to the field barNumber in the model. This value can only be from 1 - 4
+     *
+     * @param barNumber Integer representing the bar number of a Salsa Audio clip
+     */
     public void setBarNumber(int barNumber) {
         this.barNumber = barNumber;
     }
@@ -302,54 +445,122 @@ public class SalsaModel {
         return currentView;
     }
 
+    /**
+     *  Method returns the timeAccumulation field
+     *
+     * @return Long value representing the total time that the system has currently been playing music for the current
+     * simulation run
+     */
     public long getTimeAccumulation() {
         return timeAccumulation;
     }
 
+    /**
+     * Method returns the countdownCurrentlyPlaying field
+     *
+     * @return A boolean representing if the countdown audio clip is playing
+     */
     public boolean isCountdownCurrentlyPlaying() {
         return countdownCurrentlyPlaying;
     }
 
+    /**
+     * Method returns the numTransitionedStates field
+     *
+     * @return An integer representing the number of states that can still be transitioned by the Simulation
+     */
     public int getNumTransitionedStates() {
         return numTransitionedStates;
     }
 
+    /**
+     * Method returns the nameOfUser field
+     *
+     * @return A String representing the name of the user using this application
+     */
     public String getNameOfUser() {
         return nameOfUser;
     }
 
+    /**
+     * Method returns the currentState field
+     *
+     * @return A State object representing the current state that the simulation is currently on
+     */
     public State getCurrentState() {
         return currentState;
     }
 
+    /**
+     *  Method returns the currentState field
+     *
+     * @return An ArrayList of longs representing when each beat should occur in normalised time
+     */
     public ArrayList<Long> getBeatTimeline() {
         return beatTimeline;
     }
 
+    /**
+     *  Method returns the hasClickedOnce1 field
+     *
+     * @return A boolean representing whether a user has clicked before in the allocated time or whether they missed
+     * their chance to click.
+     */
     public boolean hasClickedOnce1() {
         return hasClickedOnce1;
     }
 
+    /**
+     *  Method returns the hasClickedOnce2 field
+     *
+     * @return A boolean representing whether a user has clicked before in the allocated time or whether they missed
+     * their chance to click.
+     */
     public boolean hasClickedOnce2() {
         return hasClickedOnce2;
     }
 
+    /**
+     * Method returns the windowTracker field
+     *
+     * @return An integer representing the time window that is still active
+     */
     public int getWindowTracker() {
         return this.windowTracker;
     }
 
+    /**
+     * Method returns the buttonClickerTracker field
+     *
+     * @return An integer representing the previous time window
+     */
     public int getButtonClickerTracker() {
         return this.buttonClickerTracker;
     }
 
+    /**
+     * Method returns the currentBeat field
+     *
+     * @return An integer representing the current beat that the system is requesting the user to locate in the music
+     */
     public int getCurrentBeat() {
         return currentBeat;
     }
 
+    /**
+     * Method returns the nextBeat field
+     *
+     * @return An integer representing the next beat that the system will test the user's timing on
+     */
     public int getNextBeat() {
         return nextBeat;
     }
 
+    /**
+     * Method returns the barNumber field
+     *
+     * @return An int that presents the number of bars traversed in one group of 4 8-beat bars
+     */
     public int getBarNumber() {
         return barNumber;
     }
