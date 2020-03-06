@@ -1,6 +1,7 @@
 package controllers;
 
 import components.Instrument;
+import components.MoveGaugeNeedle;
 import events.ClipInformationEvent;
 import events.SimulationEvent;
 import events.SimulationGUIListener;
@@ -15,6 +16,7 @@ import java.awt.*;
 public class SimulationGUIController extends SalsaController implements SimulationListener, SimulationGUIListener {
 
     private SimulationView simulationView;
+    private MoveGaugeNeedle moveGaugeNeedle;
 
     /**
      * Constructor for the SalsaController. This will only be called by sub classes using the super
@@ -26,6 +28,9 @@ public class SimulationGUIController extends SalsaController implements Simulati
     public SimulationGUIController(SalsaModel salsaModel, String controllerName, SimulationView simulationView) {
         super(salsaModel, controllerName);
         this.simulationView = simulationView;
+
+        this.moveGaugeNeedle = new MoveGaugeNeedle(simulationView.getRotateImage());
+        moveGaugeNeedle.setStartingPosition();
     }
 
     @Override
@@ -46,6 +51,8 @@ public class SimulationGUIController extends SalsaController implements Simulati
 
         //simulationView.getGauge().rotateNeedleOne();
         simulationView.getGauge().rotateNeedle();
+
+        moveGaugeNeedle.moveNeedle(0.75);
 
     }
 
@@ -106,6 +113,9 @@ public class SimulationGUIController extends SalsaController implements Simulati
     public void onNewErrorValueEvent(SimulationEvent e) {
         // You should be able to get the error value from e as I have overloaded the constructor
         // Logic here will be to move the gauge needle accordingly with the error value
+
+        // Here we should turn the double into 2 decimal places? Round up...?
+        // No, this should be taken care in the SimulationGUIController
     }
 
     /**

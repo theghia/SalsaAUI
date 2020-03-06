@@ -1,7 +1,9 @@
 package views;
 
 import components.Gauge;
+import components.RotateImage;
 import components.Instrument;
+import components.MoveGaugeNeedle;
 import main.SalsaView;
 
 import javax.swing.*;
@@ -30,6 +32,7 @@ public class SimulationView extends SalsaView {
     // Gauge
     private Gauge gauge;
     private JLabel gaugeGUI;
+    private RotateImage rotateImage;
 
     public SimulationView(String name, Dimension dimension) {
         super(name, dimension, false);
@@ -106,10 +109,18 @@ public class SimulationView extends SalsaView {
         return gauge;
     }
 
+    public RotateImage getRotateImage() {
+        return rotateImage;
+    }
+
     private void setupGauge() {
         this.gauge = new Gauge();
         this.gauge.setPreferredSize(new Dimension(10,10));
         this.add(gauge);
+
+        // Adding the needle to the JPanel
+        this.rotateImage = new RotateImage(getGRAPHICS() + "pointer_turning.png");
+        this.add(rotateImage);
 
         //ImageIcon instrumentGUI = new ImageIcon(getGRAPHICS() + instrument.getName() + ".png");
         //Image scaled = instrumentGUI.getImage().getScaledInstance(125,125, Image.SCALE_SMOOTH);
@@ -121,12 +132,18 @@ public class SimulationView extends SalsaView {
         this.gaugeGUI = new JLabel(scaledImgGUI);
         this.gaugeGUI.setOpaque(false);
         this.add(gaugeGUI);
+
     }
 
     private void layoutGauge() {
         this.getPanelLayout().putConstraint(SpringLayout.NORTH, gauge, 400,
                 SpringLayout.WEST, instrumentsGUI.get(0));
         this.getPanelLayout().putConstraint(SpringLayout.WEST, gauge, 200,
+                SpringLayout.WEST, this);
+
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, gaugeGUI, 400,
+                SpringLayout.WEST, instrumentsGUI.get(0));
+        this.getPanelLayout().putConstraint(SpringLayout.WEST, gaugeGUI, 200,
                 SpringLayout.WEST, this);
     }
 

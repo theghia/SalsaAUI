@@ -116,8 +116,6 @@ public class SimulationMusicController extends SalsaController implements Simula
         String filePath = sounds + currentState.getBpm().getBPM();
 
         String instruments = "";
-        /*for (Instrument instrument: currentState.getInstruments())
-            instruments += instrument.getName() + "_";*/
 
         ArrayList<Instrument> instrumentList = currentState.getInstruments();
 

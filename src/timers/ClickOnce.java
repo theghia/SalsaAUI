@@ -64,14 +64,14 @@ public class ClickOnce {
         simCon.getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
 
         // Slight buffer to allow the button to capture the one beat of each 8-beat bar - THIS MIGHT NEED ADJUSTING
-        long buffer = quarter/1000;
+        long buffer  =0;// quarter/1000;
 
         // Start the event for the SimulationGUIController to display the countdown numbers
         simCon.getSalsaModel().fireCountdownStartedEvent(clip123, clipSalsa);
 
         timer.schedule(new RemindTask(),
-                clip123 - buffer, // Initial delay as we are first playing the countdown clip
-                quarter - buffer); // This will happen just before beat 1 of every 8-beat bar
+                clip123 + buffer, // Initial delay as we are first playing the countdown clip
+                quarter + buffer); // This will happen just before beat 1 of every 8-beat bar
     }
 
     /**
