@@ -1,9 +1,6 @@
 package components;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
+import javax.sound.sampled.*;
 import java.io.File;
 
 /**
@@ -53,6 +50,15 @@ public class PlayFile extends Thread {
     }
 
     /**
+     * Method to get the Clip value that this PlayFile object contains
+     *
+     * @return The Clip object that pertains to the PlayFile object
+     */
+    public Clip getClip() {
+        return clip;
+    }
+
+    /**
      * Method to get the length of the WAV file being played in Milliseconds
      *
      * @return A long object representing the length of the WAV file in milliseconds
@@ -74,5 +80,20 @@ public class PlayFile extends Thread {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        PlayFile testing = new PlayFile("src/assets/sounds/countdown/countdown_5-0.wav");
+        testing.getClip().addLineListener(new LineListener() {
+            @Override
+            public void update(LineEvent event) {
+                if(event.getType() == LineEvent.Type.STOP)
+                    System.out.println("The clip has stopped playing");
+                else if (event.getType() == LineEvent.Type.START)
+                    System.out.println("The clip has started playing");
+            }
+        });
+
+        testing.start();
     }
 }

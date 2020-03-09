@@ -3,6 +3,7 @@ package controllers;
 import components.*;
 import events.ClipInformationEvent;
 import events.ClipInformationListener;
+import events.SimulationEvent;
 import main.SalsaController;
 import main.SalsaModel;
 import timers.ClickOnce;
@@ -35,6 +36,8 @@ public class SimulationController extends SalsaController implements ClipInforma
     // and to find a starting state
     private Random randomGenerator;
 
+    private final int TIME_WINDOW = 3;
+
     /**
      * Constructor for the SimulationController.
      *
@@ -45,7 +48,6 @@ public class SimulationController extends SalsaController implements ClipInforma
     public SimulationController(SalsaModel salsaModel, String controllerName, SimulationView simulationView) {
         super(salsaModel, controllerName);
         this.simulationView = simulationView;
-        this.errorFunction = new GaussianErrorFunction();
         this.gameStatusFunction = new DynamicGameDifficultyBalancing();
         this.randomGenerator = new Random();
 
@@ -102,10 +104,15 @@ public class SimulationController extends SalsaController implements ClipInforma
                 System.out.println("hasClickedOnce1: " + getSalsaModel().hasClickedOnce1());
                 System.out.println("hasClickedOnce2: " + getSalsaModel().hasClickedOnce2());*/
 
+                System.out.println("The current beat I am trying to find: " + getSalsaModel().getCurrentBeat());
+                System.out.println("The time I perceive the beat to be: " + System.currentTimeMillis());
+                System.out.println();
+
                 // If a Salsa audio clip is currently playing, then proceed
                 if (!getSalsaModel().isCountdownCurrentlyPlaying()) {
                     // Checking if has previously clicked in the assigned time windows
                     System.out.println("Button Clicker: " + getSalsaModel().getButtonClickerTracker());
+                    System.out.println("Window Tracker: " + getSalsaModel().getWindowTracker());
                     System.out.println("hasClickedOnce1: " + getSalsaModel().hasClickedOnce1());
                     System.out.println("hasClickedOnce2: " + getSalsaModel().hasClickedOnce2());
 
@@ -134,17 +141,34 @@ public class SimulationController extends SalsaController implements ClipInforma
         long clickTSNormalised = System.currentTimeMillis() - getSalsaModel().getTimeAccumulation();
 
         // getTimeAccumulated? Do we need to add the system
-        System.out.println(clickTSNormalised);
+        System.out.println("Not normalised: " + (clickTSNormalised + getSalsaModel().getTimeAccumulation()));
+        System.out.println("Normalised: " + clickTSNormalised);
 
-        // Error value calculated using the error function and then added to the UserProfile
+        // Necessary information to initialise the error function
         int barNumber = getSalsaModel().getBarNumber();
         int currentBeat = getSalsaModel().getCurrentBeat();
         long requiredBeatTime = getSalsaModel().getBeatTimeline().get(currentBeat - 1 + 8*(barNumber - 1));
+        System.out.println("Bar number: " + barNumber);
+        System.out.println("Current beat: " + currentBeat);
+        System.out.println("Required beat time: " + requiredBeatTime);
+        // Initialising the error function for the Linear Error Function
+        long one_beat = getSalsaModel().getBeatTimeline().get(1);
+        long left_time_window = getSalsaModel().getBeatTimeline().get(currentBeat - 1 + 8*(barNumber - 1) - TIME_WINDOW);
+        System.out.println("One beat movement: " + one_beat);
+        System.out.println("Left time window: " + left_time_window);
+        this.errorFunction = new LinearErrorFunction(one_beat, left_time_window);
+
+        // Error value calculated using the error function and then added to the UserProfile
         double errorValue = errorFunction.calculateErrorValue(clickTSNormalised, requiredBeatTime );
+        System.out.println("Error value is: " + errorValue);
+        System.out.println();
         getSalsaModel().setErrorValue(errorValue);
 
+        // Setting the event object with the recently recorded error value
+        SimulationEvent simEvent = new SimulationEvent(getSalsaModel(), errorValue);
+
         // New error value event fired so that the GUI can display it
-        getSalsaModel().fireNewErrorValueEvent();
+        getSalsaModel().fireNewErrorValueEvent(simEvent);
     }
 
     /* Helper method to set up an ActionListener for the Start button on the SimulationView */
@@ -164,7 +188,8 @@ public class SimulationController extends SalsaController implements ClipInforma
                 // Update the model
                 getSalsaModel().setCurrentState(randState);
                 getSalsaModel().setNextBeat(firstBeat);
-                getSalsaModel().addToTimeAccumulated(System.currentTimeMillis());
+                // THIS NEEDS TO BE REMOVED
+                //getSalsaModel().addToTimeAccumulated(System.currentTimeMillis());
 
                 // Fire off the events
                 getSalsaModel().fireSimulationStartEvent();

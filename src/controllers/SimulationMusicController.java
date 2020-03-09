@@ -8,6 +8,8 @@ import events.SimulationListener;
 import main.SalsaController;
 import main.SalsaModel;
 
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
@@ -58,8 +60,31 @@ public class SimulationMusicController extends SalsaController implements Simula
         // Create the clip to play the countdown WAV file and join it to the queue
         String countdownFilePath = sounds + "countdown/countdown_5-0.wav";
         PlayFile countdown = new PlayFile(countdownFilePath);
+
+        // Start of extra added
+        countdown.getClip().addLineListener(new LineListener() {
+            @Override
+            public void update(LineEvent event) {
+                // The moment the audio file starts playing
+                if (event.getType() == LineEvent.Type.START)
+                    getSalsaModel().fireCountdownStartedEvent(countdown.getMillisecondLength());
+
+                // The moment the audio file has finished playing
+                else if (event.getType() == LineEvent.Type.STOP) {
+                    // Adding the length of the countdown clip to timeAccumulation
+                    //getSalsaModel().addToTimeAccumulated(countdown.getMillisecondLength());
+                    getSalsaModel().setCountdownCurrentlyPlaying(false);
+                    getSalsaModel().fireCountdownFinishedEvent();
+                    getSalsaModel().fireNewStateEvent();
+                }
+            }
+        });
+        // End of extra added
+
+
         initSoundClip(countdown);
 
+        /*
         // Get a music file that represents the current state
         State currentState = e.getCurrentState();
         PlayFile salsaAudio = getSalsaAudio(currentState);
@@ -69,6 +94,8 @@ public class SimulationMusicController extends SalsaController implements Simula
 
         // Fire off the event to let SimulationController know about the Clip information
         getSalsaModel().fireClipInfoReadyEvent(countdown.getMillisecondLength(), salsaAudio.getMillisecondLength());
+
+         */
     }
 
     /**

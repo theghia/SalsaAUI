@@ -55,16 +55,30 @@ public class SimulationEvent extends EventObject {
         return errorValue;
     }
 
+    /**
+     * Method to get the current state that the simulation is currently on
+     *
+     * @return A State object that the simulation is currently on
+     */
     public State getCurrentState() {
         return model.getCurrentState();
     }
 
+    /**
+     * Method to get the current beat that the simulation is testing the user on
+     *
+     * @return Returns an integer representing the current beat that the system is requesting the user to find
+     */
     public int getCurrentBeat() {
         return model.getCurrentBeat();
     }
 
+    /**
+     * Method to get the next beat that the system is going to test the user with
+     *
+     * @return Returns an integer representing the next beat that the system will test the user to find
+     */
     public int getNextBeat() {
         return model.getNextBeat();
     }
-
 }

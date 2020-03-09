@@ -22,7 +22,10 @@ public class MoveGaugeNeedle {
     private final int END = 495;
 
     // The amount of time the pointer will be held at the desired angle in milliseconds
-    private final int HOLDING_POINTER = 500;
+    private final int HOLDING_POINTER = 400;
+
+    // The amount of delay between each successive execution of a thread in milliseconds
+    private final int PERIOD = 3;
 
     // Delta is the increments/decrements that the angle of the needle will move per 0.1 of the error value
     // There are 100 possible error values when rounding the error value to two decimal places
@@ -75,19 +78,23 @@ public class MoveGaugeNeedle {
 
         // Calculate the angle that the gauge needle needs to be at
         double angleDestination = START + (DELTA * (errorValue * 100));
-
+        System.out.println("The angle destination: " + angleDestination);
         // Calculating the time steps needed to get from the current angle to the desired angle
         double timeSteps = (angleDestination - currentAngle)/DELTA;
-        int time = Math.abs((int) timeSteps);
+        System.out.println("The timeStep is: " + timeSteps);
+        int time = Math.abs((int) timeSteps) * PERIOD;
+        System.out.println("The amount of milliseconds that will take to move the needle up is: " + time);
 
         // If the current angle > desired angle, then we need to move the needle backwards
         if (currentAngle > angleDestination) {
+            System.out.println("Current angle is bigger than the angle destination");
             moveNeedleOnce(angleDestination, false, scheduledExecutorService,
                     0, 3);
         }
 
         // If current angle < desired angle, then we need to move the needle forwards
         else {
+            System.out.println("Current angle is less than or equal to the angle destination");
             moveNeedleOnce(angleDestination, true, scheduledExecutorService,
                     0, 3);
         }
@@ -171,14 +178,16 @@ public class MoveGaugeNeedle {
            if (!(desiredAngle == currentAngle)) {
 
                // Needle is going forward - Adding delta to the current angle
-               if (isNeedleGoingForward) {
+               // Needle cannot go past the END bound
+               if (isNeedleGoingForward && !(currentAngle >= END)) {
                    currentAngle += DELTA;
                    BufferedImage rotated = rotateImageByDegrees(rotateImage.getMaster(), currentAngle);
                    rotateImage.setRotated(rotated);
                }
 
                // Needle is going backward - Subtracting delta from the current angle
-               else {
+               // Needle cannot go past the START bound
+               else if (!isNeedleGoingForward && !(currentAngle <= START)) {
                    currentAngle -= DELTA;
                    BufferedImage rotated = rotateImageByDegrees(rotateImage.getMaster(), currentAngle);
                    rotateImage.setRotated(rotated);

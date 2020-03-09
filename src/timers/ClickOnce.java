@@ -42,6 +42,7 @@ public class ClickOnce {
      * @param clip123 The length of the countdown clip in milliseconds
      * @param clipSalsa The length of the Salsa audio clip in milliseconds
      */
+    // THIS CAN BE REMOVED
     public ClickOnce(SimulationController simCon, long clip123, long clipSalsa) {
         this.timer = new Timer();
         this.simCon = simCon;
@@ -95,6 +96,7 @@ public class ClickOnce {
         long quarter = clipSalsa/4;
 
         // Adding a beat timeline so that the SimulationController can have the correct times that each beat occurs at
+        System.out.println("The beat timeline is being created: " + System.currentTimeMillis());
         simCon.getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
 
         // Slight buffer to allow the button to capture the one beat of each 8-beat bar - THIS MIGHT NEED ADJUSTING
@@ -102,7 +104,10 @@ public class ClickOnce {
 
         timer.schedule(new RemindTask(),
                 0,
-                quarter - buffer);
+                quarter);// + buffer);
+
+        // This timestamp will be the new 0 for the next 4 8-beat bars
+        simCon.getSalsaModel().setTimeAccumulation(System.currentTimeMillis());
 
         // The 4 time windows in which the user can click once are set up for all states except the 1st
         startWindows();
@@ -124,6 +129,7 @@ public class ClickOnce {
          */
         @Override
         public void run() {
+            // THE FIRST IF STATEMENT MIGHT NOT BE NEEDED
             if (simCon.getSalsaModel().isCountdownCurrentlyPlaying()) {
                 // So that the button clicker can now be taking the input of the user
                 simCon.getSalsaModel().setCountdownCurrentlyPlaying(false);
@@ -140,8 +146,8 @@ public class ClickOnce {
 
                 // Setting the next beat in the model
                 simCon.getSalsaModel().setNextBeat(nextBeats.get(barNumber - 1));
-                System.out.println("The index of nextBeats in ClickOnce: " + (barNumber-1));
-                System.out.println("Setting the next beat: " + nextBeats.get(barNumber - 1));
+                //System.out.println("The index of nextBeats in ClickOnce: " + (barNumber-1));
+                //System.out.println("Setting the next beat: " + nextBeats.get(barNumber - 1));
 
                 // Next bar
                 simCon.getSalsaModel().setBarNumber(barNumber);
@@ -158,7 +164,7 @@ public class ClickOnce {
                     simCon.getSalsaModel().decreaseNumTransitionedStates();
 
                     // We add the length of this Salsa audio clip to timeAccumulation
-                    simCon.getSalsaModel().addToTimeAccumulated(clipSalsa);
+                    //simCon.getSalsaModel().addToTimeAccumulated(clipSalsa);
 
                     // Logic to determine which new State to move onto next
                     State currentState = simCon.getSalsaModel().getCurrentState();
@@ -183,11 +189,11 @@ public class ClickOnce {
                 }
                 // If the simulation has finished
                 else {
-                    // We must end the simulation here and notify the other controllers working during the simulation
-                    simCon.getSalsaModel().fireSimulationFinishedEvent();
-
                     // Clean up the model to set it back to its default state
                     simCon.getSalsaModel().resetModel();
+
+                    // We must end the simulation here and notify the other controllers working during the simulation
+                    simCon.getSalsaModel().fireSimulationFinishedEvent();
                 }
                 // Terminate the timer thread
                 timer.cancel();
@@ -214,6 +220,8 @@ public class ClickOnce {
             beatTime += anEighth;
         }
         System.out.println(beatTimeline);
+        System.out.println("The beat timeline has been created: " + System.currentTimeMillis());
+
         return beatTimeline;
     }
 
@@ -247,6 +255,7 @@ public class ClickOnce {
 
     /* Helper method to initiate the time windows */
     private void startWindows() {
+        System.out.println("The time windows are being setup: " + System.currentTimeMillis());
         new ClickTimeWindow(simCon.getSalsaModel(), simCon.getSalsaModel().getNextBeat(), 1 );
         new ClickTimeWindow(simCon.getSalsaModel(), nextBeats.get(0), 2);
         new ClickTimeWindow(simCon.getSalsaModel(), nextBeats.get(1), 3);

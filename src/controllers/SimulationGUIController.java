@@ -33,15 +33,13 @@ public class SimulationGUIController extends SalsaController implements Simulati
         moveGaugeNeedle.setStartingPosition();
     }
 
+    /**
+     * Method makes the "Beat-clicker" visible and makes the home and start button invisible.
+     *
+     * @param e A SimulationEvent object that is not needed with this method
+     */
     @Override
     public void onSimulationStartedEvent(SimulationEvent e) {
-        // e is the model
-        System.out.println("I am in the Simulation GUI Controller");
-        // Make the labels or GUI to show the numbers visible for nextBeat and currentBeat
-        // Populate the nextBeat label so that the user can prep themselves to find it
-        // Pop the GUI gauge up
-        // Pop pictures of the instruments that will be played -- NO don't do this?
-        // IF POSSIBLE: 3-2-1 GUI that disappears just before the salsa music -- NO
 
         // Making the "Beat-Clicker" visible so that user knows where they should click
         simulationView.getBeatClicker().setVisible(true);
@@ -49,11 +47,10 @@ public class SimulationGUIController extends SalsaController implements Simulati
         // Makes the Start button disappear so that it can be clicked on once
         simulationView.getStartButton().setVisible(false);
 
-        //simulationView.getGauge().rotateNeedleOne();
-        simulationView.getGauge().rotateNeedle();
+        // The home button will disappear
+        simulationView.getNavigationButtons().get("main").setVisible(false);
 
         moveGaugeNeedle.moveNeedle(0.75);
-
     }
 
     /**
@@ -87,8 +84,8 @@ public class SimulationGUIController extends SalsaController implements Simulati
      */
     @Override
     public void onNewBeatEvent(SimulationEvent e) {
-        System.out.println("Current beat: " + e.getCurrentBeat());
-        System.out.println("Next beat: " + e.getNextBeat());
+        //System.out.println("Current beat: " + e.getCurrentBeat());
+        //System.out.println("Next beat: " + e.getNextBeat());
 
         // The JPanels that have the digital numbers as a png
         JPanel currentBeat = simulationView.getCurrentBeat();
@@ -109,13 +106,31 @@ public class SimulationGUIController extends SalsaController implements Simulati
             switchDigitalNumber(Integer.toString(e.getNextBeat()), nextBeat);
     }
 
+    /**
+     * Method changes the angle of the needle of the Gauge png to match the error value calculated from the user's
+     * input. The better value the user scored, the closer the needle will be on the green end of the Gauge. The worse
+     * the score that the user achieved, the closer the needle will move towards the end of the red zone.
+     *
+     * @param e A SimulationEvent object that will be used to pass the information of the new Error Value to the
+     *          moveGaugeNeedle object.
+     */
     @Override
     public void onNewErrorValueEvent(SimulationEvent e) {
-        // You should be able to get the error value from e as I have overloaded the constructor
-        // Logic here will be to move the gauge needle accordingly with the error value
+        // My assumption is that the error value should be between [0, 1]
+        assert (e.getErrorValue() > 1 || e.getErrorValue() < 0);
 
-        // Here we should turn the double into 2 decimal places? Round up...?
-        // No, this should be taken care in the SimulationGUIController
+        // ADDING
+        double toRound = e.getErrorValue() * 100;
+        double rounded = Math.round(toRound);
+
+
+        // Rounding the error value to two decimal places
+        //double rounded2dp = Math.round(e.getErrorValue() * 100)/100;
+        double rounded2dp = rounded/100;
+
+        System.out.println("Rounded is: " + rounded2dp);
+        // Move the needle according to the rounded error value
+        moveGaugeNeedle.moveNeedle(rounded2dp);
     }
 
     /**
@@ -158,6 +173,8 @@ public class SimulationGUIController extends SalsaController implements Simulati
         // timer threads in the CountDown Class! ONLY NEED ONE TIMER THREAD4
 
         // You do need. The fire method is in the CLickOnce constructor number 1. A
+
+        // IF POSSIBLE: 3-2-1 GUI that disappears just before the salsa music
 
 
     }

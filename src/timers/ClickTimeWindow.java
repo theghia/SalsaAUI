@@ -44,6 +44,7 @@ public class ClickTimeWindow {
         System.out.println("Start window: " + model.getBeatTimeline().get(indexForInitialDelay));
         System.out.println("Index for start window: " + indexForInitialDelay);
         System.out.println("Index for the end window: " + indexForPeriod);
+        System.out.println("End window: " + model.getBeatTimeline().get(indexForPeriod));
         System.out.println();
         // Initial delay is at the start of the window
         long initialDelay = model.getBeatTimeline().get(indexForInitialDelay);
@@ -71,32 +72,63 @@ public class ClickTimeWindow {
         public void run() {
             // This logic occurs at the start of the time window.
             if (repeat > 0) {
+                System.out.println("Start of time window: " + System.currentTimeMillis());
                 // We want this to run only once
                 repeat--;
-                //System.out.println("Window Tracker:  "  + model.getWindowTracker());
-
+                System.out.println("Window Tracker b4 change: "  + model.getWindowTracker());
+                System.out.println("Button Clicker b4 change: " + model.getButtonClickerTracker());
+                System.out.println("hasClickedOnce1 b4 change: " + model.hasClickedOnce1());
+                System.out.println("hasClickedOnce2 b4 change: " + model.hasClickedOnce2());
                 // We will be using two flags as the time windows can overlap in some cases
                 if ( model.getWindowTracker() == 1 ) {
                     model.setHasClickedOnce1(false);
                     model.increaseWindowTracker();
+                    System.out.println("Window Tracker after change: "  + model.getWindowTracker());
+                    System.out.println("Button Clicker after change: " + model.getButtonClickerTracker());
+                    System.out.println("hasClickedOnce1 after: " + model.hasClickedOnce1());
+                    System.out.println("hasClickedOnce2 after: " + model.hasClickedOnce2());
+                    System.out.println();
+
                 }
                 else if ( model.getWindowTracker() == 2 ) {
                     model.setHasClickedOnce2(false);
                     model.decreaseWindowTracker();
+                    System.out.println("Window Tracker after change: "  + model.getWindowTracker());
+                    System.out.println("Button Clicker after change: " + model.getButtonClickerTracker());
+                    System.out.println("hasClickedOnce1 after: " + model.hasClickedOnce1());
+                    System.out.println("hasClickedOnce2 after: " + model.hasClickedOnce2());
+                    System.out.println();
                 }
             }
 
             // This is in case the user does not do any input. The time window will be closed and the
             // buttonClickerTracker will be updated accordingly for the button clicker
             else {
+                System.out.println("End of time window: " + System.currentTimeMillis());
+                System.out.println("Window Tracker b4 change: "  + model.getWindowTracker());
+                System.out.println("Button Clicker b4 change: "  + model.getButtonClickerTracker());
+                System.out.println("hasClickedOnce1 b4 change: " + model.hasClickedOnce1());
+                System.out.println("hasClickedOnce2 b4 change: " + model.hasClickedOnce2());
                 if ( model.getButtonClickerTracker() == 1 ) {
                     model.setHasClickedOnce1(true);
                     model.increaseButtonClickerTracker();
+                    System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
+                    System.out.println("Window Tracker after change: "  + model.getWindowTracker());
+                    System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
+                    System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
+                    System.out.println();
                 }
                 else if ( model.getButtonClickerTracker() == 2 ) {
                     model.setHasClickedOnce2(true);
                     model.decreaseButtonClickerTracker();
+                    System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
+                    System.out.println("Window Tracker after change: "  + model.getWindowTracker());
+                    System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
+                    System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
+                    System.out.println();
                 }
+                // Cancelling the timer thread
+                timer.cancel();
             }
         }
     }

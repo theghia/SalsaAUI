@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class SimulationView extends SalsaView {
 
+    // Buttons that will be used exclusively for this view
     private JButton beatClicker;
     private JButton startButton;
 
@@ -30,9 +31,8 @@ public class SimulationView extends SalsaView {
     private JPanel tempos;
 
     // Gauge
-    private Gauge gauge;
     private JLabel gaugeGUI;
-    private RotateImage rotateImage;
+    private RotateImage rotateNeedle;
 
     public SimulationView(String name, Dimension dimension) {
         super(name, dimension, false);
@@ -49,11 +49,13 @@ public class SimulationView extends SalsaView {
         // Using CardLayout to swap out the JLabels if the tempo changes in a State transition
         this.tempos = new JPanel(new CardLayout());
 
+        // Setting up the JButtons, JLabels and JPanels to be added to this view
         setupJLabelsText();
         setupButtons();
         setupJLabelsInstruments();
         setupGauge();
 
+        // Laying out the JButtons, JLabels and JPanels in the desired format
         layoutTempo();
         layoutButtons();
         layoutDigitalNumbers();
@@ -105,27 +107,16 @@ public class SimulationView extends SalsaView {
         return tempos;
     }
 
-    public Gauge getGauge() {
-        return gauge;
-    }
-
     public RotateImage getRotateImage() {
-        return rotateImage;
+        return rotateNeedle;
     }
 
     private void setupGauge() {
-        this.gauge = new Gauge();
-        this.gauge.setPreferredSize(new Dimension(10,10));
-        this.add(gauge);
+        // Adding the needle of the Gauge to this view
+        this.rotateNeedle = new RotateImage(getGRAPHICS() + "pointer_turning.png");
+        this.add(rotateNeedle);
 
-        // Adding the needle to the JPanel
-        this.rotateImage = new RotateImage(getGRAPHICS() + "pointer_turning.png");
-        this.add(rotateImage);
-
-        //ImageIcon instrumentGUI = new ImageIcon(getGRAPHICS() + instrument.getName() + ".png");
-        //Image scaled = instrumentGUI.getImage().getScaledInstance(125,125, Image.SCALE_SMOOTH);
-        //ImageIcon scaledInsGUI = new ImageIcon(scaled);
-        //JLabel insGUI = new JLabel(scaledInsGUI);
+        // Adding the Gauge image to this view
         ImageIcon imgGauge = new ImageIcon(getGRAPHICS() + "gauge.png");
         Image scaled = imgGauge.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         ImageIcon scaledImgGUI = new ImageIcon(scaled);
@@ -136,14 +127,16 @@ public class SimulationView extends SalsaView {
     }
 
     private void layoutGauge() {
-        this.getPanelLayout().putConstraint(SpringLayout.NORTH, gauge, 400,
+        // Centering the needle image on the center of the Gauge image
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, rotateNeedle, 500,
                 SpringLayout.WEST, instrumentsGUI.get(0));
-        this.getPanelLayout().putConstraint(SpringLayout.WEST, gauge, 200,
+        this.getPanelLayout().putConstraint(SpringLayout.WEST, rotateNeedle, 50,
                 SpringLayout.WEST, this);
 
-        this.getPanelLayout().putConstraint(SpringLayout.NORTH, gaugeGUI, 400,
+        // Moving the Gauge to the bottom left corner
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, gaugeGUI, 500,
                 SpringLayout.WEST, instrumentsGUI.get(0));
-        this.getPanelLayout().putConstraint(SpringLayout.WEST, gaugeGUI, 200,
+        this.getPanelLayout().putConstraint(SpringLayout.WEST, gaugeGUI, 50,
                 SpringLayout.WEST, this);
     }
 

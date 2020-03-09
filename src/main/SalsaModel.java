@@ -200,8 +200,7 @@ public class SalsaModel {
      * Method starts the onNewErrorValueEvent(...) method for the SimulationGUIListener of this model. This will be
      * called every time the user's input was successfully recorded during the simulation.
      */
-    public void fireNewErrorValueEvent() {
-        SimulationEvent e = new SimulationEvent(this);
+    public void fireNewErrorValueEvent(SimulationEvent e) {
 
         // The listener will execute whatever logic that has been implemented by the SimGUIController
         this.simGUIListener.onNewErrorValueEvent(e);
@@ -218,6 +217,13 @@ public class SalsaModel {
         ClipInformationEvent e = new ClipInformationEvent(this, clip123, clipSalsa);
 
         // The listener will execute whatever logic that has been implemented by the SimGUIController
+        this.simGUIListener.onCountdownStartedEvent(e);
+    }
+
+    // Added method - The method above should be removed
+    public void fireCountdownStartedEvent(long clip123) {
+        ClipInformationEvent e = new ClipInformationEvent(this, clip123);
+
         this.simGUIListener.onCountdownStartedEvent(e);
     }
 
@@ -239,6 +245,7 @@ public class SalsaModel {
         this.numTransitionedStates--;
     }
 
+    //THIS CAN BE REMOVED
     /**
      * Method adds the time of the audio clips being played so that we can normalise the timestamp taken when the user
      * clicks the beat-clicker
@@ -423,6 +430,16 @@ public class SalsaModel {
      */
     public void setBarNumber(int barNumber) {
         this.barNumber = barNumber;
+    }
+
+    /**
+     * Method sets a new timestamp that will serve as the time that the first beat in the group of 4 8-beat bars would
+     * have theoretically occurred.
+     *
+     * @param timeAccumulation A Long object that represents the time of the first beat in the group of 4 8-beat bars
+     */
+    public void setTimeAccumulation(long timeAccumulation) {
+        this.timeAccumulation = timeAccumulation;
     }
 
     /* GETTERS */
