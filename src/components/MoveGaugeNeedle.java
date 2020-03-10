@@ -78,23 +78,23 @@ public class MoveGaugeNeedle {
 
         // Calculate the angle that the gauge needle needs to be at
         double angleDestination = START + (DELTA * (errorValue * 100));
-        System.out.println("The angle destination: " + angleDestination);
+        //System.out.println("The angle destination: " + angleDestination);
         // Calculating the time steps needed to get from the current angle to the desired angle
         double timeSteps = (angleDestination - currentAngle)/DELTA;
-        System.out.println("The timeStep is: " + timeSteps);
+        //System.out.println("The timeStep is: " + timeSteps);
         int time = Math.abs((int) timeSteps) * PERIOD;
-        System.out.println("The amount of milliseconds that will take to move the needle up is: " + time);
+        //System.out.println("The amount of milliseconds that will take to move the needle up is: " + time);
 
         // If the current angle > desired angle, then we need to move the needle backwards
         if (currentAngle > angleDestination) {
-            System.out.println("Current angle is bigger than the angle destination");
+            //System.out.println("Current angle is bigger than the angle destination");
             moveNeedleOnce(angleDestination, false, scheduledExecutorService,
                     0, 3);
         }
 
         // If current angle < desired angle, then we need to move the needle forwards
         else {
-            System.out.println("Current angle is less than or equal to the angle destination");
+            //System.out.println("Current angle is less than or equal to the angle destination");
             moveNeedleOnce(angleDestination, true, scheduledExecutorService,
                     0, 3);
         }

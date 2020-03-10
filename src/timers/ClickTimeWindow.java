@@ -82,6 +82,7 @@ public class ClickTimeWindow {
                 // We will be using two flags as the time windows can overlap in some cases
                 if ( model.getWindowTracker() == 1 ) {
                     model.setHasClickedOnce1(false);
+                    model.getWindowCache()[0] = model.getWindowCache()[1] + 1;
                     model.increaseWindowTracker();
                     System.out.println("Window Tracker after change: "  + model.getWindowTracker());
                     System.out.println("Button Clicker after change: " + model.getButtonClickerTracker());
@@ -92,6 +93,7 @@ public class ClickTimeWindow {
                 }
                 else if ( model.getWindowTracker() == 2 ) {
                     model.setHasClickedOnce2(false);
+                    model.getWindowCache()[1] = model.getWindowCache()[0] + 1;
                     model.decreaseWindowTracker();
                     System.out.println("Window Tracker after change: "  + model.getWindowTracker());
                     System.out.println("Button Clicker after change: " + model.getButtonClickerTracker());
@@ -109,7 +111,8 @@ public class ClickTimeWindow {
                 System.out.println("Button Clicker b4 change: "  + model.getButtonClickerTracker());
                 System.out.println("hasClickedOnce1 b4 change: " + model.hasClickedOnce1());
                 System.out.println("hasClickedOnce2 b4 change: " + model.hasClickedOnce2());
-                if ( model.getButtonClickerTracker() == 1 ) {
+                // The if and else if logic needs changing
+                /*if ( model.getButtonClickerTracker() == 1 ) {
                     model.setHasClickedOnce1(true);
                     model.increaseButtonClickerTracker();
                     System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
@@ -126,10 +129,70 @@ public class ClickTimeWindow {
                     System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
                     System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
                     System.out.println();
+                }*/
+
+                // THE CHANGE
+
+                // Checking if there is a zero in the int array
+                if (doesArrayContainZero(model.getWindowCache())) {
+                    if (model.getWindowCache()[0] > 0) {
+                        model.setHasClickedOnce1(true);
+                        model.getWindowCache()[0] = 0;
+                        model.increaseButtonClickerTracker();
+                        System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
+                        System.out.println("Window Tracker after change: "  + model.getWindowTracker());
+                        System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
+                        System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
+                        System.out.println();
+                    }
+                    else if (model.getWindowCache()[1] > 0) {
+                        model.setHasClickedOnce2(true);
+                        model.getWindowCache()[1] = 0;
+                        model.decreaseButtonClickerTracker();
+                        System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
+                        System.out.println("Window Tracker after change: "  + model.getWindowTracker());
+                        System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
+                        System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
+                        System.out.println();
+                    }
+                }
+
+                // There is no zero in the int array
+                else {
+                    // The first window was opened before the second window
+                    if (model.getWindowCache()[0] < model.getWindowCache()[1]) {
+                        model.setHasClickedOnce1(true);
+                        model.getWindowCache()[0] = 0;
+                        model.increaseButtonClickerTracker();
+                        System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
+                        System.out.println("Window Tracker after change: "  + model.getWindowTracker());
+                        System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
+                        System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
+                        System.out.println();
+                    }
+                    else if (model.getWindowCache()[0] > model.getWindowCache()[1]) {
+                        model.setHasClickedOnce2(true);
+                        model.getWindowCache()[1] = 0;
+                        model.decreaseButtonClickerTracker();
+                        System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
+                        System.out.println("Window Tracker after change: "  + model.getWindowTracker());
+                        System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
+                        System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
+                        System.out.println();
+                    }
                 }
                 // Cancelling the timer thread
                 timer.cancel();
             }
+        }
+
+        private boolean doesArrayContainZero(int[] array) {
+            boolean containZero = false;
+            for (int check: array) {
+                if (check == 0)
+                    containZero = true;
+            }
+            return containZero;
         }
     }
 }

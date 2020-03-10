@@ -34,6 +34,7 @@ public class ClickOnce {
     // The next 4 beats that the system will request the user to identify
     private ArrayList<Integer> nextBeats;
 
+    int currentBeat;
     /**
      * Constructor 1: This will be used at the start of the simulation to take into account the countdown clip that will
      * be played at the start of the simulation
@@ -96,11 +97,14 @@ public class ClickOnce {
         long quarter = clipSalsa/4;
 
         // Adding a beat timeline so that the SimulationController can have the correct times that each beat occurs at
-        System.out.println("The beat timeline is being created: " + System.currentTimeMillis());
+        //System.out.println("The beat timeline is being created: " + System.currentTimeMillis());
         simCon.getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
 
         // Slight buffer to allow the button to capture the one beat of each 8-beat bar - THIS MIGHT NEED ADJUSTING
         long buffer = quarter/1000;
+
+        // Record what the first beat in the group of 4 8-beat bars that the user will be tested on
+        this.currentBeat = simCon.getSalsaModel().getNextBeat();
 
         timer.schedule(new RemindTask(),
                 0,
@@ -130,7 +134,7 @@ public class ClickOnce {
         @Override
         public void run() {
             // THE FIRST IF STATEMENT MIGHT NOT BE NEEDED
-            if (simCon.getSalsaModel().isCountdownCurrentlyPlaying()) {
+            /*if (simCon.getSalsaModel().isCountdownCurrentlyPlaying()) {
                 // So that the button clicker can now be taking the input of the user
                 simCon.getSalsaModel().setCountdownCurrentlyPlaying(false);
 
@@ -139,7 +143,7 @@ public class ClickOnce {
 
                 // Notify listeners that the countdown has finished
                 simCon.getSalsaModel().fireCountdownFinishedEvent();
-            }
+            }*/
             if (numBars > 0) {
                 // Went through one 8-beat bar of music
                 numBars--;
@@ -220,7 +224,7 @@ public class ClickOnce {
             beatTime += anEighth;
         }
         System.out.println(beatTimeline);
-        System.out.println("The beat timeline has been created: " + System.currentTimeMillis());
+        //System.out.println("The beat timeline has been created: " + System.currentTimeMillis());
 
         return beatTimeline;
     }
@@ -256,7 +260,7 @@ public class ClickOnce {
     /* Helper method to initiate the time windows */
     private void startWindows() {
         System.out.println("The time windows are being setup: " + System.currentTimeMillis());
-        new ClickTimeWindow(simCon.getSalsaModel(), simCon.getSalsaModel().getNextBeat(), 1 );
+        new ClickTimeWindow(simCon.getSalsaModel(), currentBeat, 1 );
         new ClickTimeWindow(simCon.getSalsaModel(), nextBeats.get(0), 2);
         new ClickTimeWindow(simCon.getSalsaModel(), nextBeats.get(1), 3);
         new ClickTimeWindow(simCon.getSalsaModel(), nextBeats.get(2), 4);

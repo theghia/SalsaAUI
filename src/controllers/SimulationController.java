@@ -111,21 +111,31 @@ public class SimulationController extends SalsaController implements ClipInforma
                 // If a Salsa audio clip is currently playing, then proceed
                 if (!getSalsaModel().isCountdownCurrentlyPlaying()) {
                     // Checking if has previously clicked in the assigned time windows
-                    System.out.println("Button Clicker: " + getSalsaModel().getButtonClickerTracker());
-                    System.out.println("Window Tracker: " + getSalsaModel().getWindowTracker());
-                    System.out.println("hasClickedOnce1: " + getSalsaModel().hasClickedOnce1());
-                    System.out.println("hasClickedOnce2: " + getSalsaModel().hasClickedOnce2());
+                    System.out.println("In InitButtonClicker");
+                    System.out.println("Button Clicker b4 change: " + getSalsaModel().getButtonClickerTracker());
+                    System.out.println("Window Tracker b4 change: " + getSalsaModel().getWindowTracker());
+                    System.out.println("hasClickedOnce1 b4 change: " + getSalsaModel().hasClickedOnce1());
+                    System.out.println("hasClickedOnce2 b4 change: " + getSalsaModel().hasClickedOnce2());
 
                     if (getSalsaModel().getButtonClickerTracker() == 1 && !getSalsaModel().hasClickedOnce1()) {
                         getSalsaModel().setHasClickedOnce1(true);
                         getSalsaModel().increaseButtonClickerTracker();
+                        System.out.println("Button Clicker after change: " + getSalsaModel().getButtonClickerTracker());
+                        System.out.println("Window Tracker after change: " + getSalsaModel().getWindowTracker());
+                        System.out.println("hasClickedOnce1 after change: " + getSalsaModel().hasClickedOnce1());
+                        System.out.println("hasClickedOnce2 after change: " + getSalsaModel().hasClickedOnce2());
                         calculateErrorValue();
+
                         System.out.println("I have been printed");System.out.println();
                     }
 
                     else if (getSalsaModel().getButtonClickerTracker() == 2 && !getSalsaModel().hasClickedOnce2()) {
                         getSalsaModel().setHasClickedOnce2(true);
                         getSalsaModel().decreaseButtonClickerTracker();
+                        System.out.println("Button Clicker after change: " + getSalsaModel().getButtonClickerTracker());
+                        System.out.println("Window Tracker after change: " + getSalsaModel().getWindowTracker());
+                        System.out.println("hasClickedOnce1 after change: " + getSalsaModel().hasClickedOnce1());
+                        System.out.println("hasClickedOnce2 after change: " + getSalsaModel().hasClickedOnce2());
                         calculateErrorValue();
                         System.out.println("I have been printed");System.out.println();
                     }
@@ -141,8 +151,8 @@ public class SimulationController extends SalsaController implements ClipInforma
         long clickTSNormalised = System.currentTimeMillis() - getSalsaModel().getTimeAccumulation();
 
         // getTimeAccumulated? Do we need to add the system
-        System.out.println("Not normalised: " + (clickTSNormalised + getSalsaModel().getTimeAccumulation()));
-        System.out.println("Normalised: " + clickTSNormalised);
+        //System.out.println("Not normalised: " + (clickTSNormalised + getSalsaModel().getTimeAccumulation()));
+        //System.out.println("Normalised: " + clickTSNormalised);
 
         // Necessary information to initialise the error function
         int barNumber = getSalsaModel().getBarNumber();
@@ -154,14 +164,14 @@ public class SimulationController extends SalsaController implements ClipInforma
         // Initialising the error function for the Linear Error Function
         long one_beat = getSalsaModel().getBeatTimeline().get(1);
         long left_time_window = getSalsaModel().getBeatTimeline().get(currentBeat - 1 + 8*(barNumber - 1) - TIME_WINDOW);
-        System.out.println("One beat movement: " + one_beat);
+        //System.out.println("One beat movement: " + one_beat);
         System.out.println("Left time window: " + left_time_window);
         this.errorFunction = new LinearErrorFunction(one_beat, left_time_window);
 
         // Error value calculated using the error function and then added to the UserProfile
         double errorValue = errorFunction.calculateErrorValue(clickTSNormalised, requiredBeatTime );
-        System.out.println("Error value is: " + errorValue);
-        System.out.println();
+        //System.out.println("Error value is: " + errorValue);
+        //System.out.println();
         getSalsaModel().setErrorValue(errorValue);
 
         // Setting the event object with the recently recorded error value

@@ -36,6 +36,7 @@ public class SalsaModel {
     private boolean hasClickedOnce2;
     private volatile int windowTracker;
     private volatile int buttonClickerTracker;
+    private int[] windowCache;
 
     // To keep track of the number of State objects we have transitioned
     private int numTransitionedStates;
@@ -82,6 +83,7 @@ public class SalsaModel {
         this.hasClickedOnce2 = true;
         this.windowTracker = 1;
         this.buttonClickerTracker = 1;
+        this.windowCache = new int[]{0, 0}; //windowCache[0] = 2;
 
         // Default will be 0
         this.timeAccumulation = 0;
@@ -580,5 +582,9 @@ public class SalsaModel {
      */
     public int getBarNumber() {
         return barNumber;
+    }
+
+    public int[] getWindowCache() {
+        return windowCache;
     }
 }
