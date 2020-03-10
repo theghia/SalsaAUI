@@ -61,7 +61,8 @@ public class SimulationMusicController extends SalsaController implements Simula
         String countdownFilePath = sounds + "countdown/countdown_5-0.wav";
         PlayFile countdown = new PlayFile(countdownFilePath);
 
-        // Start of extra added
+        // Adding a Line Listener to the countdown clip so that the next pieces of logic are only executed once the
+        // music has finished playing
         countdown.getClip().addLineListener(new LineListener() {
             @Override
             public void update(LineEvent event) {
@@ -71,31 +72,14 @@ public class SimulationMusicController extends SalsaController implements Simula
 
                 // The moment the audio file has finished playing
                 else if (event.getType() == LineEvent.Type.STOP) {
-                    // Adding the length of the countdown clip to timeAccumulation
-                    //getSalsaModel().addToTimeAccumulated(countdown.getMillisecondLength());
                     getSalsaModel().setCountdownCurrentlyPlaying(false);
                     getSalsaModel().fireCountdownFinishedEvent();
                     getSalsaModel().fireNewStateEvent();
                 }
             }
         });
-        // End of extra added
-
 
         initSoundClip(countdown);
-
-        /*
-        // Get a music file that represents the current state
-        State currentState = e.getCurrentState();
-        PlayFile salsaAudio = getSalsaAudio(currentState);
-
-        // Play the Salsa audio clip and join it to the queue
-        initSoundClip(salsaAudio);
-
-        // Fire off the event to let SimulationController know about the Clip information
-        getSalsaModel().fireClipInfoReadyEvent(countdown.getMillisecondLength(), salsaAudio.getMillisecondLength());
-
-         */
     }
 
     /**

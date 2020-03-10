@@ -57,21 +57,6 @@ public class SimulationController extends SalsaController implements ClipInforma
 
     /**
      * This method deals with the necessary logic when the fireClipInfoReadyEvent(...) method is called in the
-     * SimulationMusicController. This method will fire events for every new 8-beat bar and when both the countdown
-     * and Salsa audio clip have finished
-     *
-     * @param e A ClipInformationEvent that will pass on information to the ClickOnce object on the length of the clip
-     *          of the countdown and salsa audio clip
-     */
-    @Override
-    public void onInitClipInfoReadyEvent(ClipInformationEvent e) {
-        // Creates a Timer thread that will execute logic found in the ClickOnce class at every new 8-beat bar and when
-        // both the countdown and Salsa audio clip have finished
-        new ClickOnce(this, e.getClip123(), e.getClipSalsa());
-    }
-
-    /**
-     * This method deals with the necessary logic when the fireClipInfoReadyEvent(...) method is called in the
      * SimulationMusicController. This method will fire events for every new 8-beat bar and when the Salsa audio clip
      * has finished as well
      *
@@ -198,8 +183,6 @@ public class SimulationController extends SalsaController implements ClipInforma
                 // Update the model
                 getSalsaModel().setCurrentState(randState);
                 getSalsaModel().setNextBeat(firstBeat);
-                // THIS NEEDS TO BE REMOVED
-                //getSalsaModel().addToTimeAccumulated(System.currentTimeMillis());
 
                 // Fire off the events
                 getSalsaModel().fireSimulationStartEvent();

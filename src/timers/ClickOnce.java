@@ -35,49 +35,9 @@ public class ClickOnce {
     private ArrayList<Integer> nextBeats;
 
     int currentBeat;
-    /**
-     * Constructor 1: This will be used at the start of the simulation to take into account the countdown clip that will
-     * be played at the start of the simulation
-     *
-     * @param simCon A SimulationController object that will be used by this Class to access the model
-     * @param clip123 The length of the countdown clip in milliseconds
-     * @param clipSalsa The length of the Salsa audio clip in milliseconds
-     */
-    // THIS CAN BE REMOVED
-    public ClickOnce(SimulationController simCon, long clip123, long clipSalsa) {
-        this.timer = new Timer();
-        this.simCon = simCon;
-        this.clipSalsa = clipSalsa;
-        this.randomGenerator = new Random();
-        this.nextBeats = createNextBeats();
-
-        // To correctly index the beats timeline
-        this.barNumber = 1;
-        this.simCon.getSalsaModel().setBarNumber(barNumber);
-
-
-        // Adding the length of clip123 to the timeAccumulation since the start of clipSalsa should be at time 0
-        simCon.getSalsaModel().addToTimeAccumulated(clip123);
-
-        // This is when the 1 beat of the second bar will be
-        long quarter = clipSalsa/4;
-
-        // Adding a beat timeline so that the SimulationController can have the correct times that each beat occurs at
-        simCon.getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
-
-        // Slight buffer to allow the button to capture the one beat of each 8-beat bar - THIS MIGHT NEED ADJUSTING
-        long buffer  =0;// quarter/1000;
-
-        // Start the event for the SimulationGUIController to display the countdown numbers
-        simCon.getSalsaModel().fireCountdownStartedEvent(clip123, clipSalsa);
-
-        timer.schedule(new RemindTask(),
-                clip123 + buffer, // Initial delay as we are first playing the countdown clip
-                quarter + buffer); // This will happen just before beat 1 of every 8-beat bar
-    }
 
     /**
-     * Constructor 2: This will be used throughout all of the simulation bar at the start of the simulation
+     * Constructor: This will be used throughout all of the simulation bar at the start of the simulation
      *
      * @param simCon A SimulationController object that will be used by this Class to access the model
      * @param clipSalsa The length of the Salsa audio clip in milliseconds
@@ -133,17 +93,6 @@ public class ClickOnce {
          */
         @Override
         public void run() {
-            // THE FIRST IF STATEMENT MIGHT NOT BE NEEDED
-            /*if (simCon.getSalsaModel().isCountdownCurrentlyPlaying()) {
-                // So that the button clicker can now be taking the input of the user
-                simCon.getSalsaModel().setCountdownCurrentlyPlaying(false);
-
-                // The 4 time windows, in which the user can try to find the requested beat, are started up for the 1st State
-                startWindows();
-
-                // Notify listeners that the countdown has finished
-                simCon.getSalsaModel().fireCountdownFinishedEvent();
-            }*/
             if (numBars > 0) {
                 // Went through one 8-beat bar of music
                 numBars--;
@@ -166,9 +115,6 @@ public class ClickOnce {
                 if (simCon.getSalsaModel().getNumTransitionedStates() > 0) {
                     // We travelled to one State and must decrease the counter in the model
                     simCon.getSalsaModel().decreaseNumTransitionedStates();
-
-                    // We add the length of this Salsa audio clip to timeAccumulation
-                    //simCon.getSalsaModel().addToTimeAccumulated(clipSalsa);
 
                     // Logic to determine which new State to move onto next
                     State currentState = simCon.getSalsaModel().getCurrentState();

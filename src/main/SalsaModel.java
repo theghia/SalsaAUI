@@ -136,21 +136,6 @@ public class SalsaModel {
     }
 
     /**
-     * Method starts the onInitClipInfoReadyEvent(...) method for the ClipInformationListener of this model. This will
-     * be called at the start of each simulation run and allows the SimulationController know the timings of the music
-     * to act accordingly with the countdown audio clip and the first Salsa audio clip to be played.
-     *
-     * @param clip123 The length of the countdown audio clip
-     * @param clipSalsa The length of the Salsa audio clip
-     */
-    public void fireClipInfoReadyEvent(long clip123, long clipSalsa) {
-        ClipInformationEvent e = new ClipInformationEvent(this, clip123, clipSalsa);
-
-        // The listener will execute whatever logic it has implemented
-        this.clipInfoListener.onInitClipInfoReadyEvent(e);
-    }
-
-    /**
      * Method starts the onClipInfoReadyEvent(...) method for the ClipInformationListener of this model. This will be
      * called for every new State object traversed bar the first one and allows the SimulationController know the
      * timings of the Salsa audio clip to act accordingly.
@@ -213,16 +198,7 @@ public class SalsaModel {
      * called once the start button has been clicked to begin the countdown to the simulation run.
      *
      * @param clip123 The length of the countdown audio clip
-     * @param clipSalsa The length of the Salsa audio clip
      */
-    public void fireCountdownStartedEvent(long clip123, long clipSalsa) {
-        ClipInformationEvent e = new ClipInformationEvent(this, clip123, clipSalsa);
-
-        // The listener will execute whatever logic that has been implemented by the SimGUIController
-        this.simGUIListener.onCountdownStartedEvent(e);
-    }
-
-    // Added method - The method above should be removed
     public void fireCountdownStartedEvent(long clip123) {
         ClipInformationEvent e = new ClipInformationEvent(this, clip123);
 
@@ -245,17 +221,6 @@ public class SalsaModel {
     public void decreaseNumTransitionedStates() {
         // Should never reach below 0
         this.numTransitionedStates--;
-    }
-
-    //THIS CAN BE REMOVED
-    /**
-     * Method adds the time of the audio clips being played so that we can normalise the timestamp taken when the user
-     * clicks the beat-clicker
-     *
-     * @param add A long value representing the length of an audio clip that has been played in the simulation
-     */
-    public void addToTimeAccumulated(long add) {
-        this.timeAccumulation += add;
     }
 
     /**
@@ -584,6 +549,12 @@ public class SalsaModel {
         return barNumber;
     }
 
+    /**
+     * Method returns the cache of the current window time lines that are open
+     *
+     * @return An int array where the first index represents one window, and the second index represents the other
+     * other window. Only 2 windows can be up at a time
+     */
     public int[] getWindowCache() {
         return windowCache;
     }
