@@ -40,6 +40,10 @@ public abstract class SalsaView extends JPanel{
     private final int WIDTH_HOME = 100;
     private final int HEIGHT_HOME = 100;
 
+    // Dimensions of desired JPanel
+    private final int WIDTH_PANEL = 788;
+    private final int HEIGHT_PANEL = 765;
+
     /**
      * Constructor for the abstract class SalsaView
      * This will only be used when the subclass calls the super() method.
@@ -123,6 +127,36 @@ public abstract class SalsaView extends JPanel{
      */
     public String getMAIN() {
         return MAIN;
+    }
+
+    /**
+     * Method returns the width of the desired JPanel
+     *
+     * @return An integer representing the width of the desired JPanel
+     */
+    public int getWidthBuffer() {
+        int buffer = 0;
+
+        // The condition to get a buffer
+        if (this.dimension.getWidth() > WIDTH_PANEL) {
+            buffer = (int) (this.dimension.getWidth() - WIDTH_PANEL)/2;
+        }
+        return buffer;
+    }
+
+    /**
+     * Method returns the height buffer between the current height of the JPanel and the height of the desired JPanel
+     *
+     * @return An integer representing the height buffer
+     */
+    public int getHeightBuffer() {
+        int buffer = 0;
+
+        // The condition to get a buffer
+        if (this.dimension.getHeight() > HEIGHT_PANEL) {
+            buffer = (int) (this.dimension.getHeight() - HEIGHT_PANEL)/2;
+        }
+        return buffer;
     }
 
     /* Helper method: Sets up the layout of the JPanel */
