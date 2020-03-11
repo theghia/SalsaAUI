@@ -34,6 +34,9 @@ public class SimulationView extends SalsaView {
     private JLabel gaugeGUI;
     private RotateImage rotateNeedle;
 
+    // 8 light buttons to represent when the beat is occurring
+    private ArrayList<JPanel> lights;
+
     public SimulationView(String name, Dimension dimension) {
         super(name, dimension, false);
 
@@ -49,11 +52,15 @@ public class SimulationView extends SalsaView {
         // Using CardLayout to swap out the JLabels if the tempo changes in a State transition
         this.tempos = new JPanel(new CardLayout());
 
+        // Instantiating the JPanels for the 8 lights
+        this.lights = new ArrayList<>(8);
+
         // Setting up the JButtons, JLabels and JPanels to be added to this view
         setupJLabelsText();
         setupButtons();
         setupJLabelsInstruments();
         setupGauge();
+        setupLights();
 
         // Laying out the JButtons, JLabels and JPanels in the desired format
         layoutTempo();
@@ -61,6 +68,7 @@ public class SimulationView extends SalsaView {
         layoutDigitalNumbers();
         layoutInstruments();
         layoutGauge();
+        layoutLights();
     }
 
     /**
@@ -109,6 +117,49 @@ public class SimulationView extends SalsaView {
 
     public RotateImage getRotateImage() {
         return rotateNeedle;
+    }
+
+    private void setupLights() {
+
+        for (int i = 0; i < 8; i++) {
+            JPanel light = new JPanel(new CardLayout());
+
+            // Adding the off light to a JLabel
+            ImageIcon light1 = new ImageIcon(getGRAPHICS() + "off_light.png");
+            JLabel off_light = new JLabel(light1);
+
+            // Adding the on light to a JLabel
+            ImageIcon light2 = new ImageIcon(getGRAPHICS() + "on_light.png");
+            JLabel on_light = new JLabel(light2);
+
+            // Adding the JLabels to the JPanel using the CardLayout()
+            light.add(off_light, "off_light");
+            light.add(on_light, "on_light");
+
+            // Adding the JPanel to the ArrayList of JPanels for the lights
+            this.lights.add(light);
+
+            // Adding the JPanel to the SimulationView
+            this.add(light);
+        }
+    }
+
+    private void layoutLights() {
+        // 35 is the length of light - 15
+        this.getPanelLayout().putConstraint(SpringLayout.EAST, lights.get(7), -180, SpringLayout.EAST, this);
+
+        // All lights should be 5 units apart from each other
+        for (int i = 6; i > -1; i--) {
+            this.getPanelLayout().putConstraint(SpringLayout.EAST, lights.get(i), -5,
+                    SpringLayout.WEST, lights.get(i+1));
+        }
+
+        // Positioning the lights vertically - 550
+        for (int i = 0; i < 8; i++) {
+            this.getPanelLayout().putConstraint(SpringLayout.NORTH, lights.get(i), 25,
+                    SpringLayout.NORTH, this);
+        }
+
     }
 
     private void setupGauge() {
@@ -169,21 +220,34 @@ public class SimulationView extends SalsaView {
 
     /* Helper method to layout the JLabels for the digital numbers on the SimulationView */
     private void layoutDigitalNumbers() {
+        // Measurements:
+        int bufferLightsANDBeatLabel = 10;
+        int bufferBeatLabelANDDigitalBeat = 10;
+        int horizontalBufferFrameANDDigitalBeat = 150;
+
         // The JLabel that will hold the text "Next Beat:"
-        this.getPanelLayout().putConstraint(SpringLayout.EAST, nextBeatLabel, -100 - 20, SpringLayout.EAST, this);
-        this.getPanelLayout().putConstraint(SpringLayout.NORTH, nextBeatLabel, 25, SpringLayout.NORTH, this);
+        this.getPanelLayout().putConstraint(SpringLayout.EAST, nextBeatLabel, -100 - 20,
+                SpringLayout.EAST, this);
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, nextBeatLabel, bufferLightsANDBeatLabel,
+                SpringLayout.SOUTH, lights.get(0)); // Lights to this - 25
 
         // The JLabel that will hold the text "Current Beat:"
-        this.getPanelLayout().putConstraint(SpringLayout.WEST, currentBeatLabel,100,SpringLayout.WEST, this);
-        this.getPanelLayout().putConstraint(SpringLayout.NORTH, currentBeatLabel, 25, SpringLayout.NORTH, this);
+        this.getPanelLayout().putConstraint(SpringLayout.WEST, currentBeatLabel,100,
+                SpringLayout.WEST, this);
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, currentBeatLabel, bufferLightsANDBeatLabel,
+                SpringLayout.SOUTH, lights.get(0));
 
         // The JPanel holding the digital number png files to let the user know what the next beat is
-        this.getPanelLayout().putConstraint(SpringLayout.EAST, nextBeat, -150, SpringLayout.EAST, this);
-        this.getPanelLayout().putConstraint(SpringLayout.NORTH, nextBeat, 50 + 25, SpringLayout.NORTH, this);
+        this.getPanelLayout().putConstraint(SpringLayout.EAST, nextBeat, -horizontalBufferFrameANDDigitalBeat,
+                SpringLayout.EAST, this);
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, nextBeat, bufferBeatLabelANDDigitalBeat,
+                SpringLayout.SOUTH, nextBeatLabel);
 
         // The JPanel holding the digital number png files to let the user know what the current beat is
-        this.getPanelLayout().putConstraint(SpringLayout.NORTH, currentBeat, 50 + 25, SpringLayout.NORTH, this);
-        this.getPanelLayout().putConstraint(SpringLayout.WEST, currentBeat,150, SpringLayout.WEST,this);
+        this.getPanelLayout().putConstraint(SpringLayout.WEST, currentBeat,horizontalBufferFrameANDDigitalBeat,
+                SpringLayout.WEST,this);
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, currentBeat, bufferBeatLabelANDDigitalBeat,
+                SpringLayout.SOUTH, currentBeatLabel);
     }
 
     /* Helper method to layout the JLabels for the instrument GUI */
