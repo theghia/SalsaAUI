@@ -6,14 +6,14 @@ import main.SalsaModel;
 import java.util.EventObject;
 
 /**
- * SimulationEvent Class that extends the EventObject Class. This event will be used in the scenarios where we are
+ * GameEvent Class that extends the EventObject Class. This event will be used in the scenarios where we are
  * notifying listeners about updates to the SalsaModel such as: New state, new next beat and new error value. This
  * event will be used with SimulationListeners and SimulationGUIListeners.
  *
  * @author Gareth Iguasnia
  * @date 24/02/2020
  */
-public class SimulationEvent extends EventObject {
+public class GameEvent extends EventObject {
 
     // To simplify the retrieval of the most recent error value added to the UserProfile object
     private double errorValue;
@@ -22,25 +22,25 @@ public class SimulationEvent extends EventObject {
     private SalsaModel model;
 
     /**
-     * Constructor 1: Creates the SimulationEvent object that will be used by the SimulationMusicController Class and
-     * the SimulationGUIController Class. This event will only be used at the start of the simulation.
+     * Constructor 1: Creates the GameEvent object that will be used by the GameProgressionMusicController Class and
+     * the GameProgressionGUIController Class. This event will only be used at the start of the simulation.
      *
      * @param source Object that is castable to a SalsaModel object
      */
-    public SimulationEvent(Object source) {
+    public GameEvent(Object source) {
         super(source);
         this.model = (SalsaModel) source;
     }
 
     /**
-     * Constructor 2: Creates the SimulationEvent object that will be used by the SimulationMusicController and
-     * the SimulationGUIController Class. This event will not be used at the start of the simulation but thereafter
+     * Constructor 2: Creates the GameEvent object that will be used by the GameProgressionMusicController and
+     * the GameProgressionGUIController Class. This event will not be used at the start of the simulation but thereafter
      * until the simulation has finished.
      *
      * @param source Object that is castable to a SalsaModel object
      * @param errorValue A double that represents the error value calculated from the user's input
      */
-    public SimulationEvent(Object source, double errorValue) {
+    public GameEvent(Object source, double errorValue) {
         super(source);
         this.errorValue = errorValue;
         this.model = (SalsaModel) source;

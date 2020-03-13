@@ -42,6 +42,9 @@ public abstract class GameView extends SalsaView {
     // 8 light buttons to represent when the beat is occurring
     private ArrayList<JPanel> lights;
 
+    // 6 numbers to display the countdown from 5 to 0
+    private JPanel numberCountdown;
+
     // Dimensions for the "Start" button
     private final int START_HEIGHT = 120;
     private final int START_WIDTH = 120;
@@ -49,6 +52,10 @@ public abstract class GameView extends SalsaView {
     // Dimensions for the "Clicker" button
     private final int CLICKER_HEIGHT = 120;
     private final int CLICKER_WIDTH = 120;
+
+    // Dimensions for the "Countdown" numbers
+    private final int COUNTDOWN_HEIGHT = 240;
+    private final int COUNTDOWN_WIDTH = 240;
 
     /**
      * Constructor for the abstract class GameView
@@ -75,12 +82,16 @@ public abstract class GameView extends SalsaView {
         // Instantiating the JPanels for the 8 lights
         this.lights = new ArrayList<>(8);
 
+        // Using CardLayout to swap out the numbers to be in sync with the countdown audio file
+        this.numberCountdown = new JPanel(new CardLayout());
+
         // Setting up the JButtons, JLabels and JPanels to be added to this view
         setupJLabelsText();
         setupButtons();
         setupJLabelsInstruments();
         setupGauge();
         setupLights();
+        setupCountdown();
 
         // Laying out the JButtons, JLabels and JPanels in the desired format
         layoutTempo();
@@ -89,6 +100,7 @@ public abstract class GameView extends SalsaView {
         layoutInstruments();
         layoutGauge();
         layoutLights();
+        layoutCountdown();
     }
 
     /**
@@ -108,7 +120,7 @@ public abstract class GameView extends SalsaView {
     public JButton getStartButton() { return startButton; }
 
     /**
-     * Method returns the JPanel currentBeat. To be used by the SimulationGUIController so that we can swap the JLabels
+     * Method returns the JPanel currentBeat. To be used by the GameProgressionGUIController so that we can swap the JLabels
      * according to the model changes for a new current and next beat.
      *
      * @return A JPanel to hold the digital number png files for the currentBeat
@@ -118,7 +130,7 @@ public abstract class GameView extends SalsaView {
     }
 
     /**
-     * Method returns the JPanel nextBeat. To be used by the SimulationGUIController so that we can swap the JLabels
+     * Method returns the JPanel nextBeat. To be used by the GameProgressionGUIController so that we can swap the JLabels
      * according to the model changes for a new current and next beat.
      *
      * @return A JPanel to hold the digital number png files for the nextBeat.
@@ -166,8 +178,17 @@ public abstract class GameView extends SalsaView {
         return rotateNeedle;
     }
 
+    /**
+     * Method returns the JPanel using CardLayout that holds all of the numbers to be used for the countdown
+     *
+     * @return A JPanel holding JLabels with all of the necessary number png files
+     */
+    public JPanel getNumberCountdown() {
+        return numberCountdown;
+    }
+
     /* Helper method that sets up the JLabels to let the user know which Digital Number is the current and next beat
-    and adds them to the SimulationView */
+        and adds them to the SimulationView */
     private void setupJLabelsText() {
         // Getting the desired font and size for the beat labels
         Font f = new Font("TimesRoman",Font.BOLD,25);
@@ -288,6 +309,20 @@ public abstract class GameView extends SalsaView {
             // Adding the JPanel to the SimulationView
             this.add(light);
         }
+    }
+
+    /* Helper method to setup the countdownNumber JPanel */
+    private void setupCountdown() {
+        // Looping 6 times for each of the numbered png files
+        for (int i = 5; i > -1; i--) {
+            ImageIcon number = new ImageIcon(getGRAPHICS() + "num_" + i + ".png");
+            Image scaled = number.getImage().getScaledInstance(COUNTDOWN_WIDTH, COUNTDOWN_HEIGHT, Image.SCALE_SMOOTH);
+            ImageIcon scaledNumber = new ImageIcon(scaled);
+            JLabel countdownNum = new JLabel(scaledNumber);
+            this.numberCountdown.add(countdownNum, Integer.toString(i));
+        }
+        // Adding the JPanel containing all of the numbered png files to the GameView
+        this.add(numberCountdown);
     }
 
     /* Helper method lays out the tempo JLabels on the GameView */
@@ -414,6 +449,18 @@ public abstract class GameView extends SalsaView {
             this.getPanelLayout().putConstraint(SpringLayout.NORTH, lights.get(i), 25,
                     SpringLayout.NORTH, this);
         }
+    }
+
+    private void layoutCountdown() {
+        // The numberCountdown JPanel - Dimensions to center the JPanel
+        int widthPositionStart = (int) (getDimension().getWidth() - COUNTDOWN_WIDTH)/2;
+        int heightPositionStart = (int) (getDimension().getHeight() - COUNTDOWN_HEIGHT)/2;
+
+        // The numberCountdown JPanel - Centering the JPanel
+        this.getPanelLayout().putConstraint(SpringLayout.WEST, numberCountdown, widthPositionStart,
+                SpringLayout.WEST, this);
+        this.getPanelLayout().putConstraint(SpringLayout.NORTH, numberCountdown, heightPositionStart,
+                SpringLayout.NORTH, this);
     }
 
     /* Helper method to add JLabels (PNG files) to the JPanel using CardLayout to display the beats */

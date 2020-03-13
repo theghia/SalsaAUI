@@ -50,15 +50,20 @@ public class SalsaModel {
     // Flag to determine whether the countdown audio clip is playing or a Salsa audio clip
     private boolean countdownCurrentlyPlaying;
 
-    // An ArrayList of SimulationListeners associated with the SimulationGUIController class and the
-    // SimulationMusicController class
-    private ArrayList<SimulationListener> simListeners;
+    // An ArrayList of SimulationListeners associated with the GameProgressionGUIController class and the
+    // GameProgressionMusicController class
+    private ArrayList<GameProgressionListener> simListeners;
+    private GameProgressionListener tutProgressGUIListener;
+    private GameProgressionListener tutProgressMusicListener;
+    private ArrayList<GameProgressionListener> tutListeners;
 
     // This listener will be used with the SimulationController Class
     private ClipInformationListener clipInfoListener;
+    private ClipInformationListener tutClipInfoListener;
 
-    // This listener will only be used with the SimulationGUIController Class
-    private SimulationGUIListener simGUIListener;
+    // This listener will only be used with the GameProgressionGUIController Class
+    private GameGUIListener simGUIListener;
+    private GameGUIListener tutGUIListener;
 
     /**
      * Constructor of the SalsaModel Class. The fields are given their default values when the object is
@@ -95,16 +100,38 @@ public class SalsaModel {
     /* Methods to add listeners to the Model */
 
     /**
-     * Method adds a SimulationListener to this model
+     * Method adds a GameProgressionListener to the simListeners.
+     * This will be connected to the SimulationView
      *
-     * @param simulationListener A Class that has implemented the SimulationListener interface
+     * @param gameProgressionListener A Class that has implemented the GameProgressionListener interface
      */
-    public void addSimulationListener(SimulationListener simulationListener) {
-        this.simListeners.add(simulationListener);
+    public void addSimulationListener(GameProgressionListener gameProgressionListener) {
+        this.simListeners.add(gameProgressionListener);
     }
 
     /**
-     * Method adds a ClipInformationListener to this model
+     * Method adds a GameProgressionListener to the tutProgressionMusicListener field.
+     * This will be connected to the TutorialView
+     *
+     * @param tutProgressMusicListener A class that has implemented the GameProgressionListener interface
+     */
+    public void addTutorialMusicListener(GameProgressionListener tutProgressMusicListener) {
+        this.tutProgressMusicListener = tutProgressMusicListener;
+    }
+
+    /**
+     * Method adds a GameProgressionListener to the tutProgressionGUIListener field.
+     * This will be connected to the TutorialView
+     *
+     * @param tutProgressGUIListener
+     */
+    public void addTutorialGUIListener(GameProgressionListener tutProgressGUIListener) {
+        this.tutProgressGUIListener = tutProgressGUIListener;
+    }
+
+    /**
+     * Method adds a ClipInformationListener to the clipInfoListeners.
+     * This will be connected to the SimulationView.
      *
      * @param clipInfoListener A Class that has implemented the ClipInformationListener interface
      */
@@ -113,12 +140,33 @@ public class SalsaModel {
     }
 
     /**
-     * Method adds a SimulationGUIListener to this model
+     * Method adds a ClipInformationListener to the tutClipInfoListener field.
+     * This will be connected to the TutorialView.
      *
-     * @param simGUIListener A Class that has implemented the SimulationGUIListener interface
+     * @param tutClipInfoListener
      */
-    public void addSimulationGUIListener(SimulationGUIListener simGUIListener) {
+    public void addTutorialClipInformationListener(ClipInformationListener tutClipInfoListener) {
+        this.tutClipInfoListener = tutClipInfoListener;
+    }
+
+    /**
+     * Method adds a GameGUIListener to the simGUIListener.
+     * This will be connected to the SimulationView.
+     *
+     * @param simGUIListener A Class that has implemented the GameGUIListener interface
+     */
+    public void addSimulationGUIListener(GameGUIListener simGUIListener) {
         this.simGUIListener = simGUIListener;
+    }
+
+    /**
+     * Method adds a GameGUIListener to the tutGUIListener.
+     * This will be connected to the TutorialView.
+     *
+     * @param tutGUIListener
+     */
+    public void addTutorialGUIListener(GameGUIListener tutGUIListener) {
+        this.tutGUIListener = tutGUIListener;
     }
 
     /* FIRE EVENT METHODS */
@@ -128,11 +176,11 @@ public class SalsaModel {
      * called at the start of each simulation run
      */
     public void fireSimulationStartEvent() {
-        SimulationEvent e = new SimulationEvent(this);
+        GameEvent e = new GameEvent(this);
 
         // The listeners will execute whatever logic they have implemented
-        for (SimulationListener simulationListener: this.simListeners)
-            simulationListener.onSimulationStartedEvent(e);
+        for (GameProgressionListener gameProgressionListener : this.simListeners)
+            gameProgressionListener.onGameStartedEvent(e);
     }
 
     /**
@@ -154,47 +202,47 @@ public class SalsaModel {
      * called whenever a new State object will traversed after the first one.
      */
     public void fireNewStateEvent() {
-        SimulationEvent e = new SimulationEvent(this);
+        GameEvent e = new GameEvent(this);
 
         // The listeners will execute whatever logic they have implemented
-        for (SimulationListener simulationListener: this.simListeners)
-            simulationListener.onNewStateEvent(e);
+        for (GameProgressionListener gameProgressionListener : this.simListeners)
+            gameProgressionListener.onNewStateEvent(e);
     }
 
     /**
-     * Method starts the onNewBeatEvent(...) method for the SimulationGUIListener of this model. This will be called
+     * Method starts the onNewBeatEvent(...) method for the GameGUIListener of this model. This will be called
      * whenever the simulation proceeds to a new 8-beat bar of music.
      */
     public void fireNewBeatEvent() {
-        SimulationEvent e = new SimulationEvent(this);
+        GameEvent e = new GameEvent(this);
 
         // The listener will execute whatever logic that has been implemented by the SimGUIController
         this.simGUIListener.onNewBeatEvent(e);
     }
 
     /**
-     * Method starts the onSimulationFinishedEvent(...) method for the SimulationGUIListener of this model. This will
+     * Method starts the onSimulationFinishedEvent(...) method for the GameGUIListener of this model. This will
      * be called whenever the simulation run has ended.
      */
     public void fireSimulationFinishedEvent() {
-        SimulationEvent e = new SimulationEvent(this);
+        GameEvent e = new GameEvent(this);
 
         // The listener will execute whatever logic that has been implemented by the SimGUIController
-        this.simGUIListener.onSimulationFinishedEvent(e);
+        this.simGUIListener.onGameFinishedEvent(e);
     }
 
     /**
-     * Method starts the onNewErrorValueEvent(...) method for the SimulationGUIListener of this model. This will be
+     * Method starts the onNewErrorValueEvent(...) method for the GameGUIListener of this model. This will be
      * called every time the user's input was successfully recorded during the simulation.
      */
-    public void fireNewErrorValueEvent(SimulationEvent e) {
+    public void fireNewErrorValueEvent(GameEvent e) {
 
         // The listener will execute whatever logic that has been implemented by the SimGUIController
         this.simGUIListener.onNewErrorValueEvent(e);
     }
 
     /**
-     * Method starts the onCountdownStartedEvent(...) method for the SimulationGUIListener of this model. This will be
+     * Method starts the onCountdownStartedEvent(...) method for the GameGUIListener of this model. This will be
      * called once the start button has been clicked to begin the countdown to the simulation run.
      *
      * @param clip123 The length of the countdown audio clip
@@ -206,11 +254,89 @@ public class SalsaModel {
     }
 
     /**
-     * Method starts the onCountdownFinishedEvent(...) method for the SimulationGUIListener of this model. This will be
+     * Method starts the onCountdownFinishedEvent(...) method for the GameGUIListener of this model. This will be
      * called after the countdown audio clip has finished to display the relevant GUI for the simulation.
      */
     public void fireCountdownFinishedEvent() {
         this.simGUIListener.onCountdownFinishedEvent();
+    }
+
+    /**
+     *  Method starts the countdown GUI that displays the number according to the audio clip counting down. This is
+     *  only for the Tutorial view
+     *
+     * @param clip123Length Long object representing the length of the countdown clip
+     */
+    public void fireTutorialCountdownStartedEvent(long clip123Length) {
+        ClipInformationEvent e = new ClipInformationEvent(this, clip123Length);
+
+        this.tutGUIListener.onCountdownStartedEvent(e);
+    }
+
+    /**
+     * Method cleans up the GUI used in the countdown and starts the game to test the user's ability to find the
+     * correct timing. This is only for the TutorialView
+     */
+    public void fireTutorialCountdownFinishedEvent() {
+        this.tutGUIListener.onCountdownFinishedEvent();
+    }
+
+    /**
+     * Method to keep progressing through the game. This is only associated for the TutorialView.
+     */
+    public void fireTutorialNewStateEvent() {
+        GameEvent e = new GameEvent(this);
+
+        // Execute logic found in the TutorialGUIController and TutorialMusicController that has implemented
+        this.tutProgressGUIListener.onNewStateEvent(e);
+        this.tutProgressMusicListener.onNewStateEvent(e);
+    }
+
+    /**
+     * Method to pass on information to listeners on the length of the salsa audio clips. This will only be associated
+     * with the TutorialView
+     *
+     * @param clipSalsaLength Long value representing the length of the Salsa audio clip
+     */
+    public void fireTutorialClipInfoReadyEvent(long clipSalsaLength) {
+        ClipInformationEvent e = new ClipInformationEvent(this, clipSalsaLength);
+
+        this.tutClipInfoListener.onClipInfoReadyEvent(e);
+    }
+
+    /**
+     * Method to display the error value on the gauge. This is only associated to the TutorialView.
+     *
+     * @param gameEvent GameEvent object that will contain the current error value that has been calculated
+     */
+    public void fireTutorialNewErrorValueEvent(GameEvent gameEvent) {
+        this.tutGUIListener.onNewErrorValueEvent(gameEvent);
+    }
+
+    /**
+     * Method to start the Tutorial for the game. This will occur before the simulation music starts playing. This is
+     * only associated with the TutorialView.
+     */
+    public void fireTutorialStartEvent() {
+        GameEvent e = new GameEvent(this);
+
+        // Displaying the starting screen of the game view
+        this.tutProgressGUIListener.onGameStartedEvent(e);
+
+
+        // and call onTutorialStartedEvent() that will be from the new interface implemented by the TutorialGUIController
+        // onTutorialFinishedEvent() should call the onGameStartedEvent() for the music controller which will throw
+        // the countdown started events....fireTutorialGameStartEvent() --> will be the method to throw the code above
+    }
+
+    /**
+     * Method to display the digital numbers according to the current and next beats that the system is currently and
+     * will test the user on
+     */
+    public void fireTutorialNewBeatEvent() {
+        GameEvent e = new GameEvent(this);
+
+        this.tutGUIListener.onNewBeatEvent(e);
     }
 
     /* CHANGE MODEL STATE */

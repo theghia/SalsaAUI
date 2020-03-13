@@ -1,13 +1,11 @@
 package main;
 
-import components.GaussianErrorFunction;
-import controllers.NavigationController;
-import controllers.SimulationController;
-import controllers.SimulationGUIController;
-import controllers.SimulationMusicController;
+import controllers.*;
+import controllers.GameProgressionGUIController;
+import controllers.GameProgressionMusicController;
 import events.ClipInformationListener;
-import events.SimulationGUIListener;
-import events.SimulationListener;
+import events.GameGUIListener;
+import events.GameProgressionListener;
 import views.SimulationView;
 
 public class MainApp {
@@ -32,9 +30,9 @@ public class MainApp {
 
         //System.out.println(test.calculateErrorValue(439999,440000));
 
-        SalsaController simulationGUIController = new SimulationGUIController(model, "simulation_gui",
+        SalsaController simulationGUIController = new GameProgressionGUIController(model, "simulation_gui",
                 simulationView);
-        SalsaController simulationMusicController = new SimulationMusicController(model,
+        SalsaController simulationMusicController = new GameProgressionMusicController(model,
                 "simulation_music");
 
         simulationController.getSalsaModel().setNameOfUser("Gareth");
@@ -44,10 +42,10 @@ public class MainApp {
 
         // Casting as we only want the model to have the Listener version of the controller so that any methods
         // that the SalsaController has will not be present in the model
-        model.addSimulationListener((SimulationListener) simulationGUIController);
-        model.addSimulationListener((SimulationListener) simulationMusicController);
+        model.addSimulationListener((GameProgressionListener) simulationGUIController);
+        model.addSimulationListener((GameProgressionListener) simulationMusicController);
         model.addClipInformationListener((ClipInformationListener) simulationController);
-        model.addSimulationGUIListener((SimulationGUIListener) simulationGUIController);
+        model.addSimulationGUIListener((GameGUIListener) simulationGUIController);
     }
 
 }

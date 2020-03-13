@@ -3,8 +3,8 @@ package controllers;
 import components.Instrument;
 import components.PlayFile;
 import components.State;
-import events.SimulationEvent;
-import events.SimulationListener;
+import events.GameProgressionListener;
+import events.GameEvent;
 import main.SalsaController;
 import main.SalsaModel;
 
@@ -19,14 +19,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * SimulationMusicController Class extends the SalsaController Class and implements the SimulationListener Class. This
- * class deals with the logic to play the Salsa audio files one after the other during the simulation according to how
- * the simulation moves around the State objects.
+ * MusicController abstract class extends the SalsaController class and implements the interface
+ * GameProgressionListener. This class shall be derived by subclasses that need to play music for the game to help the
+ * user locate the correct timing in Salsa music.
  *
  * @author Gareth Iguasnia
- * @date 26/02/2020
+ * @date 12/03/2020
  */
-public class SimulationMusicController extends SalsaController implements SimulationListener {
+public abstract class MusicController extends SalsaController implements GameProgressionListener {
+
     // The field is used to access the necessary WAV files for the MVC application
     private final String sounds = "src/assets/sounds/";
 
@@ -43,20 +44,42 @@ public class SimulationMusicController extends SalsaController implements Simula
      * @param salsaModel     A SalsaModel object that contains the data of the MVC
      * @param controllerName A String object representing the name of the controller
      */
-    public SimulationMusicController(SalsaModel salsaModel, String controllerName) {
+    public MusicController(SalsaModel salsaModel, String controllerName) {
         super(salsaModel, controllerName);
         randomGenerator = new Random();
     }
 
     /**
-     * Method used for the SimulationMusicController to take action when the fireSimulationStartedEvent method is
+     * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
+     * the method once the countdown audio file has started playing.
+     *
+     * @param clip123Length The length of the countdown audio file
+     */
+    public abstract void countdownStarted(long clip123Length);
+
+    /**
+     * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
+     * this method once the countdown audio file has finished playing.
+     */
+    public abstract void countdownFinished();
+
+    /**
+     * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
+     * this method once the Salsa audio clip has been created.
+     *
+     * @param clipSalsaLength
+     */
+    public abstract void clipReady(long clipSalsaLength);
+
+    /**
+     * Method used for the GameProgressionMusicController to take action when the fireSimulationStartedEvent method is
      * called in the model. The countdown clip and the first salsa audio clip are queued to be played in the
      * simulation. This method also fires off an event for the SimulationController to deal with
      *
-     * @param e A SimulationEvent object that will be used to initialise the audio of the current state
+     * @param e A GameEvent object that will be used to initialise the audio of the current state
      */
     @Override
-    public void onSimulationStartedEvent(SimulationEvent e) {
+    public void onGameStartedEvent(GameEvent e) {
         // Create the clip to play the countdown WAV file and join it to the queue
         String countdownFilePath = sounds + "countdown/countdown_5-0.wav";
         PlayFile countdown = new PlayFile(countdownFilePath);
@@ -68,13 +91,12 @@ public class SimulationMusicController extends SalsaController implements Simula
             public void update(LineEvent event) {
                 // The moment the audio file starts playing
                 if (event.getType() == LineEvent.Type.START)
-                    getSalsaModel().fireCountdownStartedEvent(countdown.getMillisecondLength());
+                    countdownStarted(countdown.getMillisecondLength());
 
-                // The moment the audio file has finished playing
+                    // The moment the audio file has finished playing
                 else if (event.getType() == LineEvent.Type.STOP) {
                     getSalsaModel().setCountdownCurrentlyPlaying(false);
-                    getSalsaModel().fireCountdownFinishedEvent();
-                    getSalsaModel().fireNewStateEvent();
+                    countdownFinished();
                 }
             }
         });
@@ -83,14 +105,14 @@ public class SimulationMusicController extends SalsaController implements Simula
     }
 
     /**
-     * Method used for the SimulationMusicController to take action when the fireNewStateEvent method is called by
+     * Method used for the GameProgressionMusicController to take action when the fireNewStateEvent method is called by
      * the model in the SimulationController (in the thread). This method queues the next salsa audio clip, created from
      * the new State the the simulation has moved on to, to be played straight after the previous salsa audio clip.
      *
-     * @param e A SimulationEvent object that will be used to determine what Salsa audio clip should be played
+     * @param e A GameEvent object that will be used to determine what Salsa audio clip should be played
      */
     @Override
-    public void onNewStateEvent(SimulationEvent e) {
+    public void onNewStateEvent(GameEvent e) {
         // Getting the new State that the simulation is moving to
         State currentState = e.getCurrentState();
 
@@ -99,8 +121,8 @@ public class SimulationMusicController extends SalsaController implements Simula
         // Play the salsa audio clip and join it to the queue
         initSoundClip(salsaAudio);
 
-        // Fire off the event to let SimulationController know about the Clip information
-        getSalsaModel().fireClipInfoReadyEvent(salsaAudio.getMillisecondLength());
+        // Fire off the event to let the relevant GameController know about the Clip information
+        clipReady(salsaAudio.getMillisecondLength());
     }
 
     /* Helper method that allows the Clips to be played one after the other during the simulation */
@@ -122,7 +144,7 @@ public class SimulationMusicController extends SalsaController implements Simula
     }
 
     /* Helper method that creates the final part of the file path needed to get the correct folder with
-    * the necessary WAV files */
+     * the necessary WAV files */
     private String getFilePath(State currentState) {
         String filePath = sounds + currentState.getBpm().getBPM();
 

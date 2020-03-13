@@ -3,9 +3,9 @@ package controllers;
 import components.Instrument;
 import components.MoveGaugeNeedle;
 import events.ClipInformationEvent;
-import events.SimulationEvent;
-import events.SimulationGUIListener;
-import events.SimulationListener;
+import events.GameEvent;
+import events.GameGUIListener;
+import events.GameProgressionListener;
 import main.SalsaController;
 import main.SalsaModel;
 import views.SimulationView;
@@ -13,7 +13,7 @@ import views.SimulationView;
 import javax.swing.*;
 import java.awt.*;
 
-public class SimulationGUIController extends SalsaController implements SimulationListener, SimulationGUIListener {
+public class GameProgressionGUIController extends SalsaController implements GameProgressionListener, GameGUIListener {
 
     private SimulationView simulationView;
     private MoveGaugeNeedle moveGaugeNeedle;
@@ -25,7 +25,7 @@ public class SimulationGUIController extends SalsaController implements Simulati
      * @param salsaModel     A SalsaModel object that contains the data of the MVC
      * @param controllerName A String object representing the name of the controller
      */
-    public SimulationGUIController(SalsaModel salsaModel, String controllerName, SimulationView simulationView) {
+    public GameProgressionGUIController(SalsaModel salsaModel, String controllerName, SimulationView simulationView) {
         super(salsaModel, controllerName);
         this.simulationView = simulationView;
 
@@ -36,10 +36,10 @@ public class SimulationGUIController extends SalsaController implements Simulati
     /**
      * Method makes the "Beat-clicker" visible and makes the home and start button invisible.
      *
-     * @param e A SimulationEvent object that is not needed with this method
+     * @param e A GameEvent object that is not needed with this method
      */
     @Override
-    public void onSimulationStartedEvent(SimulationEvent e) {
+    public void onGameStartedEvent(GameEvent e) {
 
         // Making the "Beat-Clicker" visible so that user knows where they should click
         simulationView.getBeatClicker().setVisible(true);
@@ -57,10 +57,10 @@ public class SimulationGUIController extends SalsaController implements Simulati
      * Method changes the JLabel to display the current tempo of the music to the user and to show the current
      * instruments that are playing
      *
-     * @param e A SimulationEvent object that is used to display the State information in the form of several GUI
+     * @param e A GameEvent object that is used to display the State information in the form of several GUI
      */
     @Override
-    public void onNewStateEvent(SimulationEvent e) {
+    public void onNewStateEvent(GameEvent e) {
         // Make all of the instrument GUI invisible
         makeInstrumentGUIInvisible();
 
@@ -79,11 +79,11 @@ public class SimulationGUIController extends SalsaController implements Simulati
      * Method changes the GUI to represent the current beat that the system is currently requesting the user to
      * find and the next beat that the system will request the user to find.
      *
-     * @param e A SimulationEvent object that will contain information on what is the current beat and the next beat
+     * @param e A GameEvent object that will contain information on what is the current beat and the next beat
      *         that the user will be tested on
      */
     @Override
-    public void onNewBeatEvent(SimulationEvent e) {
+    public void onNewBeatEvent(GameEvent e) {
         //System.out.println("Current beat: " + e.getCurrentBeat());
         //System.out.println("Next beat: " + e.getNextBeat());
 
@@ -111,11 +111,11 @@ public class SimulationGUIController extends SalsaController implements Simulati
      * input. The better value the user scored, the closer the needle will be on the green end of the Gauge. The worse
      * the score that the user achieved, the closer the needle will move towards the end of the red zone.
      *
-     * @param e A SimulationEvent object that will be used to pass the information of the new Error Value to the
+     * @param e A GameEvent object that will be used to pass the information of the new Error Value to the
      *          moveGaugeNeedle object.
      */
     @Override
-    public void onNewErrorValueEvent(SimulationEvent e) {
+    public void onNewErrorValueEvent(GameEvent e) {
         // My assumption is that the error value should be between [0, 1]
         assert (e.getErrorValue() > 1 || e.getErrorValue() < 0);
 
@@ -138,10 +138,10 @@ public class SimulationGUIController extends SalsaController implements Simulati
      * back to their default state and displays the same GUI on the SimulationView that was there before the Start
      * button was clicked
      *
-     * @param e A SimulationEvent object that will be used to reset the model (except the UserProfile) back to default
+     * @param e A GameEvent object that will be used to reset the model (except the UserProfile) back to default
      */
     @Override
-    public void onSimulationFinishedEvent(SimulationEvent e) {
+    public void onGameFinishedEvent(GameEvent e) {
         // Displaying the Diagonal Dashed Digital numbers
         onNewBeatEvent(e);
 
@@ -176,7 +176,6 @@ public class SimulationGUIController extends SalsaController implements Simulati
 
         // IF POSSIBLE: 3-2-1 GUI that disappears just before the salsa music
 
-
     }
 
     /**
@@ -196,7 +195,7 @@ public class SimulationGUIController extends SalsaController implements Simulati
 
         // 3) Make the GUI instruments appear according to the starting State and set the correct JLabel to show
         // for the Tempo according to the starting State
-        SimulationEvent e = new SimulationEvent(getSalsaModel());
+        GameEvent e = new GameEvent(getSalsaModel());
         onNewStateEvent(e);
 
         // 4) Make the tempo JLabel appear

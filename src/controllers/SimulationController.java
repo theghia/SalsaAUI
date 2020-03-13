@@ -3,7 +3,7 @@ package controllers;
 import components.*;
 import events.ClipInformationEvent;
 import events.ClipInformationListener;
-import events.SimulationEvent;
+import events.GameEvent;
 import main.SalsaController;
 import main.SalsaModel;
 import timers.ClickOnce;
@@ -18,7 +18,7 @@ import java.util.Random;
 /**
  * SimulationController Class extends the SalsaController Class and implements the ClipInformationListener interface.
  * This Class deals with the user's input and controls the flow of the Simulation by making sure that the appropriate
- * events are fired at specific times so that the SimulationGUIController and the SimulationMusicController can also
+ * events are fired at specific times so that the GameProgressionGUIController and the GameProgressionMusicController can also
  * execute their logic.
  *
  * @author Gareth Iguasnia
@@ -57,7 +57,7 @@ public class SimulationController extends SalsaController implements ClipInforma
 
     /**
      * This method deals with the necessary logic when the fireClipInfoReadyEvent(...) method is called in the
-     * SimulationMusicController. This method will fire events for every new 8-beat bar and when the Salsa audio clip
+     * GameProgressionMusicController. This method will fire events for every new 8-beat bar and when the Salsa audio clip
      * has finished as well
      *
      * @param e A ClipInformationEvent object that will pass information to ClickOnce on the length of the clip of the
@@ -160,7 +160,7 @@ public class SimulationController extends SalsaController implements ClipInforma
         getSalsaModel().setErrorValue(errorValue);
 
         // Setting the event object with the recently recorded error value
-        SimulationEvent simEvent = new SimulationEvent(getSalsaModel(), errorValue);
+        GameEvent simEvent = new GameEvent(getSalsaModel(), errorValue);
 
         // New error value event fired so that the GUI can display it
         getSalsaModel().fireNewErrorValueEvent(simEvent);
