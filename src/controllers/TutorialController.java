@@ -83,12 +83,12 @@ public class TutorialController extends GameController {
                 getSalsaModel().setNextBeat(firstBeat);
 
                 // Fire off the events
+                getSalsaModel().fireTutorialNewBeatEvent();
                 getSalsaModel().fireTutorialStartEvent();
                 //getSalsaModel().fireTutorialStartEvent(); -- onGameStartedEvent for the GUI will be called
                 // as well as another onTutorialStartedEvent -> after this mini tutorial finishes
                 // we then call onGameStartedEvent for the MusicController since the clip itself should call the
                 //appropriate countdownStartedEvent
-                getSalsaModel().fireTutorialNewBeatEvent();
             }
         };
         getGameView().getStartButton().addActionListener(start);

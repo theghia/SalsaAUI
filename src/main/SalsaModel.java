@@ -50,12 +50,10 @@ public class SalsaModel {
     // Flag to determine whether the countdown audio clip is playing or a Salsa audio clip
     private boolean countdownCurrentlyPlaying;
 
-    // An ArrayList of SimulationListeners associated with the GameProgressionGUIController class and the
-    // GameProgressionMusicController class
+    // GameProgressionListeners for both the Tutorial and Simulation controllers
     private ArrayList<GameProgressionListener> simListeners;
     private GameProgressionListener tutProgressGUIListener;
     private GameProgressionListener tutProgressMusicListener;
-    private ArrayList<GameProgressionListener> tutListeners;
 
     // This listener will be used with the SimulationController Class
     private ClipInformationListener clipInfoListener;
@@ -64,6 +62,9 @@ public class SalsaModel {
     // This listener will only be used with the GameProgressionGUIController Class
     private GameGUIListener simGUIListener;
     private GameGUIListener tutGUIListener;
+
+    // This listener will only be used with the TutorialGUIController
+    private TutorialGUIListener tutorialGUIListener;
 
     /**
      * Constructor of the SalsaModel Class. The fields are given their default values when the object is
@@ -110,22 +111,24 @@ public class SalsaModel {
     }
 
     /**
-     * Method adds a GameProgressionListener to the tutProgressionMusicListener field.
+     * Method adds a GameProgressionListener to the tutProgressionMusicListener field. This will be used to manage the
+     * GUI in the TutorialView for when the game is in progress.
      * This will be connected to the TutorialView
      *
      * @param tutProgressMusicListener A class that has implemented the GameProgressionListener interface
      */
-    public void addTutorialMusicListener(GameProgressionListener tutProgressMusicListener) {
+    public void addTutorialGUIListener(GameProgressionListener tutProgressMusicListener) {
         this.tutProgressMusicListener = tutProgressMusicListener;
     }
 
     /**
-     * Method adds a GameProgressionListener to the tutProgressionGUIListener field.
+     * Method adds a GameProgressionListener to the tutProgressionGUIListener field. This will be used to manage the
+     * music in the TutorialView for when the game is in progress.
      * This will be connected to the TutorialView
      *
      * @param tutProgressGUIListener
      */
-    public void addTutorialGUIListener(GameProgressionListener tutProgressGUIListener) {
+    public void addTutorialMusicListener(GameProgressionListener tutProgressGUIListener) {
         this.tutProgressGUIListener = tutProgressGUIListener;
     }
 
@@ -160,13 +163,25 @@ public class SalsaModel {
     }
 
     /**
-     * Method adds a GameGUIListener to the tutGUIListener.
+     * Method adds a GameGUIListener to the tutGUIListener. This will be used to manage the GUI for when the game is in
+     * action in the TutorialView.
      * This will be connected to the TutorialView.
      *
      * @param tutGUIListener
      */
-    public void addTutorialGUIListener(GameGUIListener tutGUIListener) {
+    public void addTutorialGameGUIListener(GameGUIListener tutGUIListener) {
         this.tutGUIListener = tutGUIListener;
+    }
+
+    /**
+     * Method to add a TutorialGUIListener to tutorialGUIListener. This is to deal with GUI that comes up to teach the
+     * user how to use the system.
+     * This will only be connected to the TutorialView
+     *
+     * @param tutorialGUIListener A class that has implemented the TutorialGUIListener interface
+     */
+    public void addTeachTutorialGUIListener(TutorialGUIListener tutorialGUIListener) {
+        this.tutorialGUIListener = tutorialGUIListener;
     }
 
     /* FIRE EVENT METHODS */

@@ -6,6 +6,8 @@ import controllers.GameProgressionMusicController;
 import events.ClipInformationListener;
 import events.GameGUIListener;
 import events.GameProgressionListener;
+import events.TutorialGUIListener;
+import views.GameView;
 import views.SimulationView;
 
 public class MainApp {
@@ -21,17 +23,12 @@ public class MainApp {
         // do a navigationController.start() type thing
 
         SimulationView simulationView = (SimulationView) start.getPanels().get("simulation");
-        SalsaController simulationController = new SimulationController(model, "simulation", simulationView);
 
-        //GaussianErrorFunction test = new GaussianErrorFunction();
-        //long time1 = System.currentTimeMillis()/1000;
-        //long time2 = (System.currentTimeMillis()/1000) + 3;// + (60*1000);
-        //System.out.println(System.currentTimeMillis()/1000);
+        SalsaController simulationController = new SimulationController(model,
+                "simulation", simulationView);
 
-        //System.out.println(test.calculateErrorValue(439999,440000));
-
-        SalsaController simulationGUIController = new GameProgressionGUIController(model, "simulation_gui",
-                simulationView);
+        SalsaController simulationGUIController = new GameProgressionGUIController(model,
+                "simulation_gui", simulationView);
         SalsaController simulationMusicController = new GameProgressionMusicController(model,
                 "simulation_music");
 
@@ -46,6 +43,21 @@ public class MainApp {
         model.addSimulationListener((GameProgressionListener) simulationMusicController);
         model.addClipInformationListener((ClipInformationListener) simulationController);
         model.addSimulationGUIListener((GameGUIListener) simulationGUIController);
+
+        GameView tutorialView = (GameView) start.getPanels().get("tutorial");
+        SalsaController tutorialController = new TutorialController(model, "tutorial", tutorialView);
+        SalsaController tutorialGUIController = new TutorialGUIController(model,
+                "tutorial_gui", tutorialView);
+        SalsaController tutorialMusicController = new TutorialMusicController(model, "tutorial_music");
+
+        model.addTutorialGUIListener((GameProgressionListener) tutorialGUIController);
+        model.addTutorialMusicListener((GameProgressionListener) tutorialMusicController);
+
+        model.addTutorialClipInformationListener((ClipInformationListener) tutorialController);
+
+        model.addTutorialGameGUIListener((GameGUIListener) tutorialGUIController);
+
+        model.addTeachTutorialGUIListener((TutorialGUIListener) tutorialGUIController);
     }
 
 }
