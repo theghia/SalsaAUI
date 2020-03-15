@@ -59,7 +59,7 @@ public class SalsaModel {
     private ClipInformationListener clipInfoListener;
     private ClipInformationListener tutClipInfoListener;
 
-    // This listener will only be used with the GameProgressionGUIController Class
+    // This listener will only be used with the SimulationGUIController Class
     private GameGUIListener simGUIListener;
     private GameGUIListener tutGUIListener;
 
@@ -118,7 +118,7 @@ public class SalsaModel {
      * @param tutProgressMusicListener A class that has implemented the GameProgressionListener interface
      */
     public void addTutorialGUIListener(GameProgressionListener tutProgressMusicListener) {
-        this.tutProgressMusicListener = tutProgressMusicListener;
+        this.tutProgressGUIListener = tutProgressMusicListener;
     }
 
     /**
@@ -129,7 +129,7 @@ public class SalsaModel {
      * @param tutProgressGUIListener
      */
     public void addTutorialMusicListener(GameProgressionListener tutProgressGUIListener) {
-        this.tutProgressGUIListener = tutProgressGUIListener;
+        this.tutProgressMusicListener = tutProgressGUIListener;
     }
 
     /**
@@ -242,8 +242,9 @@ public class SalsaModel {
     public void fireSimulationFinishedEvent() {
         GameEvent e = new GameEvent(this);
 
-        // The listener will execute whatever logic that has been implemented by the SimGUIController
+        // The two listeners will be notified. This is to save rewriting more classes
         this.simGUIListener.onGameFinishedEvent(e);
+        this.tutGUIListener.onGameFinishedEvent(e);
     }
 
     /**
@@ -257,15 +258,11 @@ public class SalsaModel {
     }
 
     /**
-     * Method starts the onCountdownStartedEvent(...) method for the GameGUIListener of this model. This will be
+     * Method starts the onCountdownStartedEvent() method for the GameGUIListener of this model. This will be
      * called once the start button has been clicked to begin the countdown to the simulation run.
-     *
-     * @param clip123 The length of the countdown audio clip
      */
-    public void fireCountdownStartedEvent(long clip123) {
-        ClipInformationEvent e = new ClipInformationEvent(this, clip123);
-
-        this.simGUIListener.onCountdownStartedEvent(e);
+    public void fireCountdownStartedEvent() {
+        this.simGUIListener.onCountdownStartedEvent();
     }
 
     /**
@@ -279,13 +276,10 @@ public class SalsaModel {
     /**
      *  Method starts the countdown GUI that displays the number according to the audio clip counting down. This is
      *  only for the Tutorial view
-     *
-     * @param clip123Length Long object representing the length of the countdown clip
      */
-    public void fireTutorialCountdownStartedEvent(long clip123Length) {
-        ClipInformationEvent e = new ClipInformationEvent(this, clip123Length);
+    public void fireTutorialCountdownStartedEvent() {
 
-        this.tutGUIListener.onCountdownStartedEvent(e);
+        this.tutGUIListener.onCountdownStartedEvent();
     }
 
     /**
@@ -338,7 +332,7 @@ public class SalsaModel {
         // Displaying the starting screen of the game view
         this.tutProgressGUIListener.onGameStartedEvent(e);
 
-
+        this.tutorialGUIListener.onTutorialStarted();
         // and call onTutorialStartedEvent() that will be from the new interface implemented by the TutorialGUIController
         // onTutorialFinishedEvent() should call the onGameStartedEvent() for the music controller which will throw
         // the countdown started events....fireTutorialGameStartEvent() --> will be the method to throw the code above

@@ -35,11 +35,10 @@ public interface GameGUIListener extends EventListener {
     void onGameFinishedEvent(GameEvent e);
 
     /**
-     * This method deals with the event of when the countdown audio clip has started to play.
-     *
-     * @param e A ClipInformationEvent object that will be used to determine when the countdown audio clip will finish
+     * This method deals with the event of when the countdown audio clip has started to play. This method will display
+     * the numbers on the screen as the audio countdowns from 5 to 0
      */
-    void onCountdownStartedEvent(ClipInformationEvent e);
+    void onCountdownStartedEvent();
 
     /**
      * This method deals with the event of when the countdown audio clip has finished playing

@@ -1,15 +1,14 @@
 package timers;
 
 import components.State;
-import controllers.SimulationController;
+import controllers.GameController;
 
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-
 /**
- * ClickOnce Class to be used by the SimulationController so that the events for a new state and new beat can be fired
+ * GameProgress Class to be used by the GameController so that the events for a new state and new beat can be fired
  * at the correct times for the simulation to continue. This is also takes care of noting when the simulation has ended
  * and firing the appropriate event for it. Lastly, it also deals with limiting user input to 1 input per 8-beat bar
  * of music during the simulation
@@ -17,12 +16,12 @@ import java.util.TimerTask;
  * @author Gareth Iguasnia
  * @date 27/02/2020
  */
-public class ClickOnce {
+public class GameProgress {
     // Timer object to carry out a task repeatedly
     private Timer timer;
 
     // In order for the RemindTask Class to have access to this data
-    private SimulationController simCon;
+    private GameController gameController;
     private long clipSalsa;
 
     // To keep track of the 8-beat bar number that we are currently on
@@ -34,44 +33,45 @@ public class ClickOnce {
     // The next 4 beats that the system will request the user to identify
     private ArrayList<Integer> nextBeats;
 
+    // The first beat that the user will be tested on
     int currentBeat;
 
     /**
      * Constructor: This will be used throughout all of the simulation bar at the start of the simulation
      *
-     * @param simCon A SimulationController object that will be used by this Class to access the model
+     * @param gameController A GameController object that will be used by this Class to access the model
      * @param clipSalsa The length of the Salsa audio clip in milliseconds
      */
-    public ClickOnce(SimulationController simCon, long clipSalsa) {
+    public GameProgress(GameController gameController, long clipSalsa) {
         this.timer = new Timer();
-        this.simCon = simCon;
+        this.gameController = gameController;
         this.clipSalsa = clipSalsa;
         this.randomGenerator = new Random();
         this.nextBeats = createNextBeats();
 
         // To correctly index the beats timeline
         this.barNumber = 1;
-        this.simCon.getSalsaModel().setBarNumber(barNumber);
+        this.gameController.getSalsaModel().setBarNumber(barNumber);
 
         // This is when the 1 beat of the second bar will be
         long quarter = clipSalsa/4;
 
         // Adding a beat timeline so that the SimulationController can have the correct times that each beat occurs at
         //System.out.println("The beat timeline is being created: " + System.currentTimeMillis());
-        simCon.getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
+        gameController.getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
 
         // Slight buffer to allow the button to capture the one beat of each 8-beat bar - THIS MIGHT NEED ADJUSTING
         long buffer = quarter/1000;
 
         // Record what the first beat in the group of 4 8-beat bars that the user will be tested on
-        this.currentBeat = simCon.getSalsaModel().getNextBeat();
+        this.currentBeat = gameController.getSalsaModel().getNextBeat();
 
         timer.schedule(new RemindTask(),
                 0,
                 quarter);// + buffer);
 
         // This timestamp will be the new 0 for the next 4 8-beat bars
-        simCon.getSalsaModel().setTimeAccumulation(System.currentTimeMillis());
+        gameController.getSalsaModel().setTimeAccumulation(System.currentTimeMillis());
 
         // The 4 time windows in which the user can click once are set up for all states except the 1st
         startWindows();
@@ -98,52 +98,53 @@ public class ClickOnce {
                 numBars--;
 
                 // Setting the next beat in the model
-                simCon.getSalsaModel().setNextBeat(nextBeats.get(barNumber - 1));
-                //System.out.println("The index of nextBeats in ClickOnce: " + (barNumber-1));
+                gameController.getSalsaModel().setNextBeat(nextBeats.get(barNumber - 1));
+                //System.out.println("The index of nextBeats in GameProgress: " + (barNumber-1));
                 //System.out.println("Setting the next beat: " + nextBeats.get(barNumber - 1));
 
                 // Next bar
-                simCon.getSalsaModel().setBarNumber(barNumber);
+                gameController.getSalsaModel().setBarNumber(barNumber);
                 barNumber++;
 
                 // An event is thrown here for onNewBeatEvent
-                simCon.getSalsaModel().fireNewBeatEvent();
+                gameController.getSalsaModel().fireNewBeatEvent();
             }
             // We need to signal the system internally that we have reached the final 8-beat bar of the State
             else {
                 // If the simulation has not finished yet
-                if (simCon.getSalsaModel().getNumTransitionedStates() > 0) {
+                if (gameController.getSalsaModel().getNumTransitionedStates() > 0) {
                     // We travelled to one State and must decrease the counter in the model
-                    simCon.getSalsaModel().decreaseNumTransitionedStates();
-
-                    // Logic to determine which new State to move onto next
-                    State currentState = simCon.getSalsaModel().getCurrentState();
-                    State newState = simCon.getGameStatusFunction().getNextState(currentState);
+                    gameController.getSalsaModel().decreaseNumTransitionedStates();
 
                     // If there are error values recorded in the State, then calculate the total average error value
-                    if (!currentState.getErrorValues().isEmpty()) {
+                    if (!gameController.getSalsaModel().getCurrentState().getErrorValues().isEmpty()) {
                         // The State has been explored since error values have been recorded
-                        simCon.getSalsaModel().getCurrentState().setHasBeenExplored(true);
+                        gameController.getSalsaModel().getCurrentState().setHasBeenExplored(true);
 
                         // Calculate the total average error value of the current state
-                        calculateAverageErrorValue(simCon.getSalsaModel().getCurrentState());
+                        calculateAverageErrorValue(gameController.getSalsaModel().getCurrentState());
                     }
 
-                    System.out.println("The total average error value is: " + simCon.getSalsaModel().getCurrentState().getCurrentAverageErrorValue());
+                    System.out.println("The total average error value is: " +
+                            gameController.getSalsaModel().getCurrentState().getCurrentAverageErrorValue());
+
+                    // Logic to determine which new State to move onto next
+                    State currentState = gameController.getSalsaModel().getCurrentState();
+                    State newState = gameController.getGameStatusFunction().getNextState(currentState);
 
                     // Changing State depending on the input or lack of
-                    simCon.getSalsaModel().setCurrentState(newState);
+                    gameController.getSalsaModel().setCurrentState(newState);
 
                     // The model fires an event to get the simulation started for the next State
-                    simCon.getSalsaModel().fireNewStateEvent();
+                    gameController.getSalsaModel().fireNewStateEvent();
                 }
                 // If the simulation has finished
                 else {
                     // Clean up the model to set it back to its default state
-                    simCon.getSalsaModel().resetModel();
+                    gameController.getSalsaModel().resetModel();
 
                     // We must end the simulation here and notify the other controllers working during the simulation
-                    simCon.getSalsaModel().fireSimulationFinishedEvent();
+                    gameController.getSalsaModel().fireSimulationFinishedEvent();
                 }
                 // Terminate the timer thread
                 timer.cancel();
@@ -206,10 +207,10 @@ public class ClickOnce {
     /* Helper method to initiate the time windows */
     private void startWindows() {
         System.out.println("The time windows are being setup: " + System.currentTimeMillis());
-        new ClickTimeWindow(simCon.getSalsaModel(), currentBeat, 1 );
-        new ClickTimeWindow(simCon.getSalsaModel(), nextBeats.get(0), 2);
-        new ClickTimeWindow(simCon.getSalsaModel(), nextBeats.get(1), 3);
-        new ClickTimeWindow(simCon.getSalsaModel(), nextBeats.get(2), 4);
+        new TimeWindow(gameController.getSalsaModel(), currentBeat, 1 );
+        new TimeWindow(gameController.getSalsaModel(), nextBeats.get(0), 2);
+        new TimeWindow(gameController.getSalsaModel(), nextBeats.get(1), 3);
+        new TimeWindow(gameController.getSalsaModel(), nextBeats.get(2), 4);
     }
 
     /* Helper method to calculate the average value in an ArrayList<Float> */

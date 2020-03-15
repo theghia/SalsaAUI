@@ -1,8 +1,8 @@
 package controllers;
 
+import components.Countdown;
 import components.Instrument;
 import components.MoveGaugeNeedle;
-import events.ClipInformationEvent;
 import events.GameEvent;
 import events.GameGUIListener;
 import events.GameProgressionListener;
@@ -21,6 +21,7 @@ import java.awt.*;
  * @author Gareth Iguasnia
  * @date 12/03/2020
  */
+//
 public abstract class GUIController extends SalsaController implements GameProgressionListener, GameGUIListener {
 
     private GameView gameView;
@@ -50,6 +51,8 @@ public abstract class GUIController extends SalsaController implements GameProgr
      */
     @Override
     public void onNewBeatEvent(GameEvent e) {
+        //System.out.println("Current beat: " + e.getCurrentBeat());
+        //System.out.println("Next beat: " + e.getNextBeat());
         // The JPanels that have the digital numbers as a png
         JPanel currentBeat = gameView.getCurrentBeat();
         JPanel nextBeat = gameView.getNextBeat();
@@ -87,6 +90,7 @@ public abstract class GUIController extends SalsaController implements GameProgr
         double rounded = Math.round(toRound);
         double rounded2dp = rounded/100;
 
+        System.out.println("Rounded is: " + rounded2dp);
         // Move the needle according to the rounded error value
         moveGaugeNeedle.moveNeedle(rounded2dp);
     }
@@ -116,46 +120,38 @@ public abstract class GUIController extends SalsaController implements GameProgr
     }
 
     @Override
-    public void onCountdownStartedEvent(ClipInformationEvent e) {
-        // This method will be called by the model in model.fireCountDownStartedEvent()
-        // from e, we can get the clip length of the countdown audio and put up the relevant
-        // GUI at the spaced intervals (In the ClickOnce Class)
-
-        // Here we need to set the flag countdownCurrentlyPlaying to false which can be done in this timer thread
-        // and this will be done once the clip has finished. Just like what you did with the SimulationController
-        // NOOOO, this needs to be called after the clip has finished!
-        //getSalsaModel().setCountdownCurrentlyPlaying(false);
-
-        // Here is where we start the two timer threads. One will do the GUI countdown crap and the other
-        // will do the onCountDownFinishedEvent (by firing the relevant event of course). We can start the
-        // timer threads in the CountDown Class! ONLY NEED ONE TIMER THREAD4
-
-        // You do need. The fire method is in the CLickOnce constructor number 1. A
-
-        // IF POSSIBLE: 3-2-1 GUI that disappears just before the salsa music
+    public void onCountdownStartedEvent() {
+        // The numbers are set visible
+        getGameView().getNumberCountdown().setVisible(true);
+        Countdown countdownNumbers = new Countdown(gameView);
+        countdownNumbers.countdownGUIStart();
     }
 
     /**
      * Method is called once per Simulation run for this MVC application through the CLickOnce class where:
-     * 1) We set the flag countdownCurrentlyPlaying to false as it has finished
-     * 2) We make the "Beat Clicker" look clikable
-     * 3) Make the relevant instruments appear on screen
-     * 4) Make the relevant tempo label appear on screen.
+     * 1) Make the numbers used for the countdown disappear
+     * 2) We set the flag countdownCurrentlyPlaying to false as it has finished
+     * 3) We make the "Beat Clicker" look clikable
+     * 4) Make the relevant instruments appear on screen
+     * 5) Make the relevant tempo label appear on screen.
      */
     @Override
     public void onCountdownFinishedEvent() {
-        // 1) Set the flag countdownCurrentlyPlaying to false
+        // 1) Make the countdown number disappear
+        gameView.getNumberCountdown().setVisible(false);
+
+        // 2) Set the flag countdownCurrentlyPlaying to false
         getSalsaModel().setCountdownCurrentlyPlaying(false);
 
-        // 2) Make the button clicker look "clickable"
+        // 3) Make the button clicker look "clickable"
         gameView.getBeatClicker().setEnabled(true);
 
-        // 3) Make the GUI instruments appear according to the starting State and set the correct JLabel to show
+        // 4) Make the GUI instruments appear according to the starting State and set the correct JLabel to show
         // for the Tempo according to the starting State
         GameEvent e = new GameEvent(getSalsaModel());
         onNewStateEvent(e);
 
-        // 4) Make the tempo JLabel appear
+        // 5) Make the tempo JLabel appear
         gameView.getTempos().setVisible(true);
     }
 
@@ -174,6 +170,9 @@ public abstract class GUIController extends SalsaController implements GameProgr
 
         // The home button will disappear
         gameView.getNavigationButtons().get("main").setVisible(false);
+
+        //Remove
+        moveGaugeNeedle.moveNeedle(0.75);
     }
 
     /**

@@ -1,8 +1,8 @@
 package main;
 
 import controllers.*;
-import controllers.GameProgressionGUIController;
-import controllers.GameProgressionMusicController;
+import controllers.SimulationGUIController;
+import controllers.SimulationMusicController;
 import events.ClipInformationListener;
 import events.GameGUIListener;
 import events.GameProgressionListener;
@@ -27,9 +27,9 @@ public class MainApp {
         SalsaController simulationController = new SimulationController(model,
                 "simulation", simulationView);
 
-        SalsaController simulationGUIController = new GameProgressionGUIController(model,
+        SalsaController simulationGUIController = new SimulationGUIController(model,
                 "simulation_gui", simulationView);
-        SalsaController simulationMusicController = new GameProgressionMusicController(model,
+        SalsaController simulationMusicController = new SimulationMusicController(model,
                 "simulation_music");
 
         simulationController.getSalsaModel().setNameOfUser("Gareth");

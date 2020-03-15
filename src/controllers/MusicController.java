@@ -38,7 +38,7 @@ public abstract class MusicController extends SalsaController implements GamePro
     private Random randomGenerator;
 
     /**
-     * Constructor for the SalsaController. This will only be called by sub classes using the super
+     * Constructor for the MusicController. This will only be called by sub classes using the super
      * keyword as this class should never be instantiated.
      *
      * @param salsaModel     A SalsaModel object that contains the data of the MVC
@@ -52,10 +52,8 @@ public abstract class MusicController extends SalsaController implements GamePro
     /**
      * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
      * the method once the countdown audio file has started playing.
-     *
-     * @param clip123Length The length of the countdown audio file
      */
-    public abstract void countdownStarted(long clip123Length);
+    public abstract void countdownStarted();
 
     /**
      * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
@@ -72,7 +70,7 @@ public abstract class MusicController extends SalsaController implements GamePro
     public abstract void clipReady(long clipSalsaLength);
 
     /**
-     * Method used for the GameProgressionMusicController to take action when the fireSimulationStartedEvent method is
+     * Method used for the SimulationMusicController to take action when the fireSimulationStartedEvent method is
      * called in the model. The countdown clip and the first salsa audio clip are queued to be played in the
      * simulation. This method also fires off an event for the SimulationController to deal with
      *
@@ -91,21 +89,20 @@ public abstract class MusicController extends SalsaController implements GamePro
             public void update(LineEvent event) {
                 // The moment the audio file starts playing
                 if (event.getType() == LineEvent.Type.START)
-                    countdownStarted(countdown.getMillisecondLength());
+                    countdownStarted();
 
-                    // The moment the audio file has finished playing
+                // The moment the audio file has finished playing
                 else if (event.getType() == LineEvent.Type.STOP) {
                     getSalsaModel().setCountdownCurrentlyPlaying(false);
                     countdownFinished();
                 }
             }
         });
-
         initSoundClip(countdown);
     }
 
     /**
-     * Method used for the GameProgressionMusicController to take action when the fireNewStateEvent method is called by
+     * Method used for the SimulationMusicController to take action when the fireNewStateEvent method is called by
      * the model in the SimulationController (in the thread). This method queues the next salsa audio clip, created from
      * the new State the the simulation has moved on to, to be played straight after the previous salsa audio clip.
      *
@@ -122,7 +119,8 @@ public abstract class MusicController extends SalsaController implements GamePro
         initSoundClip(salsaAudio);
 
         // Fire off the event to let the relevant GameController know about the Clip information
-        clipReady(salsaAudio.getMillisecondLength());
+        clipReady(salsaAudio.getMillisecondLength()); // in the action listener -> on START
+        // fireNewState(...) in the END of the clip -> Take out this code in the GameProgress else part
     }
 
     /* Helper method that allows the Clips to be played one after the other during the simulation */

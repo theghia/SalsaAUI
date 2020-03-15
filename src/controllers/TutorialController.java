@@ -15,6 +15,10 @@ import java.awt.event.ActionListener;
  * TutorialController class extends the GameController class and overrides some of the methods in the GameController
  * class so that the TutorialView is manipulated with the "fire" methods
  *
+ * This Class deals with the user's input and controls the flow of the game by making sure that the appropriate
+ * events are fired at specific times so that the TutorialGUIController and the TutorialMusicController can also
+ * execute their logic.
+ *
  * @author Gareth Iguasnia
  * @date 12/03/2020
  */
@@ -107,6 +111,6 @@ public class TutorialController extends GameController {
 
     @Override
     public void onClipInfoReadyEvent(ClipInformationEvent e) {
-        // We want to modify the ClickOnce Class so that we can progress onto states that are only slow and medium
+        // We want to modify the GameProgress Class so that we can progress onto states that are only slow and medium
     }
 }

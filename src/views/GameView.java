@@ -120,7 +120,7 @@ public abstract class GameView extends SalsaView {
     public JButton getStartButton() { return startButton; }
 
     /**
-     * Method returns the JPanel currentBeat. To be used by the GameProgressionGUIController so that we can swap the JLabels
+     * Method returns the JPanel currentBeat. To be used by the SimulationGUIController so that we can swap the JLabels
      * according to the model changes for a new current and next beat.
      *
      * @return A JPanel to hold the digital number png files for the currentBeat
@@ -130,7 +130,7 @@ public abstract class GameView extends SalsaView {
     }
 
     /**
-     * Method returns the JPanel nextBeat. To be used by the GameProgressionGUIController so that we can swap the JLabels
+     * Method returns the JPanel nextBeat. To be used by the SimulationGUIController so that we can swap the JLabels
      * according to the model changes for a new current and next beat.
      *
      * @return A JPanel to hold the digital number png files for the nextBeat.
@@ -321,6 +321,9 @@ public abstract class GameView extends SalsaView {
             JLabel countdownNum = new JLabel(scaledNumber);
             this.numberCountdown.add(countdownNum, Integer.toString(i));
         }
+        // Making the numbered png files invisible
+        this.numberCountdown.setVisible(false);
+
         // Adding the JPanel containing all of the numbered png files to the GameView
         this.add(numberCountdown);
     }

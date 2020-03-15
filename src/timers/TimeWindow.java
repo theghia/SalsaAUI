@@ -6,14 +6,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * ClickTimeWindow Class to be used by the ClickOnce Class so that there can be a time window around the current beat
+ * TimeWindow Class to be used by the GameProgress Class so that there can be a time window around the current beat
  * in which the user can input their guess of the correct beat. Once an input has been recorded, no more inputs will
  * be regarded until the next time window.
  *
  * @author Gareth Iguasnia
  * @date 29/02/2020
  */
-public class ClickTimeWindow {
+public class TimeWindow {
     // Timer object to carry out a task repeatedly
     private Timer timer;
 
@@ -31,7 +31,7 @@ public class ClickTimeWindow {
      * @param beatSelected Integer representing the beat that the user needs to find in the music
      * @param barNumber Integer that represents the bar number in the 4 8-beat bar batch
      */
-    public ClickTimeWindow(SalsaModel model, int beatSelected, int barNumber) {
+    public TimeWindow(SalsaModel model, int beatSelected, int barNumber) {
         this.model = model;
         this.timer = new Timer();
 

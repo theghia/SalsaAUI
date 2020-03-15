@@ -24,6 +24,7 @@ public class TutorialGUIController extends GUIController implements TutorialGUIL
     @Override
     public void onTutorialFinished() {
         // Hides all of the JLabels for the tutorial and fires off the onGameStart for the MusicController
+        // fireTutorialGameStartEvent() so that the music can start playing and the whole shebang
     }
 
     // We need to add methods here to implement an interface that takes care of bringing up the correct lights
