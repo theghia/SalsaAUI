@@ -20,4 +20,18 @@ public interface TutorialGUIListener extends EventListener {
      * This method deals with the event of the Tutorial finishing
      */
     void onTutorialFinished();
+
+    void onKeepLights();
+
+    void onKeepInstrumentsAndTempo();
+
+    void onKeepCurrentBeat();
+
+    void onKeepNextBeat();
+
+    void onKeepClicker();
+
+    void onKeepGauge();
+
+    void onFinalTutorial();
 }

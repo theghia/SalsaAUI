@@ -88,8 +88,11 @@ public abstract class MusicController extends SalsaController implements GamePro
             @Override
             public void update(LineEvent event) {
                 // The moment the audio file starts playing
-                if (event.getType() == LineEvent.Type.START)
+                if (event.getType() == LineEvent.Type.START) {
+                    System.out.println("Countdown clip started");
                     countdownStarted();
+                }
+                    //countdownStarted();
 
                 // The moment the audio file has finished playing
                 else if (event.getType() == LineEvent.Type.STOP) {
@@ -115,11 +118,21 @@ public abstract class MusicController extends SalsaController implements GamePro
 
         PlayFile salsaAudio = getSalsaAudio(currentState);
 
+        // Adding a LineListener so that the user input matches the sound
+        salsaAudio.getClip().addLineListener(new LineListener() {
+            @Override
+            public void update(LineEvent event) {
+                // Fire off the event to let the relevant GameController know about the Clip information
+                if (event.getType() == LineEvent.Type.START)
+                    clipReady(salsaAudio.getMillisecondLength());
+            }
+        });
+
         // Play the salsa audio clip and join it to the queue
         initSoundClip(salsaAudio);
 
         // Fire off the event to let the relevant GameController know about the Clip information
-        clipReady(salsaAudio.getMillisecondLength()); // in the action listener -> on START
+        //clipReady(salsaAudio.getMillisecondLength()); // in the action listener -> on START
         // fireNewState(...) in the END of the clip -> Take out this code in the GameProgress else part
     }
 

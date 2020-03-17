@@ -8,10 +8,14 @@ import events.GameGUIListener;
 import events.GameProgressionListener;
 import main.SalsaController;
 import main.SalsaModel;
+import timers.Lights;
 import views.GameView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * GUIController abstract class extends the SalsaController and implements the GameProgressionListener and
@@ -26,6 +30,7 @@ public abstract class GUIController extends SalsaController implements GameProgr
 
     private GameView gameView;
     private MoveGaugeNeedle moveGaugeNeedle;
+    private ScheduledExecutorService scheduledExecutorService;
 
     /**
      * Constructor for the GUIController that will only be called by the subclass through the super keyword.
@@ -40,6 +45,9 @@ public abstract class GUIController extends SalsaController implements GameProgr
         // Setting the gauge needle to the starting position
         this.moveGaugeNeedle = new MoveGaugeNeedle(gameView.getRotateImage());
         this.moveGaugeNeedle.setStartingPosition();
+
+        // Getting the Executor ready for the lights to be turned on
+        scheduledExecutorService = Executors.newScheduledThreadPool(1);
     }
 
     /**
@@ -106,6 +114,10 @@ public abstract class GUIController extends SalsaController implements GameProgr
     public void onGameFinishedEvent(GameEvent e) {
         // Displaying the Diagonal Dashed Digital numbers
         onNewBeatEvent(e);
+
+        // Restarting the Executor
+        this.scheduledExecutorService.shutdownNow();
+        this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
         // Making the instruments, tempo and "Beat-Clicker" invisible
         makeInstrumentGUIInvisible();
@@ -194,7 +206,15 @@ public abstract class GUIController extends SalsaController implements GameProgr
         // Get the name of the tempo
         JPanel tempos = gameView.getTempos();
         CardLayout cardLayout = (CardLayout) gameView.getTempos().getLayout();
-        cardLayout.show(gameView.getTempos(), e.getCurrentState().getBpm().getName());
+        cardLayout.show(tempos, e.getCurrentState().getBpm().getName());
+    }
+
+    @Override
+    public void onLightsTurnOn(){
+        this.scheduledExecutorService.shutdownNow();
+        Lights lights = new Lights(gameView);
+        long one_beat = getSalsaModel().getBeatTimeline().get(1);
+        this.scheduledExecutorService.scheduleAtFixedRate(lights, 0, one_beat, TimeUnit.MILLISECONDS);
     }
 
     /**

@@ -81,9 +81,17 @@ public class TimeWindow {
                 System.out.println("hasClickedOnce2 b4 change: " + model.hasClickedOnce2());
                 // We will be using two flags as the time windows can overlap in some cases
                 if ( model.getWindowTracker() == 1 ) {
+                    // To open Time Window 1
                     model.setHasClickedOnce1(false);
                     model.getWindowCache()[0] = model.getWindowCache()[1] + 1;
+
+                    // To get the beat that pertains to the current open window/s
+                    model.getBeatCache()[0] = model.getTestingBeats().get(model.getBeatCacheTracker());
+                    model.increaseBeatCacheTracker();
+
+                    // The next window to be opened is Time Window 2
                     model.increaseWindowTracker();
+
                     System.out.println("Window Tracker after change: "  + model.getWindowTracker());
                     System.out.println("Button Clicker after change: " + model.getButtonClickerTracker());
                     System.out.println("hasClickedOnce1 after: " + model.hasClickedOnce1());
@@ -92,9 +100,17 @@ public class TimeWindow {
 
                 }
                 else if ( model.getWindowTracker() == 2 ) {
+                    // To open Time Window 2
                     model.setHasClickedOnce2(false);
                     model.getWindowCache()[1] = model.getWindowCache()[0] + 1;
+
+                    // To get the beat that pertains to the current open window/s
+                    model.getBeatCache()[1] = model.getTestingBeats().get(model.getBeatCacheTracker());
+                    model.increaseBeatCacheTracker();
+
+                    // The next window to be opened is Time Window 1
                     model.decreaseWindowTracker();
+
                     System.out.println("Window Tracker after change: "  + model.getWindowTracker());
                     System.out.println("Button Clicker after change: " + model.getButtonClickerTracker());
                     System.out.println("hasClickedOnce1 after: " + model.hasClickedOnce1());
@@ -111,34 +127,20 @@ public class TimeWindow {
                 System.out.println("Button Clicker b4 change: "  + model.getButtonClickerTracker());
                 System.out.println("hasClickedOnce1 b4 change: " + model.hasClickedOnce1());
                 System.out.println("hasClickedOnce2 b4 change: " + model.hasClickedOnce2());
-                // The if and else if logic needs changing
-                /*if ( model.getButtonClickerTracker() == 1 ) {
-                    model.setHasClickedOnce1(true);
-                    model.increaseButtonClickerTracker();
-                    System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
-                    System.out.println("Window Tracker after change: "  + model.getWindowTracker());
-                    System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
-                    System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
-                    System.out.println();
-                }
-                else if ( model.getButtonClickerTracker() == 2 ) {
-                    model.setHasClickedOnce2(true);
-                    model.decreaseButtonClickerTracker();
-                    System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
-                    System.out.println("Window Tracker after change: "  + model.getWindowTracker());
-                    System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
-                    System.out.println("hasClickedOnce2 after change: " + model.hasClickedOnce2());
-                    System.out.println();
-                }*/
-
-                // THE CHANGE
 
                 // Checking if there is a zero in the int array
                 if (doesArrayContainZero(model.getWindowCache())) {
                     if (model.getWindowCache()[0] > 0) {
+                        // Closing Time Window 1
                         model.setHasClickedOnce1(true);
+
+                        // Resetting the cache
                         model.getWindowCache()[0] = 0;
+                        model.getBeatCache()[0] = 0;
+
+                        // Allowing the system to take an input from Time Window 2
                         model.increaseButtonClickerTracker();
+
                         System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
                         System.out.println("Window Tracker after change: "  + model.getWindowTracker());
                         System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
@@ -146,9 +148,16 @@ public class TimeWindow {
                         System.out.println();
                     }
                     else if (model.getWindowCache()[1] > 0) {
+                        // Closing Time Window 2
                         model.setHasClickedOnce2(true);
+
+                        // Resetting the cache
                         model.getWindowCache()[1] = 0;
+                        model.getBeatCache()[1] = 0;
+
+                        // Allowing the system to take an input from Time Window 1
                         model.decreaseButtonClickerTracker();
+
                         System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
                         System.out.println("Window Tracker after change: "  + model.getWindowTracker());
                         System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
@@ -161,9 +170,16 @@ public class TimeWindow {
                 else {
                     // The first window was opened before the second window
                     if (model.getWindowCache()[0] < model.getWindowCache()[1]) {
+                        // Closing Time Window 1
                         model.setHasClickedOnce1(true);
+
+                        // Resetting the cache
                         model.getWindowCache()[0] = 0;
+                        model.getBeatCache()[0] = 0;
+
+                        // Allowing the system to take an input from Time Window 2
                         model.increaseButtonClickerTracker();
+
                         System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
                         System.out.println("Window Tracker after change: "  + model.getWindowTracker());
                         System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());
@@ -171,9 +187,16 @@ public class TimeWindow {
                         System.out.println();
                     }
                     else if (model.getWindowCache()[0] > model.getWindowCache()[1]) {
+                        // Closing Time Window 2
                         model.setHasClickedOnce2(true);
+
+                        // Resetting the cache
                         model.getWindowCache()[1] = 0;
+                        model.getBeatCache()[1] = 0;
+
+                        // Allowing the system to take an input from Time Window 1
                         model.decreaseButtonClickerTracker();
+
                         System.out.println("Button Clicker after change: "  + model.getButtonClickerTracker());
                         System.out.println("Window Tracker after change: "  + model.getWindowTracker());
                         System.out.println("hasClickedOnce1 after change: " + model.hasClickedOnce1());

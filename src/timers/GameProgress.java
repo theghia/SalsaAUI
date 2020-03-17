@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 /**
- * GameProgress Class to be used by the GameController so that the events for a new state and new beat can be fired
+ * GameProgress Class to be used by a GameController so that the events for a new state and new beat can be fired
  * at the correct times for the simulation to continue. This is also takes care of noting when the simulation has ended
  * and firing the appropriate event for it. Lastly, it also deals with limiting user input to 1 input per 8-beat bar
  * of music during the simulation
@@ -49,6 +49,12 @@ public class GameProgress {
         this.randomGenerator = new Random();
         this.nextBeats = createNextBeats();
 
+        // Record what the first beat in the group of 4 8-beat bars that the user will be tested on
+        this.currentBeat = gameController.getSalsaModel().getNextBeat();
+
+        // The beats that the system will test the user in this State
+        this.gameController.getSalsaModel().setTestingBeats(createTestingBeats());
+
         // To correctly index the beats timeline
         this.barNumber = 1;
         this.gameController.getSalsaModel().setBarNumber(barNumber);
@@ -56,22 +62,15 @@ public class GameProgress {
         // This is when the 1 beat of the second bar will be
         long quarter = clipSalsa/4;
 
-        // Adding a beat timeline so that the SimulationController can have the correct times that each beat occurs at
-        //System.out.println("The beat timeline is being created: " + System.currentTimeMillis());
-        gameController.getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
-
         // Slight buffer to allow the button to capture the one beat of each 8-beat bar - THIS MIGHT NEED ADJUSTING
         long buffer = quarter/1000;
 
-        // Record what the first beat in the group of 4 8-beat bars that the user will be tested on
-        this.currentBeat = gameController.getSalsaModel().getNextBeat();
+        // This timestamp will be the new 0 for the next 4 8-beat bars
+        gameController.getSalsaModel().setTimeAccumulation(System.currentTimeMillis());
 
         timer.schedule(new RemindTask(),
                 0,
                 quarter);// + buffer);
-
-        // This timestamp will be the new 0 for the next 4 8-beat bars
-        gameController.getSalsaModel().setTimeAccumulation(System.currentTimeMillis());
 
         // The 4 time windows in which the user can click once are set up for all states except the 1st
         startWindows();
@@ -112,7 +111,7 @@ public class GameProgress {
             // We need to signal the system internally that we have reached the final 8-beat bar of the State
             else {
                 // If the simulation has not finished yet
-                if (gameController.getSalsaModel().getNumTransitionedStates() > 0) {
+                if (gameController.getSalsaModel().getNumTransitionedStates() > 1) {
                     // We travelled to one State and must decrease the counter in the model
                     gameController.getSalsaModel().decreaseNumTransitionedStates();
 
@@ -140,40 +139,31 @@ public class GameProgress {
                 }
                 // If the simulation has finished
                 else {
+                    // If there are error values recorded in the State, then calculate the total average error value
+                    if (!gameController.getSalsaModel().getCurrentState().getErrorValues().isEmpty()) {
+                        // The State has been explored since error values have been recorded
+                        gameController.getSalsaModel().getCurrentState().setHasBeenExplored(true);
+
+                        // Calculate the total average error value of the current state
+                        calculateAverageErrorValue(gameController.getSalsaModel().getCurrentState());
+                    }
+
+                    System.out.println("The total average error value is: " +
+                            gameController.getSalsaModel().getCurrentState().getCurrentAverageErrorValue());
+
                     // Clean up the model to set it back to its default state
                     gameController.getSalsaModel().resetModel();
 
                     // We must end the simulation here and notify the other controllers working during the simulation
                     gameController.getSalsaModel().fireSimulationFinishedEvent();
                 }
+                // Reset the beat cache tracker
+                gameController.getSalsaModel().resetBeatCacheTracker();
+
                 // Terminate the timer thread
                 timer.cancel();
             }
         }
-    }
-
-    /* Helper method to create a beat timeline for each beat in a group of 4 8-beat bars */
-    private ArrayList<Long> createBeatTimeline(long quarter) {
-        // Number of beats in a group of 4 8-beat bars
-        int numBeatsPerState = 32;
-
-        ArrayList<Long> beatTimeline = new ArrayList<>(numBeatsPerState);
-
-        // Beat 1 of a new group of 4 8-beat bars is 0
-        long beatTime = 0;
-
-        // The time each beat is spread out with
-        long anEighth = quarter/8;
-
-        // Incrementally adding anEighth to the beatTime to get the beat timeline
-        for (int i = 0; i < numBeatsPerState; i++) {
-            beatTimeline.add(beatTime);
-            beatTime += anEighth;
-        }
-        System.out.println(beatTimeline);
-        //System.out.println("The beat timeline has been created: " + System.currentTimeMillis());
-
-        return beatTimeline;
     }
 
     /* The next beats that the simulation will request the user to identify in the music */
@@ -239,5 +229,20 @@ public class GameProgress {
         // Calculating the total average error value
         double totalAverage = getAverage(currentState.getAverageErrorValues());
         currentState.setCurrentAverageErrorValue(totalAverage);
+    }
+
+    /* Helper method to get the beats that the user will be tested on */
+    private ArrayList<Integer> createTestingBeats() {
+        // The beats that the user will be tested on
+        ArrayList<Integer> testingBeats = new ArrayList<>(4);
+
+        // The first beat
+        testingBeats.add(this.currentBeat);
+
+        // The next 3 beats
+        for (int i = 0; i < 3; i++)
+            testingBeats.add(this.nextBeats.get(i));
+
+        return testingBeats;
     }
 }

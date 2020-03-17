@@ -150,6 +150,33 @@ public abstract class GameView extends SalsaView {
     }
 
     /**
+     * Method returns currentBeatLabel
+     *
+     * @return A JLabel containing the words "Current Beat"
+     */
+    public JLabel getCurrentBeatLabel() {
+        return currentBeatLabel;
+    }
+
+    /**
+     * Method returns nextBeatLabel
+     *
+     * @return A JLabel containing the words "Next Beat"
+     */
+    public JLabel getNextBeatLabel() {
+        return nextBeatLabel;
+    }
+
+    /**
+     * Method returns the needle of the gauge
+     *
+     * @return A RotateImage object that contains a needle png
+     */
+    public RotateImage getRotateNeedle() {
+        return rotateNeedle;
+    }
+
+    /**
      * Method loops through all of the JPanels that hold the light PNG files and will set them all visible
      */
     public void displayLights() {
@@ -166,6 +193,15 @@ public abstract class GameView extends SalsaView {
      */
     public JPanel getTempos() {
         return tempos;
+    }
+
+    /**
+     * Method returns the Gauge icon
+     *
+     * @return JLabel that contains the Gauge png file
+     */
+    public JLabel getGaugeGUI() {
+        return gaugeGUI;
     }
 
     /**
@@ -187,8 +223,18 @@ public abstract class GameView extends SalsaView {
         return numberCountdown;
     }
 
+    /**
+     * Method returns the ArrayList of JPanels that represents the lights to display the timing
+     *
+     * @return An ArrayList of JPanels where each JPanel will hold the light png files (on and off)
+     */
+    public ArrayList<JPanel> getLights() {
+        return lights;
+    }
+
+
     /* Helper method that sets up the JLabels to let the user know which Digital Number is the current and next beat
-        and adds them to the SimulationView */
+            and adds them to the SimulationView */
     private void setupJLabelsText() {
         // Getting the desired font and size for the beat labels
         Font f = new Font("TimesRoman",Font.BOLD,25);
@@ -454,6 +500,7 @@ public abstract class GameView extends SalsaView {
         }
     }
 
+    /* Helper method to layout the number png files that will display the numbers as the countdown file plays */
     private void layoutCountdown() {
         // The numberCountdown JPanel - Dimensions to center the JPanel
         int widthPositionStart = (int) (getDimension().getWidth() - COUNTDOWN_WIDTH)/2;

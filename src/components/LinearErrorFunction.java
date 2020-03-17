@@ -15,6 +15,8 @@ public class LinearErrorFunction implements ErrorFunction {
     // The timestamp of the left window that the system will take an input from the system
     private long left_time_window;
 
+    private int BUFFER_SLICE = 3;
+
     /**
      * Constructor for the LinearErrorFunction. This is a one time use function as we need
      * @param one_beat
@@ -33,8 +35,13 @@ public class LinearErrorFunction implements ErrorFunction {
 
         double denominator = (double) one_beat * 3;
         double numerator = (double) new_x - left_time_window;
-        System.out.println("The denominator: " + denominator + " The numerator: " + numerator);
-        double y = numerator/denominator;
+
+        // Taking into account human time reaction. The third is a value that can be adjusted.
+        double time_reaction = Math.round( (double) one_beat/BUFFER_SLICE );
+        double buffered_numerator = numerator + time_reaction;
+
+        System.out.println("The denominator: " + denominator + " The numerator: " + buffered_numerator);
+        double y = buffered_numerator/denominator;
         System.out.println("The y output is: " + y);
         return y;
     }

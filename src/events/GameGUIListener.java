@@ -10,7 +10,6 @@ import java.util.EventListener;
  * @date 13/03/2020
  */
 public interface GameGUIListener extends EventListener {
-
     /**
      * This method deals with the event of a new 8-beat bar starting.
      *
@@ -44,4 +43,11 @@ public interface GameGUIListener extends EventListener {
      * This method deals with the event of when the countdown audio clip has finished playing
      */
     void onCountdownFinishedEvent();
+
+    /**
+     * This method deals with the event when the lights need to be turned on to display the timing of a Salsa audio
+     * clip. The model should have been updated with a beat timeline of the new Salsa audio clip that is going to be
+     * played.
+     */
+    void onLightsTurnOn();
 }

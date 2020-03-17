@@ -37,12 +37,17 @@ public class SalsaModel {
     private volatile int windowTracker;
     private volatile int buttonClickerTracker;
     private int[] windowCache;
+    private int[] beatCache;
+    private int beatCacheTracker;
 
     // To keep track of the number of State objects we have transitioned
     private int numTransitionedStates;
 
     // A beat timeline so that we can use the error function to compare the user's input to the correct timing
     private ArrayList<Long> beatTimeline;
+
+    // The 4 beats that the user will be tested on in this State run
+    private ArrayList<Integer> testingBeats;
 
     // To normalise the timestamp of the user's input
     private long timeAccumulation;
@@ -89,7 +94,10 @@ public class SalsaModel {
         this.hasClickedOnce2 = true;
         this.windowTracker = 1;
         this.buttonClickerTracker = 1;
-        this.windowCache = new int[]{0, 0}; //windowCache[0] = 2;
+        this.windowCache = new int[]{0, 0};
+
+        this.beatCache = new int[]{0, 0};
+        this.beatCacheTracker = 0;
 
         // Default will be 0
         this.timeAccumulation = 0;
@@ -327,15 +335,19 @@ public class SalsaModel {
      * only associated with the TutorialView.
      */
     public void fireTutorialStartEvent() {
+        this.tutorialGUIListener.onTutorialStarted();
+    }
+
+    public void fireTutorialFinishedEvent() {
+        this.tutorialGUIListener.onTutorialFinished();
+    }
+
+    public void fireTutorialGameStartEvent() {
         GameEvent e = new GameEvent(this);
 
         // Displaying the starting screen of the game view
         this.tutProgressGUIListener.onGameStartedEvent(e);
-
-        this.tutorialGUIListener.onTutorialStarted();
-        // and call onTutorialStartedEvent() that will be from the new interface implemented by the TutorialGUIController
-        // onTutorialFinishedEvent() should call the onGameStartedEvent() for the music controller which will throw
-        // the countdown started events....fireTutorialGameStartEvent() --> will be the method to throw the code above
+        this.tutProgressMusicListener.onGameStartedEvent(e);
     }
 
     /**
@@ -346,6 +358,38 @@ public class SalsaModel {
         GameEvent e = new GameEvent(this);
 
         this.tutGUIListener.onNewBeatEvent(e);
+    }
+
+    /**
+     * Method to display the timing of the Salsa audio clip through lights. The first light represents beat 1 of the
+     * bar of music and the eighth light represents the eighth beat of bar of music.
+     */
+    public void fireLightsOnEvent() {
+        this.tutGUIListener.onLightsTurnOn();
+    }
+
+    public void fireTutorialFinalEvent() {
+        this.tutorialGUIListener.onFinalTutorial();
+    }
+
+    public void fireTutorialKeepInstrumentsAndTempo() {
+        this.tutorialGUIListener.onKeepInstrumentsAndTempo();
+    }
+
+    public void fireTutorialKeepCurrentBeat() {
+        this.tutorialGUIListener.onKeepCurrentBeat();
+    }
+
+    public void fireTutorialKeepNextBeat() {
+        this.tutorialGUIListener.onKeepNextBeat();
+    }
+
+    public void fireTutorialKeepClicker() {
+        this.tutorialGUIListener.onKeepClicker();
+    }
+
+    public void fireTutorialKeepGauge() {
+        this.tutorialGUIListener.onKeepGauge();
     }
 
     /* CHANGE MODEL STATE */
@@ -419,6 +463,21 @@ public class SalsaModel {
      */
     public synchronized void decreaseButtonClickerTracker() {
         this.buttonClickerTracker = 1;
+    }
+
+    /**
+     * Method increases the beatCacheTracker by 1
+     */
+    public synchronized void increaseBeatCacheTracker() {
+        if (this.beatCacheTracker < 4)
+            this.beatCacheTracker++;
+    }
+
+    /**
+     * Method resets the beatCacheTracker back to 0
+     */
+    public synchronized void resetBeatCacheTracker() {
+        this.beatCacheTracker = 0;
     }
 
     /* SETTERS */
@@ -542,6 +601,16 @@ public class SalsaModel {
      */
     public void setTimeAccumulation(long timeAccumulation) {
         this.timeAccumulation = timeAccumulation;
+    }
+
+    /**
+     * Method sets an ArrayList of integers to the field testingBeats that represents the beats that the user will be
+     * tested on this State
+     *
+     * @param testingBeats An ArrayList of integers of size 4
+     */
+    public void setTestingBeats(ArrayList<Integer> testingBeats) {
+        this.testingBeats = testingBeats;
     }
 
     /* GETTERS */
@@ -692,5 +761,34 @@ public class SalsaModel {
      */
     public int[] getWindowCache() {
         return windowCache;
+    }
+
+    /**
+     * Method returns the cache of the current beat according to which time windows are open
+     *
+     * @return An int array where the first index represents the beat that the user needs to locate in Time Window 1,
+     * and the second index is the beat that the user needs to locate in Time Window 2
+     */
+    public int[] getBeatCache() {
+        return beatCache;
+    }
+
+    /**
+     * Method returns an ArrayList containing integers that represents the beats that the system will request the user
+     * to locate in this State
+     *
+     * @return An ArrayList if integers of size 4
+     */
+    public ArrayList<Integer> getTestingBeats() {
+        return testingBeats;
+    }
+
+    /**
+     * Method returns the tracker used to get the current beat that the system is testing the user on
+     *
+     * @return An integer representing the index to be used for the testingBeats
+     */
+    public int getBeatCacheTracker() {
+        return beatCacheTracker;
     }
 }

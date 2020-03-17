@@ -34,7 +34,8 @@ public class Countdown {
     public void countdownGUIStart() {
         scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-        scheduledExecutorService.scheduleAtFixedRate(new CountdownNumbers(), 1400,
+        //1400 -> Get the length of the clip
+        scheduledExecutorService.scheduleAtFixedRate(new CountdownNumbers(), 2400,
                 1200, TimeUnit.MILLISECONDS );
     }
 
@@ -52,6 +53,7 @@ public class Countdown {
 
         @Override
         public void run() {
+            System.out.println("One run about to happen");
             if( numberToDisplay > -1) {
                 CardLayout cardLayout = (CardLayout) gameView.getNumberCountdown().getLayout();
                 // Displaying the correct number
