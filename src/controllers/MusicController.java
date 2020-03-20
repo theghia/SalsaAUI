@@ -1,9 +1,9 @@
 package controllers;
 
-import components.Instrument;
+import components.enums.Instrument;
 import components.PlayFile;
-import components.State;
-import events.GameProgressionListener;
+import components.enums.State;
+import listeners.GameProgressionListener;
 import events.GameEvent;
 import main.SalsaController;
 import main.SalsaModel;
@@ -65,14 +65,14 @@ public abstract class MusicController extends SalsaController implements GamePro
      * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
      * this method once the Salsa audio clip has been created.
      *
-     * @param clipSalsaLength
+     * @param clipSalsaLength Long variable representing the length of the Salsa audio clip
      */
     public abstract void clipReady(long clipSalsaLength);
 
     /**
-     * Method used for the SimulationMusicController to take action when the fireSimulationStartedEvent method is
+     * Method used for the HardSimulationMusicController to take action when the fireSimulationStartedEvent method is
      * called in the model. The countdown clip and the first salsa audio clip are queued to be played in the
-     * simulation. This method also fires off an event for the SimulationController to deal with
+     * simulation. This method also fires off an event for the HardSimulationController to deal with
      *
      * @param e A GameEvent object that will be used to initialise the audio of the current state
      */
@@ -89,7 +89,6 @@ public abstract class MusicController extends SalsaController implements GamePro
             public void update(LineEvent event) {
                 // The moment the audio file starts playing
                 if (event.getType() == LineEvent.Type.START) {
-                    System.out.println("Countdown clip started");
                     countdownStarted();
                 }
                     //countdownStarted();
@@ -105,8 +104,8 @@ public abstract class MusicController extends SalsaController implements GamePro
     }
 
     /**
-     * Method used for the SimulationMusicController to take action when the fireNewStateEvent method is called by
-     * the model in the SimulationController (in the thread). This method queues the next salsa audio clip, created from
+     * Method used for the HardSimulationMusicController to take action when the fireNewStateEvent method is called by
+     * the model in the HardSimulationController (in the thread). This method queues the next salsa audio clip, created from
      * the new State the the simulation has moved on to, to be played straight after the previous salsa audio clip.
      *
      * @param e A GameEvent object that will be used to determine what Salsa audio clip should be played
@@ -130,10 +129,6 @@ public abstract class MusicController extends SalsaController implements GamePro
 
         // Play the salsa audio clip and join it to the queue
         initSoundClip(salsaAudio);
-
-        // Fire off the event to let the relevant GameController know about the Clip information
-        //clipReady(salsaAudio.getMillisecondLength()); // in the action listener -> on START
-        // fireNewState(...) in the END of the clip -> Take out this code in the GameProgress else part
     }
 
     /* Helper method that allows the Clips to be played one after the other during the simulation */

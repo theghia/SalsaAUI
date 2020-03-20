@@ -159,6 +159,11 @@ public abstract class SalsaView extends JPanel{
         return buffer;
     }
 
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(800,800);
+    }
+
     /* Helper method: Sets up the layout of the JPanel */
     private void setupLayout() {
         this.panelLayout = new SpringLayout();

@@ -1,14 +1,14 @@
 package controllers;
 
-import components.Countdown;
-import components.Instrument;
-import components.MoveGaugeNeedle;
+import components.gui.Countdown;
+import components.enums.Instrument;
+import components.gui.MoveGaugeNeedle;
 import events.GameEvent;
-import events.GameGUIListener;
-import events.GameProgressionListener;
+import listeners.GameGUIListener;
+import listeners.GameProgressionListener;
 import main.SalsaController;
 import main.SalsaModel;
-import timers.Lights;
+import components.gui.Lights;
 import views.GameView;
 
 import javax.swing.*;
@@ -182,9 +182,6 @@ public abstract class GUIController extends SalsaController implements GameProgr
 
         // The home button will disappear
         gameView.getNavigationButtons().get("main").setVisible(false);
-
-        //Remove
-        moveGaugeNeedle.moveNeedle(0.75);
     }
 
     /**
@@ -226,14 +223,18 @@ public abstract class GUIController extends SalsaController implements GameProgr
         return gameView;
     }
 
+    public MoveGaugeNeedle getMoveGaugeNeedle() {
+        return moveGaugeNeedle;
+    }
+
     /* Helper method to be used by onNewBeatEvent() to switch out between the JLabels holding the
-       digital number png files */
+           digital number png files */
     private void switchDigitalNumber(String name, JPanel digitalNumbers) {
         CardLayout cardLayout = (CardLayout) digitalNumbers.getLayout();
         cardLayout.show(digitalNumbers, name);
     }
 
-    /* Helper method that makes all of the instrument GUI invisible on the SimulationView JPanel */
+    /* Helper method that makes all of the instrument GUI invisible on the HardSimulationView JPanel */
     private void makeInstrumentGUIInvisible() {
         for (JLabel instrument: gameView.getInstrumentsGUI())
             instrument.setVisible(false);

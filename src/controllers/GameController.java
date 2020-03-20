@@ -1,11 +1,10 @@
 package controllers;
 
-import components.*;
+import components.enums.State;
 import events.ClipInformationEvent;
-import events.ClipInformationListener;
+import listeners.ClipInformationListener;
 import main.SalsaController;
 import main.SalsaModel;
-import timers.ClickTimeWindowFAKE;
 import views.GameView;
 
 import java.awt.event.ActionEvent;
@@ -14,14 +13,10 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public abstract class GameController extends SalsaController implements ClipInformationListener {
-    // To have access to the buttons in the SimulationView Class
+    // To have access to the buttons in the HardSimulationView Class
     private GameView gameView;
-
-    // As we are programming to an interface, we can switch out the GameStatusFunction with ease
-    private GameStatusFunction gameStatusFunction;
 
     // Random Generator to be used to get the next beat that the user will be tested on
     // and to find a starting state
@@ -31,7 +26,7 @@ public abstract class GameController extends SalsaController implements ClipInfo
     private final int TIME_WINDOW = 3;
 
     // The next 4 beats that the system will request the user to identify
-    private ArrayList<Integer> nextBeats;
+    private volatile ArrayList<Integer> nextBeats;
 
     // This executor will hold 6 threads needed to be executed when a new State object is traversed
     private ScheduledExecutorService scheduledExecutorService;
@@ -46,7 +41,7 @@ public abstract class GameController extends SalsaController implements ClipInfo
     public GameController(SalsaModel salsaModel, String controllerName, GameView gameView) {
         super(salsaModel, controllerName);
         this.gameView = gameView;
-        this.gameStatusFunction = new DynamicGameDifficultyBalancing();
+        //this.gameStatusFunction = new DynamicGameDifficultyBalancing();
         this.randomGenerator = new Random();
         this.scheduledExecutorService = Executors.newScheduledThreadPool(6);
 
@@ -59,8 +54,9 @@ public abstract class GameController extends SalsaController implements ClipInfo
      * just display the error on the gauge
      *
      * @param currentBeat The beat that the user needs to find
+     * @param barNumber   The bar number that the beat requested is on
      */
-    public abstract void calculateErrorValue(int currentBeat);
+    public abstract void calculateErrorValue(int currentBeat, int barNumber);
 
     /**
      * Abstract method to be used to add an action listener to the Start button of the GameView
@@ -85,7 +81,7 @@ public abstract class GameController extends SalsaController implements ClipInfo
 
     /**
      * This method deals with the necessary logic when the fireClipInfoReadyEvent(...) method is called in the
-     * SimulationMusicController. This method will fire events for every new 8-beat bar and when the Salsa audio clip
+     * HardSimulationMusicController. This method will fire events for every new 8-beat bar and when the Salsa audio clip
      * has finished as well
      *
      * @param e A ClipInformationEvent object that will pass information to GameProgress on the length of the clip of the
@@ -93,39 +89,14 @@ public abstract class GameController extends SalsaController implements ClipInfo
      */
     @Override
     public void onClipInfoReadyEvent(ClipInformationEvent e) {
-        // Adding a beat timeline so that the SimulationController can have the correct times that each beat occurs at
-        //System.out.println("The beat timeline is being created: " + System.currentTimeMillis());
+        // Adding a beat timeline so that the HardSimulationController can have the correct times that each beat occurs at
         long quarter = e.getClipSalsa()/4;
         getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
 
-        // This method will be different for the TutorialController and the SimulationController as the Tutorial is
+        // This method will be different for the TutorialController and the HardSimulationController as the Tutorial is
         // the only one the will display the lights
         clipReady(e.getClipSalsa());
     }
-    // {
-        /*System.out.println("NEW CLIP INFO EVENT");
-        this.scheduledExecutorService.shutdownNow();
-        this.nextBeats = createNextBeats();
-        this.scheduledExecutorService = Executors.newScheduledThreadPool(6);
-
-        // Create the beat timeline
-        long quarter = e.getClipSalsa()/4;
-        getSalsaModel().setBeatTimeline(createBeatTimeline(quarter));
-
-        // Might be needed to take into account human reaction
-        long buffer = quarter/1000; // Or do like an addition to the GUI or the button clicker..
-
-        // To normalise the user input
-        getSalsaModel().setTimeAccumulation(System.currentTimeMillis());
-
-        // Setting up the time windows
-        startupTimeWindows();
-
-        // Starting up the thread to keep progressing through the game
-        GameProgressFake gameProgress = new GameProgressFake(this);
-        this.scheduledExecutorService.scheduleAtFixedRate(gameProgress, 0, quarter, TimeUnit.MILLISECONDS);*/
-
-    //}
 
     /**
      * Method returns the nextBeats field
@@ -144,16 +115,6 @@ public abstract class GameController extends SalsaController implements ClipInfo
      */
     public ScheduledExecutorService getScheduledExecutorService() {
         return scheduledExecutorService;
-    }
-
-    /**
-     * Method returns the GameStatusFunction that the MVC application will be using to determine the next state that
-     * the game will move on to next
-     *
-     * @return A GameStatusFunction
-     */
-    public GameStatusFunction getGameStatusFunction() {
-        return gameStatusFunction;
     }
 
     /**
@@ -192,7 +153,6 @@ public abstract class GameController extends SalsaController implements ClipInfo
         ActionListener click = new ActionListener() {
             @Override
             public synchronized void actionPerformed(ActionEvent e) {
-                System.out.println("The current beat I am trying to find: " + getSalsaModel().getCurrentBeat());
                 System.out.println("The time I perceive the beat to be: " + System.currentTimeMillis());
                 System.out.println();
 
@@ -214,9 +174,8 @@ public abstract class GameController extends SalsaController implements ClipInfo
                         System.out.println("hasClickedOnce2 after change: " + getSalsaModel().hasClickedOnce2());
 
                         //Logic to determine the beat to the current time window
-                        calculateErrorValue(getSalsaModel().getBeatCache()[0]);
-
-                        System.out.println("I have been printed");System.out.println();
+                        calculateErrorValue(getSalsaModel().getBeatCaching().get(0),
+                                getSalsaModel().getBarCaching().get(0));
                     }
 
                     else if (getSalsaModel().getButtonClickerTracker() == 2 && !getSalsaModel().hasClickedOnce2()) {
@@ -227,9 +186,9 @@ public abstract class GameController extends SalsaController implements ClipInfo
                         System.out.println("hasClickedOnce1 after change: " + getSalsaModel().hasClickedOnce1());
                         System.out.println("hasClickedOnce2 after change: " + getSalsaModel().hasClickedOnce2());
 
-                        calculateErrorValue(getSalsaModel().getBeatCache()[1]);
-
-                        System.out.println("I have been printed");System.out.println();
+                        // Logic to determine the beat to the current time window
+                        calculateErrorValue(getSalsaModel().getBeatCaching().get(1),
+                                getSalsaModel().getBarCaching().get(1));
                     }
                 }
             }
@@ -255,80 +214,6 @@ public abstract class GameController extends SalsaController implements ClipInfo
             beatTimeline.add(beatTime);
             beatTime += anEighth;
         }
-        System.out.println(beatTimeline);
-        //System.out.println("The beat timeline has been created: " + System.currentTimeMillis());
-
         return beatTimeline;
-    }
-
-
-
-
-
-
-    /* Helper method to calculate the index of the time that the start of the window will be at */
-    private long initialDelay(int requestedBeat, int barNumber) {
-        int indexForInitialDelay = requestedBeat - TIME_WINDOW - 1 + (8*(barNumber - 1));
-        System.out.println("Index for start window: " + indexForInitialDelay);
-        System.out.println("Start window: " + getSalsaModel().getBeatTimeline().get(indexForInitialDelay));
-        return getSalsaModel().getBeatTimeline().get(indexForInitialDelay);
-    }
-
-    /* Helper method to calculate the index of the time that the end of the window will be at */
-    private long period(int requestedBeat, int barNumber, long initialDelay) {
-        int indexForPeriod = requestedBeat + TIME_WINDOW - 1 + (8*(barNumber - 1));
-        System.out.println("Index for the end window: " + indexForPeriod);
-        System.out.println("End window: " + getSalsaModel().getBeatTimeline().get(indexForPeriod));
-        System.out.println();
-        return getSalsaModel().getBeatTimeline().get(indexForPeriod) - initialDelay;
-    }
-
-    private void startupTimeWindows() {
-        // 1st time window
-        System.out.println("Bar number: " + 1);
-        long initDelay1 = initialDelay(getSalsaModel().getNextBeat(), 1);
-        ClickTimeWindowFAKE t1 = new ClickTimeWindowFAKE(getSalsaModel());
-
-        // Time windows are the same size
-        long period = period(getSalsaModel().getNextBeat(), 1, initDelay1);
-
-        this.scheduledExecutorService.scheduleAtFixedRate(t1, initDelay1, period, TimeUnit.MILLISECONDS);
-
-        // 2nd, 3rd and 4th time window
-        for (int i = 1; i < 4; i++) {
-            System.out.println("Bar number: " + (i + 1));
-            long initDelay = initialDelay(nextBeats.get(i-1), i + 1);
-            ClickTimeWindowFAKE tw = new ClickTimeWindowFAKE(getSalsaModel());
-            long p = period(nextBeats.get(i - 1), i + 1, initDelay);
-            this.scheduledExecutorService.scheduleAtFixedRate(tw, initDelay, p, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    /* The next beats that the simulation will request the user to identify in the music */
-    private ArrayList<Integer> createNextBeats() {
-        // ArrayList for the next 4 beats in the simulation
-        ArrayList<Integer> nextBeats = new ArrayList<>(4);
-
-        for (int i = 0; i < 4; i++) {
-            // 2nd and 3rd bar of the 4 8-beat bar Salsa audio clip
-            if (i == 0 || i == 1) {
-                int nextBeat = randomGenerator.nextInt(8) + 1;
-                nextBeats.add(nextBeat);
-            }
-
-            // 4th bar of the 4 8-beat bar Salsa audio clip
-            else if (i == 2) {
-                int nextBeat = randomGenerator.nextInt(5) + 1;
-                nextBeats.add(nextBeat);
-            }
-
-            // 1st bar of the next 4 8-beat bar Salsa audio clip
-            else {
-                int nextBeat = randomGenerator.nextInt(5) + 4;
-                nextBeats.add(nextBeat);
-            }
-        }
-        System.out.println(nextBeats);
-        return nextBeats;
     }
 }

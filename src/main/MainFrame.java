@@ -1,8 +1,9 @@
 package main;
 
+import views.GameLevelView;
 import views.JustifiedUserProfileView;
 import views.MenuView;
-import views.SimulationView;
+import views.games.HardSimulationView;
 import views.TutorialView;
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class MainFrame extends JFrame {
 
     // Used to move through views
-    private Map<String, SalsaView> panels = new HashMap<String, SalsaView>(); //Use the index number? panels.keySet()
+    private Map<String, SalsaView> panels = new HashMap<>(); //Use the index number? panels.keySet()
 
     // Card layout structure
     private JPanel cards = new JPanel(new CardLayout());
@@ -35,6 +36,8 @@ public class MainFrame extends JFrame {
     private final String SIMULATION = "simulation";
     private final String TUTORIAL = "tutorial";
     private final String JUP = "justified_user_profile";
+    private final String LEVELS = "levels";
+    private final String HARD = "hard";
 
 
     /**
@@ -44,7 +47,6 @@ public class MainFrame extends JFrame {
      * of the application
      */
     public MainFrame() {
-        //SHOULD THIS BE DONE IN A THREAD SAFETY THING
         // This could be one method - Set up frame
         setupFrame();
 
@@ -105,19 +107,45 @@ public class MainFrame extends JFrame {
      */
     public String getJUP() { return JUP; }
 
+    /**
+     * Method that returns the field LEVELS
+     *
+     * @return String object that is held by the field LEVELS
+     */
+    public String getLEVELS() {
+        return LEVELS;
+    }
+
+    /**
+     * Method that returns the field HARD
+     *
+     * @return String object that is held by the field HARD
+     */
+    public String getHARD() {
+        return HARD;
+    }
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(WIDTH,HEIGHT);
+    }
+
     /* Helper Method to initialise the views */
     private void setupMultipleViews() {
         SalsaView menu = new MenuView(MAIN, this.getContentPane().getSize());
         setupOneView(menu);
 
-        SalsaView simulation = new SimulationView(SIMULATION, this.getContentPane().getSize());
-        setupOneView(simulation);
+        SalsaView hard = new HardSimulationView(HARD, this.getContentPane().getSize());
+        setupOneView(hard);
 
         SalsaView tutorial = new TutorialView(TUTORIAL, this.getContentPane().getSize());
         setupOneView(tutorial);
 
         SalsaView justifiedUserProfile = new JustifiedUserProfileView(JUP, this.getContentPane().getSize());
         setupOneView(justifiedUserProfile);
+
+        SalsaView gameLevel = new GameLevelView(LEVELS, this.getContentPane().getSize());
+        setupOneView(gameLevel);
 
         // Adding the cards to the frame
         this.getContentPane().add(cards);
@@ -136,7 +164,7 @@ public class MainFrame extends JFrame {
         this.pack();
         this.setSize(WIDTH,HEIGHT);
 
-        // Centering the JFrame
+        // Centering the JFrame on the user's screen
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2 - this.getSize().height/2);
     }

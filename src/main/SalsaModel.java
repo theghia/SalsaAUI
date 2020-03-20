@@ -1,10 +1,15 @@
 package main;
 
-import components.State;
+import components.enums.State;
 import components.UserProfile;
 import events.*;
+import listeners.ClipInformationListener;
+import listeners.GameGUIListener;
+import listeners.GameProgressionListener;
+import listeners.TutorialGUIListener;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
  * SalsaModel Class that represents the single Model in this MVC application
@@ -24,47 +29,50 @@ public class SalsaModel {
     private UserProfile userProfile;
 
     // To know what the current state the simulation is at when it is running
-    private State currentState;
+    private volatile State currentState;
 
     // To keep track of what beats we require the user to find
-    private int currentBeat;
-    private int nextBeat;
-    private int barNumber;
+    private volatile int currentBeat;
+    private volatile int nextBeat;
+    private volatile int barNumber;
 
     // Keeping track whether the user has previously clicked before during each 8-beat bar of music
-    private boolean hasClickedOnce1;
-    private boolean hasClickedOnce2;
+    // and which beat pertains to which time window.
+    // Variables have been set as volatile since different threads will be accessing this data
+    private volatile boolean hasClickedOnce1;
+    private volatile boolean hasClickedOnce2;
     private volatile int windowTracker;
     private volatile int buttonClickerTracker;
-    private int[] windowCache;
-    private int[] beatCache;
-    private int beatCacheTracker;
+    private AtomicIntegerArray windowCaching;
+    private AtomicIntegerArray beatCaching;
+    private AtomicIntegerArray barCaching;
+    private volatile int beatCacheTracker;
 
     // To keep track of the number of State objects we have transitioned
     private int numTransitionedStates;
 
     // A beat timeline so that we can use the error function to compare the user's input to the correct timing
-    private ArrayList<Long> beatTimeline;
+    private volatile ArrayList<Long> beatTimeline;
 
     // The 4 beats that the user will be tested on in this State run
-    private ArrayList<Integer> testingBeats;
+    private volatile ArrayList<Integer> testingBeats;
 
     // To normalise the timestamp of the user's input
-    private long timeAccumulation;
+    private volatile long timeAccumulation;
 
     // Flag to determine whether the countdown audio clip is playing or a Salsa audio clip
-    private boolean countdownCurrentlyPlaying;
+    private volatile boolean countdownCurrentlyPlaying;
 
     // GameProgressionListeners for both the Tutorial and Simulation controllers
     private ArrayList<GameProgressionListener> simListeners;
     private GameProgressionListener tutProgressGUIListener;
     private GameProgressionListener tutProgressMusicListener;
 
-    // This listener will be used with the SimulationController Class
+    // This listener will be used with the HardSimulationController Class
     private ClipInformationListener clipInfoListener;
     private ClipInformationListener tutClipInfoListener;
 
-    // This listener will only be used with the SimulationGUIController Class
+    // This listener will only be used with the HardSimulationGUIController Class
     private GameGUIListener simGUIListener;
     private GameGUIListener tutGUIListener;
 
@@ -94,9 +102,23 @@ public class SalsaModel {
         this.hasClickedOnce2 = true;
         this.windowTracker = 1;
         this.buttonClickerTracker = 1;
-        this.windowCache = new int[]{0, 0};
 
-        this.beatCache = new int[]{0, 0};
+        // Setting the cache for the bar number of that the State is in to know which time window pertains to which
+        // bar number
+        this.barCaching = new AtomicIntegerArray(2);
+        this.barCaching.set(0, 0);
+        this.barCaching.set(1, 0);
+
+        // Setting the window cache to know which time window should be closed when they are overlapping
+        this.windowCaching = new AtomicIntegerArray(2);
+        this.windowCaching.set(0, 0);
+        this.windowCaching.set(1, 0);
+
+        // Setting up the beat cache to know which beat pertains to which time window
+        this.beatCaching = new AtomicIntegerArray(2);
+        this.beatCaching.set(0, 0);
+        this.beatCaching.set(1, 0);
+
         this.beatCacheTracker = 0;
 
         // Default will be 0
@@ -110,7 +132,7 @@ public class SalsaModel {
 
     /**
      * Method adds a GameProgressionListener to the simListeners.
-     * This will be connected to the SimulationView
+     * This will be connected to the HardSimulationView
      *
      * @param gameProgressionListener A Class that has implemented the GameProgressionListener interface
      */
@@ -142,7 +164,7 @@ public class SalsaModel {
 
     /**
      * Method adds a ClipInformationListener to the clipInfoListeners.
-     * This will be connected to the SimulationView.
+     * This will be connected to the HardSimulationView.
      *
      * @param clipInfoListener A Class that has implemented the ClipInformationListener interface
      */
@@ -162,7 +184,7 @@ public class SalsaModel {
 
     /**
      * Method adds a GameGUIListener to the simGUIListener.
-     * This will be connected to the SimulationView.
+     * This will be connected to the HardSimulationView.
      *
      * @param simGUIListener A Class that has implemented the GameGUIListener interface
      */
@@ -208,7 +230,7 @@ public class SalsaModel {
 
     /**
      * Method starts the onClipInfoReadyEvent(...) method for the ClipInformationListener of this model. This will be
-     * called for every new State object traversed bar the first one and allows the SimulationController know the
+     * called for every new State object traversed bar the first one and allows the HardSimulationController know the
      * timings of the Salsa audio clip to act accordingly.
      *
      * @param clipSalsa The length of the Salsa audio clip
@@ -392,6 +414,10 @@ public class SalsaModel {
         this.tutorialGUIListener.onKeepGauge();
     }
 
+    public void fireTutorialStartScreen() {
+        this.tutorialGUIListener.onStartScreenEvent();
+    }
+
     /* CHANGE MODEL STATE */
 
     /**
@@ -433,6 +459,13 @@ public class SalsaModel {
 
         // Default is true, ready for when the simulation is played again
         this.countdownCurrentlyPlaying = true;
+
+        // Resetting the cache
+        this.beatCacheTracker = 0;
+        for (int i = 0; i < 2; i ++) {
+            this.beatCaching.set(i, 0);
+            this.windowCaching.set(i, 0);
+        }
     }
 
     /**
@@ -754,26 +787,6 @@ public class SalsaModel {
     }
 
     /**
-     * Method returns the cache of the current window time lines that are open
-     *
-     * @return An int array where the first index represents one window, and the second index represents the other
-     * other window. Only 2 windows can be up at a time
-     */
-    public int[] getWindowCache() {
-        return windowCache;
-    }
-
-    /**
-     * Method returns the cache of the current beat according to which time windows are open
-     *
-     * @return An int array where the first index represents the beat that the user needs to locate in Time Window 1,
-     * and the second index is the beat that the user needs to locate in Time Window 2
-     */
-    public int[] getBeatCache() {
-        return beatCache;
-    }
-
-    /**
      * Method returns an ArrayList containing integers that represents the beats that the system will request the user
      * to locate in this State
      *
@@ -790,5 +803,35 @@ public class SalsaModel {
      */
     public int getBeatCacheTracker() {
         return beatCacheTracker;
+    }
+
+    /**
+     * Method returns the cache of the current window time lines that are open
+     *
+     * @return An AtomicIntegerArray where the first index represents one window, and the second index represents
+     * the other window. Only 2 windows can be up at a time.
+     */
+    public AtomicIntegerArray getWindowCaching() {
+        return windowCaching;
+    }
+
+    /**
+     * Method returns the cache of the current beat according to which time windows are open
+     *
+     * @return An AtomicIntegerArray where the first index represents the beat that the user needs to locate in
+     * Time Window 1, and the second index is the beat that the user needs to locate in Time Window 2
+     */
+    public AtomicIntegerArray getBeatCaching() {
+        return beatCaching;
+    }
+
+    /**
+     * Method return the cache of the current bar according to which time windows are open
+     *
+     * @return An AtomicIntegerArray where the first index represents the bar number for Time Window 1 and the second
+     * index is the bar number for Time Window 2
+     */
+    public AtomicIntegerArray getBarCaching() {
+        return barCaching;
     }
 }

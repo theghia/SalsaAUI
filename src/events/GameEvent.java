@@ -1,6 +1,6 @@
 package events;
 
-import components.State;
+import components.enums.State;
 import main.SalsaModel;
 
 import java.util.EventObject;
@@ -22,8 +22,8 @@ public class GameEvent extends EventObject {
     private SalsaModel model;
 
     /**
-     * Constructor 1: Creates the GameEvent object that will be used by the SimulationMusicController Class and
-     * the SimulationGUIController Class. This event will only be used at the start of the simulation.
+     * Constructor 1: Creates the GameEvent object that will be used by the HardSimulationMusicController Class and
+     * the HardSimulationGUIController Class. This event will only be used at the start of the simulation.
      *
      * @param source Object that is castable to a SalsaModel object
      */
@@ -33,8 +33,8 @@ public class GameEvent extends EventObject {
     }
 
     /**
-     * Constructor 2: Creates the GameEvent object that will be used by the SimulationMusicController and
-     * the SimulationGUIController Class. This event will not be used at the start of the simulation but thereafter
+     * Constructor 2: Creates the GameEvent object that will be used by the HardSimulationMusicController and
+     * the HardSimulationGUIController Class. This event will not be used at the start of the simulation but thereafter
      * until the simulation has finished.
      *
      * @param source Object that is castable to a SalsaModel object

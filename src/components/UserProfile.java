@@ -1,5 +1,8 @@
 package components;
 
+import components.enums.BPM;
+import components.enums.Instrument;
+import components.enums.State;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,7 +20,7 @@ public class UserProfile {
 
     // Key - Unique String ID where the single digits represent an instrument and the alphabetical character
     // represents a tempo. Value - The State object that holds the combination detailed by the ID
-    private Map<String, State> states = new HashMap<String, State>();
+    private Map<String, State> states = new HashMap<>();
 
     // Fields just to access information quickly when setting up the UserProfile object
     private int numOfInstruments;
@@ -218,7 +221,7 @@ public class UserProfile {
     /* Helper method to convert an int array into an ArrayList of Instrument objects */
     private ArrayList<Instrument> convertIntListToInstrument(int[] combo) {
 
-        ArrayList<Instrument> combination = new ArrayList<Instrument>();
+        ArrayList<Instrument> combination = new ArrayList<>();
 
         for(int value: combo) {
             combination.add(convertIntToInstrument(value));
@@ -247,7 +250,7 @@ public class UserProfile {
     /* Helper method gets all possible combinations of integers using 3rd party module */
     private ArrayList<int[]> getCombinations() {
         // All of the possible combinations
-        ArrayList<int[]> combinations = new ArrayList<int[]>();
+        ArrayList<int[]> combinations = new ArrayList<>();
 
         // The number of instruments being used in the MVC application
         Instrument aInstrument = Instrument.PIANO;

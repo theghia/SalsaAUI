@@ -1,7 +1,7 @@
 package views;
 
-import components.Instrument;
-import components.RotateImage;
+import components.enums.Instrument;
+import components.gui.RotateImage;
 import main.SalsaView;
 
 import javax.swing.*;
@@ -120,7 +120,7 @@ public abstract class GameView extends SalsaView {
     public JButton getStartButton() { return startButton; }
 
     /**
-     * Method returns the JPanel currentBeat. To be used by the SimulationGUIController so that we can swap the JLabels
+     * Method returns the JPanel currentBeat. To be used by the HardSimulationGUIController so that we can swap the JLabels
      * according to the model changes for a new current and next beat.
      *
      * @return A JPanel to hold the digital number png files for the currentBeat
@@ -130,7 +130,7 @@ public abstract class GameView extends SalsaView {
     }
 
     /**
-     * Method returns the JPanel nextBeat. To be used by the SimulationGUIController so that we can swap the JLabels
+     * Method returns the JPanel nextBeat. To be used by the HardSimulationGUIController so that we can swap the JLabels
      * according to the model changes for a new current and next beat.
      *
      * @return A JPanel to hold the digital number png files for the nextBeat.
@@ -234,7 +234,7 @@ public abstract class GameView extends SalsaView {
 
 
     /* Helper method that sets up the JLabels to let the user know which Digital Number is the current and next beat
-            and adds them to the SimulationView */
+            and adds them to the HardSimulationView */
     private void setupJLabelsText() {
         // Getting the desired font and size for the beat labels
         Font f = new Font("TimesRoman",Font.BOLD,25);
@@ -292,7 +292,7 @@ public abstract class GameView extends SalsaView {
 
     /* Helper method sets up the JLabels for the instrument GUI */
     private void setupJLabelsInstruments() {
-        // Adding the instrument png files to the SimulationView
+        // Adding the instrument png files to the HardSimulationView
         Instrument aInstrument = Instrument.PIANO;
         Instrument[] possibleValues = aInstrument.getDeclaringClass().getEnumConstants();
         for (Instrument instrument: possibleValues) {
@@ -302,7 +302,7 @@ public abstract class GameView extends SalsaView {
             ImageIcon scaledInsGUI = new ImageIcon(scaled);
             JLabel insGUI = new JLabel(scaledInsGUI);
 
-            // Adding the JLabel to the SimulationView
+            // Adding the JLabel to the HardSimulationView
             this.add(insGUI);
 
             // We do not want the instruments to be visible before pressing the Start button
@@ -352,7 +352,7 @@ public abstract class GameView extends SalsaView {
             // The lights will only be visible in the Tutorial View
             light.setVisible(false);
 
-            // Adding the JPanel to the SimulationView
+            // Adding the JPanel to the HardSimulationView
             this.add(light);
         }
     }
@@ -383,7 +383,7 @@ public abstract class GameView extends SalsaView {
                 SpringLayout.EAST, instrumentsGUI.get(0));
     }
 
-    /* Helper method to layout the JLabels for the digital numbers on the SimulationView */
+    /* Helper method to layout the JLabels for the digital numbers on the HardSimulationView */
     private void layoutDigitalNumbers() {
         // Measurements:
         int bufferLightsANDBeatLabel = 10;
@@ -415,7 +415,7 @@ public abstract class GameView extends SalsaView {
                 SpringLayout.SOUTH, currentBeatLabel);
     }
 
-    /* Helper method to layout the buttons (except the home button) as desired on the SimulationView*/
+    /* Helper method to layout the buttons (except the home button) as desired on the HardSimulationView*/
     private void layoutButtons() {
         // The Start button - Dimensions to center the button
         int widthPositionStart = (int) (getDimension().getWidth() - START_WIDTH)/2;
@@ -534,7 +534,7 @@ public abstract class GameView extends SalsaView {
                 displayBeats.add(digNum, Integer.toString(i));
             }
         }
-        // Adding the group of JLabels to the SimulationView
+        // Adding the group of JLabels to the HardSimulationView
         this.add(displayBeats);
     }
 }

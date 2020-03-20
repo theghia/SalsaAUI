@@ -3,9 +3,10 @@ package controllers;
 import main.MainFrame;
 import main.SalsaController;
 import main.SalsaModel;
+import views.GameLevelView;
+import views.games.HardSimulationView;
 import views.JustifiedUserProfileView;
 import views.MenuView;
-import views.SimulationView;
 import views.TutorialView;
 import javax.swing.*;
 import java.awt.*;
@@ -39,6 +40,7 @@ public class NavigationController extends SalsaController {
         initSimulationNavigationButtonActionListeners();
         initTutorialNavigationButtonActionListeners();
         initJUPNavigationButtonActionListeners();
+        initLevelNavigationButtonActionListeners();
     }
 
     /* Helper method to initialise the navigation buttons in the JustifiedUserProfileView */
@@ -53,13 +55,15 @@ public class NavigationController extends SalsaController {
         TutorialView tutorial = (TutorialView) this.mainFrame.getPanels().get(mainFrame.getTUTORIAL());
 
         goToView(tutorial.getNavigationButtons().get(mainFrame.getMAIN()), mainFrame.getMAIN());
+
     }
 
-    /* Helper method to initialise the navigation buttons in the SimulationView */
+    /* Helper method to initialise the navigation buttons in the HardSimulationView */
     private void initSimulationNavigationButtonActionListeners() {
-        SimulationView simulation = (SimulationView) this.mainFrame.getPanels().get(mainFrame.getSIMULATION());
+        HardSimulationView hardSimulationView =
+                (HardSimulationView) this.mainFrame.getPanels().get(mainFrame.getHARD());
 
-        goToView(simulation.getNavigationButtons().get(mainFrame.getMAIN()), mainFrame.getMAIN());
+        goToView(hardSimulationView.getNavigationButtons().get(mainFrame.getMAIN()), mainFrame.getMAIN());
     }
 
     /* Helper method to initialise the navigation buttons in the MenuView */
@@ -67,7 +71,8 @@ public class NavigationController extends SalsaController {
         MenuView main = (MenuView) this.mainFrame.getPanels().get(mainFrame.getMAIN()); // Getting the view main
 
         // Initialises the ActionListener for the "simulation" button
-        goToView(main.getNavigationButtons().get(mainFrame.getSIMULATION()), mainFrame.getSIMULATION());
+        //goToView(main.getNavigationButtons().get(mainFrame.getSIMULATION()), mainFrame.getSIMULATION());
+        goToView(main.getNavigationButtons().get(mainFrame.getSIMULATION()), mainFrame.getLEVELS());
 
         // Initialises the ActionListener for the "tutorial" button
         goToView(main.getNavigationButtons().get(mainFrame.getTUTORIAL()), mainFrame.getTUTORIAL());
@@ -79,9 +84,22 @@ public class NavigationController extends SalsaController {
         this.getSalsaModel().setCurrentView(mainFrame.getMAIN());
     }
 
+    private void initLevelNavigationButtonActionListeners() {
+        GameLevelView gameLevelView = (GameLevelView) this.mainFrame.getPanels().get(mainFrame.getLEVELS());
+
+        // Initialises the ActionListener for the "easy" button
+        buttonUnderConstruction(gameLevelView.getNavigationButtons().get("easy"), mainFrame.getLEVELS());
+
+        // Initialises the ActionListener for the "medium" button
+        buttonUnderConstruction(gameLevelView.getNavigationButtons().get("medium"), mainFrame.getLEVELS());
+
+        // Initialises the ActionListener for the "hard" button
+        goToView(gameLevelView.getNavigationButtons().get(mainFrame.getHARD()), mainFrame.getHARD());
+    }
+
     /* Helper method to add an ActionListener to the "Home" buttons */
     private void goToView(JButton navigationButton, String panel) {
-        ActionListener gotoMain = new ActionListener() {
+        ActionListener goToView = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CardLayout cardLayout = (CardLayout) mainFrame.getCards().getLayout();
@@ -91,6 +109,17 @@ public class NavigationController extends SalsaController {
                 getSalsaModel().setCurrentView(panel);
             }
         };
-        navigationButton.addActionListener(gotoMain);
+        navigationButton.addActionListener(goToView);
+    }
+
+    private void buttonUnderConstruction(JButton navigationButton, String panel) {
+        ActionListener underConstruction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JPanel pane = mainFrame.getPanels().get(panel);
+                JOptionPane.showMessageDialog(pane, "This is under construction");
+            }
+        };
+        navigationButton.addActionListener(underConstruction);
     }
 }

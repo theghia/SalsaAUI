@@ -1,63 +1,83 @@
 package main;
 
 import controllers.*;
-import controllers.SimulationGUIController;
-import controllers.SimulationMusicController;
-import events.ClipInformationListener;
-import events.GameGUIListener;
-import events.GameProgressionListener;
-import events.TutorialGUIListener;
-import views.GameView;
-import views.SimulationView;
+import controllers.simulation.hard.HardSimulationGUIController;
+import controllers.simulation.hard.HardSimulationMusicController;
+import controllers.simulation.hard.HardSimulationController;
+import controllers.tutorial.TutorialController;
+import controllers.tutorial.TutorialGUIController;
+import controllers.tutorial.TutorialMusicController;
+import listeners.ClipInformationListener;
+import listeners.GameGUIListener;
+import listeners.GameProgressionListener;
+import listeners.TutorialGUIListener;
+import views.games.HardSimulationView;
+import views.TutorialView;
 
 public class MainApp {
 
     public static void main(String[] args) {
-        // All of the views are started here
-        MainFrame start = new MainFrame();
 
-        SalsaModel model = new SalsaModel();
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                MainApp main = new MainApp();
 
-        SalsaController navigationController = new NavigationController(model, "navigation", start);
+                // All of the views are created here
+                MainFrame mainFrame = new MainFrame();
 
-        // do a navigationController.start() type thing
+                SalsaModel model = new SalsaModel();
 
-        SimulationView simulationView = (SimulationView) start.getPanels().get("simulation");
+                // Navigation Controller
+                new NavigationController(model,
+                        "navigation", mainFrame);
 
-        SalsaController simulationController = new SimulationController(model,
-                "simulation", simulationView);
+                // Setting up the controllers to listen to the model
+                main.setupHardSimulation(mainFrame, model);
+                main.setupTutorial(mainFrame, model);
+            }
+        });
+    }
 
-        SalsaController simulationGUIController = new SimulationGUIController(model,
-                "simulation_gui", simulationView);
-        SalsaController simulationMusicController = new SimulationMusicController(model,
-                "simulation_music");
+    public void setupHardSimulation(MainFrame mainFrame, SalsaModel salsaModel) {
+        // Isolating the simulation view
+        HardSimulationView hardSimulationView = (HardSimulationView) mainFrame.getPanels().get("hard");
 
-        simulationController.getSalsaModel().setNameOfUser("Gareth");
-        System.out.println(model.getNameOfUser());
-        simulationGUIController.getSalsaModel().setNameOfUser("Not Gareth");
-        System.out.println(model.getNameOfUser());
+        // Setting up the three controllers needed for the Game Simulation
+        SalsaController simulationController = new HardSimulationController(salsaModel,
+                "hard_simulation", hardSimulationView);
+
+        SalsaController simulationGUIController = new HardSimulationGUIController(salsaModel,
+                "hard_simulation_gui", hardSimulationView);
+        SalsaController simulationMusicController = new HardSimulationMusicController(salsaModel,
+                "hard_simulation_music");
+
 
         // Casting as we only want the model to have the Listener version of the controller so that any methods
         // that the SalsaController has will not be present in the model
-        model.addSimulationListener((GameProgressionListener) simulationGUIController);
-        model.addSimulationListener((GameProgressionListener) simulationMusicController);
-        model.addClipInformationListener((ClipInformationListener) simulationController);
-        model.addSimulationGUIListener((GameGUIListener) simulationGUIController);
+        salsaModel.addSimulationListener((GameProgressionListener) simulationGUIController);
+        salsaModel.addSimulationListener((GameProgressionListener) simulationMusicController);
+        salsaModel.addClipInformationListener((ClipInformationListener) simulationController);
+        salsaModel.addSimulationGUIListener((GameGUIListener) simulationGUIController);
+    }
 
-        GameView tutorialView = (GameView) start.getPanels().get("tutorial");
-        SalsaController tutorialController = new TutorialController(model, "tutorial", tutorialView);
-        SalsaController tutorialGUIController = new TutorialGUIController(model,
+    public void setupTutorial(MainFrame mainFrame, SalsaModel salsaModel) {
+        TutorialView tutorialView = (TutorialView) mainFrame.getPanels().get("tutorial");
+        SalsaController tutorialController = new TutorialController(salsaModel,
+                "tutorial", tutorialView);
+        SalsaController tutorialGUIController = new TutorialGUIController(salsaModel,
                 "tutorial_gui", tutorialView);
-        SalsaController tutorialMusicController = new TutorialMusicController(model, "tutorial_music");
+        SalsaController tutorialMusicController = new TutorialMusicController(salsaModel,
+                "tutorial_music");
 
-        model.addTutorialGUIListener((GameProgressionListener) tutorialGUIController);
-        model.addTutorialMusicListener((GameProgressionListener) tutorialMusicController);
+        salsaModel.addTutorialGUIListener((GameProgressionListener) tutorialGUIController);
+        salsaModel.addTutorialMusicListener((GameProgressionListener) tutorialMusicController);
 
-        model.addTutorialClipInformationListener((ClipInformationListener) tutorialController);
+        salsaModel.addTutorialClipInformationListener((ClipInformationListener) tutorialController);
 
-        model.addTutorialGameGUIListener((GameGUIListener) tutorialGUIController);
+        salsaModel.addTutorialGameGUIListener((GameGUIListener) tutorialGUIController);
 
-        model.addTeachTutorialGUIListener((TutorialGUIListener) tutorialGUIController);
+        salsaModel.addTeachTutorialGUIListener((TutorialGUIListener) tutorialGUIController);
     }
 
 }

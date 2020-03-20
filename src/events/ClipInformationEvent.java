@@ -4,7 +4,7 @@ import java.util.EventObject;
 
 /**
  * ClipInformationEvent Class that extends the EventObject Class. This event will be used to notify the
- * SimulationController of when a sound clip has been created.
+ * HardSimulationController of when a sound clip has been created.
  *
  * @author Gareth Iguasnia
  * @date 24/02/2020
@@ -17,7 +17,7 @@ public class ClipInformationEvent extends EventObject {
     private long clip123;
 
     /**
-     * Constructor 1: Creates the ClipInformationEvent that will be used by the SimulationController Class. This
+     * Constructor 1: Creates the ClipInformationEvent that will be used by the HardSimulationController Class. This
      * event will only be used at the start of the simulation.
      *
      * @param source Object that is castable to a model
@@ -31,7 +31,7 @@ public class ClipInformationEvent extends EventObject {
     }
 
     /**
-     * Constructor 2: Creates the ClipInformationEvent that will be used by the SimulationController Class. This event
+     * Constructor 2: Creates the ClipInformationEvent that will be used by the HardSimulationController Class. This event
      * will not be used at the start of the simulation but thereafter until the simulation ends.
      *
      * @param source Object that is castable to a model

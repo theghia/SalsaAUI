@@ -120,8 +120,8 @@ public class TutorialView extends GameView {
     }
 
     private void setupGaugeText(Font font, Border border) {
-        JTextArea gauge = new JTextArea("The needle will move depending on how \nclose your " +
-                "guess was to the actual beat.\nThe goal is to move the needle to the green");
+        JTextArea gauge = new JTextArea("The needle will move depending on how close \nyour " +
+                "guess was to the actual beat.\nThe goal is to move the needle to the green side.");
 
         // Setting up the JTextArea
         setupJTextArea(gauge, font, border);
@@ -269,5 +269,4 @@ public class TutorialView extends GameView {
         // Adding the JTextAreas to the view
         this.add(text);
     }
-
 }
