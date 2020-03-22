@@ -1,6 +1,6 @@
 package components.functions.gsf;
 
-import components.enums.State;
+import components.State;
 import components.functions.GameStatusFunction;
 
 import java.util.ArrayList;
@@ -170,47 +170,20 @@ public abstract class DynamicGameDifficultyBalancing implements GameStatusFuncti
         for (State state: neighbours) {
             // Harder, explored
             if (code == 1 && state.hasBeenExplored()) {
-                // Error values closer to 0 means that the user did not perform well - so a harder state for them
-                //if (state.getCurrentAverageErrorValue() < currentState.getCurrentAverageErrorValue())
-                    //sorted.add(state);
                 sortHardAndExplored(sorted, state, currentState);
             }
             // Harder, unexplored states
             else if (code == 2 && !state.hasBeenExplored()) {
                 // What determines a harder state?
-
-                // A faster tempo
-                /*if (state.getBpm().getBPM() > currentState.getBpm().getBPM())
-                    sorted.add(state);
-
-                // More instruments playing
-                else if (state.getInstruments().size() > currentState.getInstruments().size())
-                    sorted.add(state);
-
-                // Switching out instruments
-                else if (state.getInstruments().size() == currentState.getInstruments().size()
-                && state.getBpm().getBPM() == currentState.getBpm().getBPM())
-                    sorted.add(state);*/
                 sortHardAndUnexplored(sorted, state, currentState);
             }
             // Easier/Same level, explored states
             else if (code == 3 && state.hasBeenExplored()) {
-                // Error values closer to 1 means that the user performed very well - so easier state for them
-                /*if(state.getCurrentAverageErrorValue() >= currentState.getCurrentAverageErrorValue()) // 0.66 since it is in the green?
-                    sorted.add(state);*/
                 sortEasyAndExplored(sorted, state, currentState);
             }
             // Easier, unexplored states
             else if (code == 4 && !state.hasBeenExplored()) {
                 // What determines an easier state?
-
-                // Less instruments playing
-                /*if (state.getInstruments().size() < currentState.getInstruments().size())
-                    sorted.add(state);
-
-                // Slower tempo
-                else if (state.getBpm().getBPM() < currentState.getBpm().getBPM())
-                    sorted.add(state);*/
                 sortEasyAndUnexplored(sorted, state, currentState);
             }
 

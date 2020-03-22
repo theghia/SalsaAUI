@@ -39,6 +39,7 @@ public class Lights implements Runnable {
         if (beat < 32) {
             // Using mod since there are only 8 beats per 2 bars. 32 beats in one State object
             int index = (beat % 8);
+            System.out.println("One light");
 
             // Turn off all of the lights
             turnOffAllLights(gameView.getLights());

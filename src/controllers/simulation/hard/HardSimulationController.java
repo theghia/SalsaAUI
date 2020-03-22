@@ -1,8 +1,8 @@
 package controllers.simulation.hard;
 
-import components.enums.State;
+import components.State;
 import components.functions.ef.LinearErrorFunction;
-import components.functions.gsf.DynamicGameDifficultyBalancingHard;
+import components.functions.gsf.DGDBHard;
 import components.functions.ErrorFunction;
 import components.functions.GameStatusFunction;
 import controllers.GameController;
@@ -44,7 +44,7 @@ public class HardSimulationController extends GameController {
         super(salsaModel, controllerName, gameView);
 
         // The Game Status function for the Hard mode of the game
-        this.gameStatusFunction = new DynamicGameDifficultyBalancingHard();
+        this.gameStatusFunction = new DGDBHard();
     }
 
     /**

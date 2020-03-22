@@ -1,6 +1,6 @@
 package main;
 
-import components.enums.State;
+import components.State;
 import components.UserProfile;
 import events.*;
 import listeners.ClipInformationListener;
@@ -8,6 +8,7 @@ import listeners.GameGUIListener;
 import listeners.GameProgressionListener;
 import listeners.TutorialGUIListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
@@ -17,10 +18,13 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * @author Gareth Iguasnia
  * @date 03/03/2020
  */
-public class SalsaModel {
+public class SalsaModel implements Serializable {
 
     // Name of the user of the application
     private String nameOfUser;
+
+    // File path of the folder that holds the game data
+    private String DATA = "src/data/";
 
     // To cache the current view
     private String currentView;
@@ -646,6 +650,14 @@ public class SalsaModel {
         this.testingBeats = testingBeats;
     }
 
+    public void setCurrentBeat(int currentBeat) {
+        this.currentBeat = currentBeat;
+    }
+
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+    }
+
     /* GETTERS */
 
     /**
@@ -833,5 +845,14 @@ public class SalsaModel {
      */
     public AtomicIntegerArray getBarCaching() {
         return barCaching;
+    }
+
+    /**
+     * Method to get the file path of where the Game data is saved
+     *
+     * @return A String representing the file path of the "data" folder
+     */
+    public String getDATA() {
+        return DATA;
     }
 }

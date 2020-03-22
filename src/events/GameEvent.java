@@ -1,6 +1,6 @@
 package events;
 
-import components.enums.State;
+import components.State;
 import main.SalsaModel;
 
 import java.util.EventObject;

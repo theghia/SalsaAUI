@@ -1,9 +1,11 @@
 package components.ingame;
 
-import components.enums.State;
-import components.ingame.TimeWindow;
+import components.State;
 import controllers.GameController;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -77,6 +79,10 @@ public abstract class GameProgress {
         startWindows();
     }
 
+    public GameController getGameController() {
+        return gameController;
+    }
+
     /**
      * RemindTask Innerclass that extends TimerTask. This will be the logic that will be executed after every 8-beat
      * bar of salsa music and will be called by the timer schedule
@@ -95,6 +101,7 @@ public abstract class GameProgress {
         public void run() {
             if (numBars > 0) {
                 // Went through one 8-beat bar of music
+                System.out.println("RemindTask -> Run()");
                 numBars--;
 
                 // Setting the next beat in the model
@@ -106,8 +113,9 @@ public abstract class GameProgress {
                 gameController.getSalsaModel().setBarNumber(barNumber);
                 barNumber++;
 
-                // An event is thrown here for onNewBeatEvent
-                gameController.getSalsaModel().fireNewBeatEvent();
+                // An event is thrown here for to show the new beats
+                newBeat();
+                //gameController.getSalsaModel().fireNewBeatEvent();
             }
             // We need to signal the system internally that we have reached the final 8-beat bar of the State
             else {
@@ -130,16 +138,9 @@ public abstract class GameProgress {
 
                     // Logic to determine which new State to move onto next
                     State currentState = gameController.getSalsaModel().getCurrentState();
+
+                    // The desired event will be thrown in this abstract method
                     stateTransitionBehaviour(currentState);
-
-                    /*State newState = gameController.getGameStatusFunction().getNextState(currentState); // NEED TO ADAPT THE DGDB FUNCTION
-
-                    // Changing State depending on the input or lack of
-                    gameController.getSalsaModel().setCurrentState(newState);
-
-                    // The model fires an event to get the simulation started for the next State
-                    gameController.getSalsaModel().fireNewStateEvent();*/ // This should be in an ABSTRACT METHOD so that
-                    // you can add the pause before the next state for the beginners
                 }
                 // If the simulation has finished
                 else {
@@ -158,8 +159,11 @@ public abstract class GameProgress {
                     // Clean up the model to set it back to its default state
                     gameController.getSalsaModel().resetModel();
 
+                    // Save the game progress
+                    saveGameProgress();
+
                     // We must end the simulation here and notify the other controllers working during the simulation
-                    gameController.getSalsaModel().fireSimulationFinishedEvent();
+                    gameFinished();
                 }
                 // Reset the beat cache tracker
                 gameController.getSalsaModel().resetBeatCacheTracker();
@@ -170,35 +174,31 @@ public abstract class GameProgress {
         }
     }
 
-    /* The next beats that the simulation will request the user to identify in the music */
-    /*private ArrayList<Integer> createNextBeats() {
-        // ArrayList for the next 4 beats in the simulation
-        ArrayList<Integer> nextBeats = new ArrayList<>(4);
+    public void saveGameProgress() {
+        String filename = gameController.getSalsaModel().getDATA() +
+                gameController.getSalsaModel().getNameOfUser() + ".ser";
+        FileOutputStream fileOutput = null;
+        ObjectOutputStream objectOutput = null;
 
-        for (int i = 0; i < 4; i++) {
-            // 2nd and 3rd bar of the 4 8-beat bar Salsa audio clip
-            if (i == 0 || i == 1) {
-                int nextBeat = randomGenerator.nextInt(8) + 1;
-                nextBeats.add(nextBeat);
-            }
+        try {
+            fileOutput = new FileOutputStream(filename);
+            objectOutput = new ObjectOutputStream(fileOutput);
 
-            // 4th bar of the 4 8-beat bar Salsa audio clip
-            else if (i == 2) {
-                int nextBeat = randomGenerator.nextInt(5) + 1;
-                nextBeats.add(nextBeat);
-            }
-
-            // 1st bar of the next 4 8-beat bar Salsa audio clip
-            else {
-                int nextBeat = randomGenerator.nextInt(5) + 4;
-                nextBeats.add(nextBeat);
-            }
+            objectOutput.writeObject(gameController.getSalsaModel().getUserProfile());
+            objectOutput.close();
         }
-        System.out.println(nextBeats);
-        return nextBeats;
-    }*/
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public abstract ArrayList<Integer> createNextBeats(Random randomGenerator);
+
+    public abstract void stateTransitionBehaviour(State currentState);
+
+    public abstract void newBeat();
+
+    public abstract void gameFinished();
 
     /* Helper method to initiate the time windows */
     private void startWindows() {
@@ -251,6 +251,4 @@ public abstract class GameProgress {
 
         return testingBeats;
     }
-
-    public abstract void stateTransitionBehaviour(State currentState);
 }

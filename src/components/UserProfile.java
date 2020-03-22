@@ -2,8 +2,9 @@ package components;
 
 import components.enums.BPM;
 import components.enums.Instrument;
-import components.enums.State;
 import org.apache.commons.math3.util.CombinatoricsUtils;
+
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -15,9 +16,7 @@ import java.util.stream.IntStream;
  * @author Gareth Iguasnia
  * @date 16/02/2020
  */
-public class UserProfile {
-    // oooo have the ability to export this data into a csv? a public method that requires a string -> username.
-
+public class UserProfile implements Serializable {
     // Key - Unique String ID where the single digits represent an instrument and the alphabetical character
     // represents a tempo. Value - The State object that holds the combination detailed by the ID
     private Map<String, State> states = new HashMap<>();
@@ -271,91 +270,4 @@ public class UserProfile {
         }
         return combinations;
     }
-
-    /*public static void main(String[] args) {
-
-        ArrayList<int[]> test;
-
-        Iterator<int[]> testing = CombinatoricsUtils.combinationsIterator(4,2);
-        while(testing.hasNext()) {
-            //Object element = testing.next();
-            int[] element = testing.next();
-
-            System.out.print(Arrays.toString(element));
-        }
-
-        Instrument hu = Instrument.BASS;
-
-        Object[] possibleValues = hu.getDeclaringClass().getEnumConstants();
-        Instrument[] possVal = hu.getDeclaringClass().getEnumConstants();
-
-        for (Object obj: possibleValues) {
-            System.out.println(obj);
-            Instrument tesst = (Instrument) obj;
-            Instrument fr = Instrument.PIANO;
-            //int tet =
-            //System.out.println(fr.value);
-        }
-        System.out.println(possibleValues.length);
-
-        ArrayList<Instrument> in = new ArrayList<Instrument>();
-        in.add(Instrument.CLAVE);
-        in.add(Instrument.PIANO);
-        BPM inn = BPM.SLOW;
-
-        Object[] getting = {in, inn};
-
-        ArrayList<Instrument> in2 = new ArrayList<Instrument>();
-        in2.add(Instrument.CLAVE);
-        in2.add(Instrument.PIANO);
-
-        BPM inn2 = BPM.MEDIUM;
-        Object[] getting2 = {in2, inn2};
-
-        System.out.println(getting.equals(getting2));
-        System.out.println(in.equals(inn2));
-        String ed = "hi";
-        String ed2 ="hi";
-        String ed3 = ed+ed2;
-        System.out.println(ed3);
-
-        char ni = 'a';
-        String ed4 = ed3 + ni;
-        System.out.println(ed4);
-
-        System.out.println(ed4.substring(ed4.length() - 1));
-        System.out.println('b' > 'a');
-        System.out.println(ed4.substring(0, ed4.length() - 1));
-
-        List<Integer> range = IntStream.rangeClosed(0, 3)
-                .boxed().collect(Collectors.toList());
-        System.out.println(range);
-
-        String con = "hello1";
-        System.out.println(con.contains("1"));
-        char[] waitUp = con.toCharArray();
-        Arrays.sort(waitUp);
-        System.out.println(waitUp);
-        char huhu = 'a';
-        char hihi = 'a';
-        System.out.println(huhu == hihi);
-        System.out.println(con + huhu);
-        System.out.println(con.substring(0,1));
-        System.out.println(con.substring(2));
-
-        UserProfile up = new UserProfile();
-
-        for (Map.Entry<String, State> entry : up.getStates().entrySet()) {
-            System.out.println("The combination is: " + entry.getKey());
-            System.out.println(entry.getValue().getInstruments());
-            System.out.println(entry.getValue().getBpm());
-            System.out.println("The neighbours are:");
-            for (State state: entry.getValue().getNeighbours()) {
-                System.out.println(state.getInstruments());
-                System.out.println(state.getBpm());
-            }
-            System.out.println();
-        }
-
-    }*/
 }

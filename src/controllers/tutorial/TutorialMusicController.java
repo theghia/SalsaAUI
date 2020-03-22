@@ -1,5 +1,6 @@
 package controllers.tutorial;
 
+import components.PlayFile;
 import controllers.MusicController;
 import main.SalsaModel;
 
@@ -37,4 +38,5 @@ public class TutorialMusicController extends MusicController {
     public void clipReady(long clipSalsaLength) {
         getSalsaModel().fireTutorialClipInfoReadyEvent(clipSalsaLength);
     }
+
 }

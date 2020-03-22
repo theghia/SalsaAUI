@@ -7,6 +7,7 @@ import views.GameView;
 import views.TutorialView;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * TutorialGUIController class extends GUIController and implements the TutorialGUIListener interface.
@@ -47,6 +48,9 @@ public class TutorialGUIController extends GUIController implements TutorialGUIL
         tutorialView.getPractice().setVisible(false);
         tutorialView.getNo().setVisible(false);
         tutorialView.getBack().setVisible(false);
+
+        makeMainComponentsAppear();
+        tutorialView.getBeatClicker().setVisible(true);
 
         // We start the Game in the Tutorial
         getSalsaModel().fireTutorialGameStartEvent();
@@ -135,6 +139,30 @@ public class TutorialGUIController extends GUIController implements TutorialGUIL
 
     @Override
     public void onStartScreenEvent() {
+        makeGUIDisappear();
+        makeMainComponentsAppear();
+
+        // Start and Home button
+        tutorialView.getStartButton().setVisible(true);
+        tutorialView.getNavigationButtons().get("main").setVisible(true);
+
+        // Not needed
+        tutorialView.getBack().setVisible(false);
+        tutorialView.getPractice().setVisible(false);
+        tutorialView.getNo().setVisible(false);
+
+        // Turning off all of the lights
+        turnOffAllLights();
+    }
+
+    private void turnOffAllLights() {
+        for (JPanel light: tutorialView.getLights()) {
+            CardLayout cardLayout = (CardLayout) light.getLayout();
+            cardLayout.show(light, "off_light");
+        }
+    }
+
+    private void makeMainComponentsAppear() {
         // The current and next beats
         tutorialView.getNextBeat().setVisible(true);
         tutorialView.getCurrentBeat().setVisible(true);
@@ -145,18 +173,9 @@ public class TutorialGUIController extends GUIController implements TutorialGUIL
         for (JPanel light: tutorialView.getLights())
             light.setVisible(true);
 
-        // Start and Home button
-        tutorialView.getStartButton().setVisible(true);
-        tutorialView.getNavigationButtons().get("main").setVisible(true);
-
         // The gauge
         tutorialView.getGaugeGUI().setVisible(true);
         tutorialView.getRotateNeedle().setVisible(true);
-
-        // Not needed
-        tutorialView.getBack().setVisible(false);
-        tutorialView.getPractice().setVisible(false);
-        tutorialView.getNo().setVisible(false);
     }
 
     /* Helper method that makes all of the GUI, bar the buttons for the tutorial navigation, invisible */

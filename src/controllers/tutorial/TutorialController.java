@@ -1,17 +1,22 @@
 package controllers.tutorial;
 
+import components.enums.BPM;
 import components.functions.ErrorFunction;
+import components.functions.GameStatusFunction;
 import components.functions.ef.LinearErrorFunction;
-import components.enums.State;
+import components.State;
+import components.functions.gsf.DGDBEasy;
+import components.ingame.levels.TutorialProgress;
 import controllers.GameController;
 import events.GameEvent;
 import main.SalsaModel;
-import components.ingame.levels.HardProgress;
 import views.GameView;
 import views.TutorialView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * TutorialController class extends the GameController class and overrides some of the methods in the GameController
@@ -28,9 +33,14 @@ public class TutorialController extends GameController {
     // Error Function to be used with the calculateErrorValue() method
     private ErrorFunction errorFunction;
 
+    // To know which stage of the tutorial we are at
     private int tutorialTracker;
 
+    // To add listeners to the extra buttons found in the TutorialView
     private TutorialView tutorialView;
+
+    // As we are programming to an interface, we can switch out the GameStatusFunction with ease
+    private GameStatusFunction gameStatusFunction;
 
     /**
      * Constructor for the TutorialController.
@@ -47,6 +57,9 @@ public class TutorialController extends GameController {
         // The default value for the tutorialTracker
         this.tutorialTracker = 0;
 
+        // The Game Status function for the Hard mode of the game
+        this.gameStatusFunction = new DGDBEasy();
+
         // Start up the extra buttons in the TutorialView
         initStartButton();
         initBackButton();
@@ -54,6 +67,16 @@ public class TutorialController extends GameController {
         initNoButton();
         initPracticeButton();
         initSkipButton();
+    }
+
+    /**
+     * Method returns the GameStatusFunction that the MVC application will be using to determine the next state that
+     * the game will move on to next
+     *
+     * @return A GameStatusFunction
+     */
+    public GameStatusFunction getGameStatusFunction() {
+        return gameStatusFunction;
     }
 
     /**
@@ -68,10 +91,14 @@ public class TutorialController extends GameController {
         // Necessary information to initialise the error function
         long requiredBeatTime = getSalsaModel().getBeatTimeline().get(currentBeat - 1 + 8*(barNumber - 1));
 
+        // Determining the index of the left time window
+        int index_left_TW = currentBeat - 1 + 8*(barNumber - 1) - getTIME_WINDOW();
+        if (index_left_TW < 0)
+            index_left_TW = 0;
+
         // Initialising the error function for the Linear Error Function
         long one_beat = getSalsaModel().getBeatTimeline().get(1);
-        long left_time_window = getSalsaModel().getBeatTimeline().get(
-                currentBeat - 1 + 8*(barNumber - 1) - getTIME_WINDOW());
+        long left_time_window = getSalsaModel().getBeatTimeline().get(index_left_TW);
         this.errorFunction = new LinearErrorFunction(one_beat, left_time_window);
 
         // Error value calculated using the error function and then added to the UserProfile
@@ -96,11 +123,11 @@ public class TutorialController extends GameController {
                 // Choose a starting State
                 State randState = chooseStartingState();
 
-                // Choose a random int between [4, 8]
-                int firstBeat = getRandomGenerator().nextInt(5) + 4;
+                // Choose a random int between [1, 8]
+                int firstBeat = getRandomGenerator().nextInt(8) + 1;
 
                 // Only 8 different State objects will be visited
-                getSalsaModel().setNumTransitionedStates(8);
+                getSalsaModel().setNumTransitionedStates(4);
 
                 // Update the model
                 getSalsaModel().setCurrentState(randState);
@@ -121,8 +148,37 @@ public class TutorialController extends GameController {
      */
     @Override
     public State chooseStartingState() {
-        // Starting at a node that is slow?
-        return null;
+        // The random starting State that has been chosen
+        State randState;
+        // To loop through all of the State objects in the User Profile
+        Map<String, State> states = getSalsaModel().getUserProfile().getStates();
+
+        // An ArrayList of State objects that have not been explored
+        ArrayList<State> unexploredStates = new ArrayList<State>();
+
+        // An ArrayList of State objects that have previously been explored
+        ArrayList<State> exploredStates = new ArrayList<State>();
+
+        for (Map.Entry<String, State> entry: states.entrySet()) {
+            if (!entry.getValue().hasBeenExplored() && entry.getValue().getBpm().equals(BPM.SLOW)
+                    && (entry.getValue().getInstruments().size() <= 2))
+                unexploredStates.add(entry.getValue());
+            else if (entry.getValue().hasBeenExplored() && entry.getValue().getBpm().equals(BPM.SLOW)
+                    && (entry.getValue().getInstruments().size() <= 2))
+                exploredStates.add(entry.getValue());
+        }
+
+        // If there are some States that have not been explored, then randomly choose one of those State objects
+        if (!unexploredStates.isEmpty()) {
+            int rndIndex = this.getRandomGenerator().nextInt(unexploredStates.size());
+            randState = unexploredStates.get(rndIndex);
+        }
+        // Otherwise, randomly choose a starting State from all possible State objects
+        else {
+            int rndIndex = this.getRandomGenerator().nextInt(exploredStates.size());
+            randState = exploredStates.get(rndIndex);
+        }
+        return randState;
     }
 
     /**
@@ -138,9 +194,11 @@ public class TutorialController extends GameController {
 
         // Creates a Timer thread that will execute logic found in the GameProgress class at every new 8-beat bar
         // for 4 bars. Then a new state is chosen, and the process is repeated
-        //new GameProgress(this, clipSalsa);
-        HardProgress hardProgress = new HardProgress(this, clipSalsa);
-        hardProgress.start();
+
+        //HardProgress hardProgress = new HardProgress(this, clipSalsa);
+        //hardProgress.start();
+        TutorialProgress tutorialProgress = new TutorialProgress(this, clipSalsa);
+        tutorialProgress.start();
     }
 
     private void initNextButton() {
@@ -235,6 +293,8 @@ public class TutorialController extends GameController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 tutorialTracker = 0;
+                getSalsaModel().setCurrentBeat(-1);
+                getSalsaModel().fireTutorialNewBeatEvent();
                 getSalsaModel().fireTutorialFinishedEvent();
             }
         };

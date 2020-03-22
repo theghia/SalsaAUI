@@ -136,7 +136,7 @@ public class TutorialView extends GameView {
     }
 
     private void setupNextBeatText(Font font, Border border) {
-        JTextArea nextBeat = new JTextArea("The 'Next Beat' is the beat \nthat you will need" +
+        JTextArea nextBeat = new JTextArea("The 'Next Beat' is the beat \nthat you will need " +
                 "to find in the next \nbar of Salsa music");
 
         // Setting up the JTextArea
@@ -224,14 +224,14 @@ public class TutorialView extends GameView {
                 widthPosition, SpringLayout.WEST, this);
 
         this.getPanelLayout().putConstraint(SpringLayout.NORTH, skip,
-                50, SpringLayout.NORTH, gameView.getTempos());
+                10, SpringLayout.SOUTH, gameView.getTempos());
 
         // Layout for the Practice button
         this.getPanelLayout().putConstraint(SpringLayout.WEST, practice,
                 widthPosition, SpringLayout.WEST, this);
 
         this.getPanelLayout().putConstraint(SpringLayout.NORTH, practice,
-                50, SpringLayout.NORTH, gameView.getTempos());
+                10, SpringLayout.SOUTH, gameView.getTempos());
 
         // Layout for the next button
         this.getPanelLayout().putConstraint(SpringLayout.WEST, next,

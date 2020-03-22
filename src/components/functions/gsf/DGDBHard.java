@@ -1,10 +1,10 @@
 package components.functions.gsf;
 
-import components.enums.State;
+import components.State;
 
 import java.util.ArrayList;
 
-public class DynamicGameDifficultyBalancingHard extends DynamicGameDifficultyBalancing {
+public class DGDBHard extends DynamicGameDifficultyBalancing {
 
     @Override
     public void sortHardAndExplored(ArrayList<State> sorted, State potentialNeighbour, State currentState) {

@@ -1,5 +1,9 @@
-package components.enums;
+package components;
 
+import components.enums.BPM;
+import components.enums.Instrument;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,7 +13,7 @@ import java.util.ArrayList;
  * @author Gareth Iguasnia
  * @date 01/03/2020
  */
-public class State {
+public class State implements Serializable {
 
     private BPM bpm;
     private ArrayList<Instrument> instruments;

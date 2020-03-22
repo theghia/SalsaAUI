@@ -1,6 +1,6 @@
 package components.functions;
 
-import components.enums.State;
+import components.State;
 
 /**
  * GameStatusFunction interface that will be implemented by the game status function chosen to be used in this

@@ -2,7 +2,7 @@ package controllers;
 
 import components.enums.Instrument;
 import components.PlayFile;
-import components.enums.State;
+import components.State;
 import listeners.GameProgressionListener;
 import events.GameEvent;
 import main.SalsaController;

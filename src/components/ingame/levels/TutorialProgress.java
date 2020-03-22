@@ -3,14 +3,14 @@ package components.ingame.levels;
 import components.State;
 import components.ingame.GameProgress;
 import controllers.GameController;
-import controllers.simulation.hard.HardSimulationController;
+import controllers.tutorial.TutorialController;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class HardProgress extends GameProgress {
+public class TutorialProgress extends GameProgress {
 
-    private HardSimulationController hardSimulationController;
+    private TutorialController tutorialController;
 
     /**
      * Constructor: This will be used throughout all of the simulation bar at the start of the simulation
@@ -18,9 +18,9 @@ public class HardProgress extends GameProgress {
      * @param gameController A GameController object that will be used by this Class to access the model
      * @param clipSalsa      The length of the Salsa audio clip in milliseconds
      */
-    public HardProgress(GameController gameController, long clipSalsa) {
+    public TutorialProgress(GameController gameController, long clipSalsa) {
         super(gameController, clipSalsa);
-        this.hardSimulationController = (HardSimulationController) gameController;
+        this.tutorialController = (TutorialController) gameController;
     }
 
     @Override
@@ -29,21 +29,15 @@ public class HardProgress extends GameProgress {
         ArrayList<Integer> nextBeats = new ArrayList<>(4);
 
         for (int i = 0; i < 4; i++) {
-            // 2nd and 3rd bar of the 4 8-beat bar Salsa audio clip
-            if (i == 0 || i == 1) {
-                int nextBeat = randomGenerator.nextInt(8) + 1;
-                nextBeats.add(nextBeat);
-            }
+            int sameBeat = getGameController().getSalsaModel().getNextBeat();
 
-            // 4th bar of the 4 8-beat bar Salsa audio clip
-            else if (i == 2) {
-                int nextBeat = randomGenerator.nextInt(5) + 1;
-                nextBeats.add(nextBeat);
-            }
+            // 2nd, 3rd and 4th bar of the 4 8-beat bar Salsa audio clip
+            if (!(i == 3))
+                nextBeats.add(sameBeat);
 
             // 1st bar of the next 4 8-beat bar Salsa audio clip
             else {
-                int nextBeat = randomGenerator.nextInt(5) + 4;
+                int nextBeat = randomGenerator.nextInt(8) + 1;
                 nextBeats.add(nextBeat);
             }
         }
@@ -53,23 +47,25 @@ public class HardProgress extends GameProgress {
 
     @Override
     public void stateTransitionBehaviour(State currentState) {
-        State newState = hardSimulationController.getGameStatusFunction().getNextState(currentState);
+        // Choosing the next state
+        State newState = this.tutorialController.getGameStatusFunction().getNextState(currentState);
 
         // Changing State depending on the input or lack of
-        hardSimulationController.getSalsaModel().setCurrentState(newState);
+        this.tutorialController.getSalsaModel().setCurrentState(newState);
 
         // The model fires an event to get the simulation started for the next State
-        hardSimulationController.getSalsaModel().fireNewStateEvent(); // This should be in an ABSTRACT METHOD so that
-        // you can add the pause before the next state for the beginners
+        tutorialController.getSalsaModel().fireTutorialNewStateEvent();
     }
 
     @Override
     public void newBeat() {
-        getGameController().getSalsaModel().fireNewBeatEvent();
+        getGameController().getSalsaModel().fireTutorialNewBeatEvent();
     }
 
     @Override
     public void gameFinished() {
-        getGameController().getSalsaModel().fireSimulationFinishedEvent();
+        getGameController().getSalsaModel().resetModel();
+        getGameController().getSalsaModel().fireTutorialNewBeatEvent();
+        getGameController().getSalsaModel().fireTutorialStartScreen();
     }
 }

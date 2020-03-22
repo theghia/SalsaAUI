@@ -1,5 +1,6 @@
 package controllers;
 
+import components.UserProfile;
 import main.MainFrame;
 import main.SalsaController;
 import main.SalsaModel;
@@ -12,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
 
 /**
  * NavigationController Class that extends the SalsaController Class. This controller will be in charge of the logic
@@ -71,11 +73,10 @@ public class NavigationController extends SalsaController {
         MenuView main = (MenuView) this.mainFrame.getPanels().get(mainFrame.getMAIN()); // Getting the view main
 
         // Initialises the ActionListener for the "simulation" button
-        //goToView(main.getNavigationButtons().get(mainFrame.getSIMULATION()), mainFrame.getSIMULATION());
-        goToView(main.getNavigationButtons().get(mainFrame.getSIMULATION()), mainFrame.getLEVELS());
+        beforePlayingTheGame(main.getNavigationButtons().get(mainFrame.getSIMULATION()), mainFrame.getLEVELS());
 
         // Initialises the ActionListener for the "tutorial" button
-        goToView(main.getNavigationButtons().get(mainFrame.getTUTORIAL()), mainFrame.getTUTORIAL());
+        beforePlayingTheGame(main.getNavigationButtons().get(mainFrame.getTUTORIAL()), mainFrame.getTUTORIAL());
 
         // Initialises the ActionListener for the "justified_user_profile" button
         goToView(main.getNavigationButtons().get(mainFrame.getJUP()), mainFrame.getJUP());
@@ -95,6 +96,9 @@ public class NavigationController extends SalsaController {
 
         // Initialises the ActionListener for the "hard" button
         goToView(gameLevelView.getNavigationButtons().get(mainFrame.getHARD()), mainFrame.getHARD());
+
+        // Initialise the ActionListener for the "home" button
+        goToView(gameLevelView.getNavigationButtons().get(mainFrame.getMAIN()), mainFrame.getMAIN());
     }
 
     /* Helper method to add an ActionListener to the "Home" buttons */
@@ -121,5 +125,59 @@ public class NavigationController extends SalsaController {
             }
         };
         navigationButton.addActionListener(underConstruction);
+    }
+
+    private void beforePlayingTheGame(JButton navigationButton, String panel) {
+        ActionListener beforePlaying = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // The user must register a name before playing
+                if (getSalsaModel().getNameOfUser() == null) {
+                    JPanel pane = mainFrame.getPanels().get(panel);
+                    String username = JOptionPane.showInputDialog(pane,
+                            "Please input your username:",
+                            "Username needed",
+                            JOptionPane.WARNING_MESSAGE);
+                    getSalsaModel().setNameOfUser(username);
+                    if (!(getSalsaModel().getNameOfUser() == null))
+                        JOptionPane.showMessageDialog(pane,
+                                "Username successfully added!",
+                                "Alert",
+                                JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    // Load the information
+                    loadGameProgress();
+
+                    CardLayout cardLayout = (CardLayout) mainFrame.getCards().getLayout();
+                    // Displaying the game difficulty page
+                    cardLayout.show(mainFrame.getCards(), panel);
+                    // Caching the result of the current view
+                    getSalsaModel().setCurrentView(panel);
+                }
+            }
+        };
+        navigationButton.addActionListener(beforePlaying);
+    }
+
+    public void loadGameProgress() {
+        String filename = getSalsaModel().getDATA() +
+                getSalsaModel().getNameOfUser() + ".ser";
+        FileInputStream fileInputStream = null;
+        ObjectInputStream objectInputStream = null;
+
+        try {
+            fileInputStream = new FileInputStream(filename);
+            objectInputStream = new ObjectInputStream(fileInputStream);
+
+            UserProfile userProfile = (UserProfile) objectInputStream.readObject();
+            getSalsaModel().setUserProfile(userProfile);
+        }
+        catch (IOException e) {
+            System.out.println("There is no file to load");
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

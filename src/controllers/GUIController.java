@@ -2,6 +2,7 @@ package controllers;
 
 import components.gui.Countdown;
 import components.enums.Instrument;
+import components.gui.LightSwitch;
 import components.gui.MoveGaugeNeedle;
 import events.GameEvent;
 import listeners.GameGUIListener;
@@ -208,10 +209,12 @@ public abstract class GUIController extends SalsaController implements GameProgr
 
     @Override
     public void onLightsTurnOn(){
-        this.scheduledExecutorService.shutdownNow();
-        Lights lights = new Lights(gameView);
+        // The time between one beat
         long one_beat = getSalsaModel().getBeatTimeline().get(1);
-        this.scheduledExecutorService.scheduleAtFixedRate(lights, 0, one_beat, TimeUnit.MILLISECONDS);
+
+        // Sets the executor in motion to turn the lights on according to the beat timeline
+        LightSwitch lightSwitch = new LightSwitch(gameView, one_beat);
+        lightSwitch.lightSwitchStart();
     }
 
     /**

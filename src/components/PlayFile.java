@@ -10,7 +10,7 @@ import java.io.File;
  * @author Gareth Iguasnia
  * @date 26/12/2019
  */
-public class PlayFile extends Thread {
+public class PlayFile implements Runnable {
     // The name of the file to play
     private String filename;
 
@@ -94,6 +94,6 @@ public class PlayFile extends Thread {
             }
         });
 
-        testing.start();
+        testing.run();
     }
 }

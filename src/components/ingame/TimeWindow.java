@@ -38,8 +38,14 @@ public class TimeWindow {
 
         // -1 -> Since index starts at 0
         // + (8*(stateNumber - 1)) -> since each State comes with 4 8-beat bars of Salsa music
-        int indexForInitialDelay = beatSelected - TIMEWINDOW - 1 + (8*(barNumber - 1)); // Allow for the time window to be shorten
-        int indexForPeriod = beatSelected + TIMEWINDOW - 1 + (8*(barNumber - 1)); // Allow the time window to be shorten
+        int indexForInitialDelay = beatSelected - TIMEWINDOW - 1 + (8*(barNumber - 1));
+        int indexForPeriod = beatSelected + TIMEWINDOW - 1 + (8*(barNumber - 1));
+
+        // Allowing the time window to be shortened
+        if (indexForInitialDelay < 0)
+            indexForInitialDelay = 0;
+        if (indexForPeriod > 31)
+            indexForPeriod = 31;
 
         System.out.println("Bar number: " + barNumber);
         System.out.println("Start window: " + model.getBeatTimeline().get(indexForInitialDelay));

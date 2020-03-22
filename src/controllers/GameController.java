@@ -1,6 +1,6 @@
 package controllers;
 
-import components.enums.State;
+import components.State;
 import events.ClipInformationEvent;
 import listeners.ClipInformationListener;
 import main.SalsaController;
