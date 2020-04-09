@@ -218,6 +218,10 @@ public class MoveGaugeNeedle {
         }
     }
 
+    public double getCurrentAngle() {
+        return currentAngle;
+    }
+
     /* Helper method to run the logic in a thread as sometimes the needle would not move in sync with the input */
     private void moveNeedleOnce(double desiredAngle, boolean isNeedleGoingForward,
                                 ScheduledExecutorService scheduledExecutorService, int initialDelay, int period) {

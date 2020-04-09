@@ -56,19 +56,19 @@ public abstract class GameController extends SalsaController implements ClipInfo
      * @param currentBeat The beat that the user needs to find
      * @param barNumber   The bar number that the beat requested is on
      */
-    public abstract void calculateErrorValue(int currentBeat, int barNumber);
+    protected abstract void calculateErrorValue(int currentBeat, int barNumber);
 
     /**
      * Abstract method to be used to add an action listener to the Start button of the GameView
      */
-    public abstract void initStartButton();
+    protected abstract void initStartButton();
 
     /**
      * Abstract method to choose the state that the game will start on
      *
      * @return A State object that will be the first state that the game will begin on
      */
-    public abstract State chooseStartingState();
+    protected abstract State chooseStartingState();
 
     /**
      * Abstract method to execute the needed to progress the game. The reason this method is abstract is to allow the
@@ -77,7 +77,7 @@ public abstract class GameController extends SalsaController implements ClipInfo
      *
      * @param clipSalsa Long value representing the length of the Salsa audio clip
      */
-    public abstract void clipReady(long clipSalsa);
+    protected abstract void clipReady(long clipSalsa);
 
     /**
      * This method deals with the necessary logic when the fireClipInfoReadyEvent(...) method is called in the

@@ -53,13 +53,13 @@ public abstract class MusicController extends SalsaController implements GamePro
      * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
      * the method once the countdown audio file has started playing.
      */
-    public abstract void countdownStarted();
+    protected abstract void countdownStarted();
 
     /**
      * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
      * this method once the countdown audio file has finished playing.
      */
-    public abstract void countdownFinished();
+    protected abstract void countdownFinished();
 
     /**
      * Abstract method needs to be implemented by the derived subclass so that the right "fire" method is called in
@@ -67,7 +67,7 @@ public abstract class MusicController extends SalsaController implements GamePro
      *
      * @param clipSalsaLength Long variable representing the length of the Salsa audio clip
      */
-    public abstract void clipReady(long clipSalsaLength);
+    protected abstract void clipReady(long clipSalsaLength);
 
     /**
      * Method used for the HardSimulationMusicController to take action when the fireSimulationStartedEvent method is

@@ -101,7 +101,6 @@ public abstract class GameProgress {
         public void run() {
             if (numBars > 0) {
                 // Went through one 8-beat bar of music
-                System.out.println("RemindTask -> Run()");
                 numBars--;
 
                 // Setting the next beat in the model
@@ -115,7 +114,6 @@ public abstract class GameProgress {
 
                 // An event is thrown here for to show the new beats
                 newBeat();
-                //gameController.getSalsaModel().fireNewBeatEvent();
             }
             // We need to signal the system internally that we have reached the final 8-beat bar of the State
             else {

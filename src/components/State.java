@@ -141,4 +141,30 @@ public class State implements Serializable {
     public void setHasBeenExplored(boolean hasBeenExplored) {
         this.hasBeenExplored = hasBeenExplored;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        State compare = (State) obj;
+
+        int instrumentCounter = 0;
+        int total = this.getInstruments().size() + compare.getInstruments().size();
+
+        for (Instrument instrument1: this.getInstruments()) {
+            for (Instrument instrument2: compare.getInstruments()) {
+                if (instrument1.getValue() == instrument2.getValue())
+                    instrumentCounter++;
+            }
+        }
+
+        for (Instrument instrument1: compare.getInstruments()) {
+            for (Instrument instrument2: this.getInstruments()) {
+                if (instrument1.getValue() == instrument2.getValue())
+                    instrumentCounter++;
+            }
+        }
+
+        return ((instrumentCounter == total) &&
+                this.getBpm().getId() == compare.getBpm().getId());
+    }
 }
