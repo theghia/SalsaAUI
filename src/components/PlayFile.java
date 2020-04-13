@@ -84,6 +84,9 @@ public class PlayFile implements Runnable {
 
     public static void main(String[] args) {
         PlayFile testing = new PlayFile("src/assets/sounds/countdown/countdown_5-0.wav");
+        PlayFile test = new PlayFile("src/assets/sounds/countdown/countdown_5-0.wav");
+
+        System.out.println(testing.getClip().equals(test.getClip()));
         testing.getClip().addLineListener(new LineListener() {
             @Override
             public void update(LineEvent event) {
