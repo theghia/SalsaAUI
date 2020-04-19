@@ -20,4 +20,6 @@ public interface GameStatusFunction {
      * @return A State object representing the next state that the user will be tested on
      */
     State getNextState(State currentState);
+
+    double getThreshold();
 }

@@ -30,6 +30,10 @@ public abstract class DynamicGameDifficultyBalancing implements GameStatusFuncti
         randomGenerator = new Random();
     }
 
+    public double getThreshold() {
+        return THRESHOLD;
+    }
+
     @Override
     public State getNextState(State currentState) {
         // Getting the neighbouring states

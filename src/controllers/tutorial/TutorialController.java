@@ -194,9 +194,6 @@ public class TutorialController extends GameController {
 
         // Creates a Timer thread that will execute logic found in the GameProgress class at every new 8-beat bar
         // for 4 bars. Then a new state is chosen, and the process is repeated
-
-        //HardProgress hardProgress = new HardProgress(this, clipSalsa);
-        //hardProgress.start();
         TutorialProgress tutorialProgress = new TutorialProgress(this, clipSalsa);
         tutorialProgress.start();
     }

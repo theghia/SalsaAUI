@@ -8,6 +8,7 @@ import listeners.GameGUIListener;
 import listeners.GameProgressionListener;
 import listeners.TutorialGUIListener;
 
+import javax.sound.sampled.Clip;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -72,11 +73,13 @@ public class SalsaModel implements Serializable {
     private GameProgressionListener tutProgressGUIListener;
     private GameProgressionListener tutProgressMusicListener;
 
-    // This listener will be used with the HardSimulationController Class
+    // This listener will be used with the SimulationController Class
+    private ArrayList<ClipInformationListener> clipInfoListeners;
     private ClipInformationListener clipInfoListener;
     private ClipInformationListener tutClipInfoListener;
 
     // This listener will only be used with the HardSimulationGUIController Class
+    private ArrayList<GameGUIListener> simGUIListeners;
     private GameGUIListener simGUIListener;
     private GameGUIListener tutGUIListener;
 
@@ -92,7 +95,9 @@ public class SalsaModel implements Serializable {
         userProfile = new UserProfile();
 
         // Initialise the ArrayList to be able to add Listeners
-        simListeners = new ArrayList<>(2);
+        this.simListeners = new ArrayList<>(4);
+        this.clipInfoListeners = new ArrayList<>(4);
+        this.simGUIListeners = new ArrayList<>(4);
 
         // The beats will only be from 1 to 8. -1 used as they can never be that number
         this.currentBeat = -1;
@@ -173,7 +178,9 @@ public class SalsaModel implements Serializable {
      * @param clipInfoListener A Class that has implemented the ClipInformationListener interface
      */
     public void addClipInformationListener(ClipInformationListener clipInfoListener) {
-        this.clipInfoListener = clipInfoListener;
+        //this.clipInfoListener = clipInfoListener;
+        // TRANSITION TO
+        this.clipInfoListeners.add(clipInfoListener);
     }
 
     /**
@@ -193,7 +200,9 @@ public class SalsaModel implements Serializable {
      * @param simGUIListener A Class that has implemented the GameGUIListener interface
      */
     public void addSimulationGUIListener(GameGUIListener simGUIListener) {
-        this.simGUIListener = simGUIListener;
+        //this.simGUIListener = simGUIListener;
+        // TRANSITION TO
+        this.simGUIListeners.add(simGUIListener);
     }
 
     /**
@@ -228,8 +237,19 @@ public class SalsaModel implements Serializable {
         GameEvent e = new GameEvent(this);
 
         // The listeners will execute whatever logic they have implemented
-        for (GameProgressionListener gameProgressionListener : this.simListeners)
-            gameProgressionListener.onGameStartedEvent(e);
+        //for (GameProgressionListener gameProgressionListener : this.simListeners)
+          //  gameProgressionListener.onGameStartedEvent(e);
+        for (int i = 0; i < 2; i ++) {
+            this.simListeners.get(i).onGameStartedEvent(e);
+        }
+    }
+
+    public void fireEasySimulationStartEvent() {
+        GameEvent e = new GameEvent(this);
+
+        for (int i = 2; i < 4; i ++) {
+            this.simListeners.get(i).onGameStartedEvent(e);
+        }
     }
 
     /**
@@ -243,7 +263,15 @@ public class SalsaModel implements Serializable {
         ClipInformationEvent e = new ClipInformationEvent(this, clipSalsa);
 
         // The listener will execute whatever logic it has implemented
-        this.clipInfoListener.onClipInfoReadyEvent(e);
+        //this.clipInfoListener.onClipInfoReadyEvent(e);
+        // TRANSITION TO
+        this.clipInfoListeners.get(0).onClipInfoReadyEvent(e);
+    }
+
+    public void fireEasyClipInfoReadyEvent(long clipSalsa) {
+        ClipInformationEvent e = new ClipInformationEvent(this, clipSalsa);
+
+        this.clipInfoListeners.get(1).onClipInfoReadyEvent(e);
     }
 
     /**
@@ -254,8 +282,20 @@ public class SalsaModel implements Serializable {
         GameEvent e = new GameEvent(this);
 
         // The listeners will execute whatever logic they have implemented
-        for (GameProgressionListener gameProgressionListener : this.simListeners)
-            gameProgressionListener.onNewStateEvent(e);
+        //for (GameProgressionListener gameProgressionListener : this.simListeners)
+          //  gameProgressionListener.onNewStateEvent(e);
+
+        for (int i = 0; i < 2; i ++) {
+            this.simListeners.get(i).onNewStateEvent(e);
+        }
+    }
+
+    public void fireEasyNewStateEvent() {
+        GameEvent e = new GameEvent(this);
+
+        for (int i = 2; i < 4; i ++) {
+            this.simListeners.get(i).onNewStateEvent(e);
+        }
     }
 
     /**
@@ -266,7 +306,15 @@ public class SalsaModel implements Serializable {
         GameEvent e = new GameEvent(this);
 
         // The listener will execute whatever logic that has been implemented by the SimGUIController
-        this.simGUIListener.onNewBeatEvent(e);
+        //this.simGUIListener.onNewBeatEvent(e);
+
+        this.simGUIListeners.get(0).onNewBeatEvent(e);
+    }
+
+    public void fireEasyNewBeatEvent() {
+        GameEvent e = new GameEvent(this);
+
+        this.simGUIListeners.get(1).onNewBeatEvent(e);
     }
 
     /**
@@ -277,7 +325,9 @@ public class SalsaModel implements Serializable {
         GameEvent e = new GameEvent(this);
 
         // The two listeners will be notified. This is to save rewriting more classes
-        this.simGUIListener.onGameFinishedEvent(e);
+        for (GameGUIListener gameGUIListener: this.simGUIListeners)
+            gameGUIListener.onGameFinishedEvent(e);
+        //this.simGUIListener.onGameFinishedEvent(e);
         this.tutGUIListener.onGameFinishedEvent(e);
     }
 
@@ -288,7 +338,13 @@ public class SalsaModel implements Serializable {
     public void fireNewErrorValueEvent(GameEvent e) {
 
         // The listener will execute whatever logic that has been implemented by the SimGUIController
-        this.simGUIListener.onNewErrorValueEvent(e);
+        //this.simGUIListener.onNewErrorValueEvent(e);
+
+        this.simGUIListeners.get(0).onNewErrorValueEvent(e);
+    }
+
+    public void fireEasyNewErrorValueEvent(GameEvent e) {
+        this.simGUIListeners.get(1).onNewErrorValueEvent(e);
     }
 
     /**
@@ -296,7 +352,12 @@ public class SalsaModel implements Serializable {
      * called once the start button has been clicked to begin the countdown to the simulation run.
      */
     public void fireCountdownStartedEvent() {
-        this.simGUIListener.onCountdownStartedEvent();
+        //this.simGUIListener.onCountdownStartedEvent();
+        this.simGUIListeners.get(0).onCountdownStartedEvent();
+    }
+
+    public void fireEasyCountdownStartedEvent() {
+        this.simGUIListeners.get(1).onCountdownStartedEvent();
     }
 
     /**
@@ -304,7 +365,13 @@ public class SalsaModel implements Serializable {
      * called after the countdown audio clip has finished to display the relevant GUI for the simulation.
      */
     public void fireCountdownFinishedEvent() {
-        this.simGUIListener.onCountdownFinishedEvent();
+        //this.simGUIListener.onCountdownFinishedEvent();
+
+        this.simGUIListeners.get(0).onCountdownFinishedEvent();
+    }
+
+    public void fireEasyCountdownFinishedEvent() {
+        this.simGUIListeners.get(1).onCountdownFinishedEvent();
     }
 
     /**
@@ -392,6 +459,10 @@ public class SalsaModel implements Serializable {
      */
     public void fireLightsOnEvent() {
         this.tutGUIListener.onLightsTurnOn();
+    }
+
+    public void fireEasyLightsOnEvent() {
+        this.simGUIListeners.get(1).onLightsTurnOn();
     }
 
     public void fireTutorialFinalEvent() {

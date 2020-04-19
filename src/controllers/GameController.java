@@ -1,6 +1,7 @@
 package controllers;
 
 import components.State;
+import components.functions.GameStatusFunction;
 import events.ClipInformationEvent;
 import listeners.ClipInformationListener;
 import main.SalsaController;
@@ -31,6 +32,9 @@ public abstract class GameController extends SalsaController implements ClipInfo
     // This executor will hold 6 threads needed to be executed when a new State object is traversed
     private ScheduledExecutorService scheduledExecutorService;
 
+    // As we are programming to an interface, we can switch out the GameStatusFunction with ease
+    private GameStatusFunction gameStatusFunction;
+
     /**
      * Constructor for the GameController. This will only be called by sub classes using the super
      * keyword as this class should never be instantiated.
@@ -47,6 +51,20 @@ public abstract class GameController extends SalsaController implements ClipInfo
 
         initClickerButton();
         initStartButton();
+    }
+
+    /**
+     * Method returns the GameStatusFunction that the MVC application will be using to determine the next state that
+     * the game will move on to next
+     *
+     * @return A GameStatusFunction
+     */
+    public GameStatusFunction getGameStatusFunction() {
+        return gameStatusFunction;
+    }
+
+    public void setGameStatusFunction(GameStatusFunction gameStatusFunction) {
+        this.gameStatusFunction = gameStatusFunction;
     }
 
     /**

@@ -1,6 +1,9 @@
 package main;
 
 import controllers.*;
+import controllers.simulation.easy.EasySimulationController;
+import controllers.simulation.easy.EasySimulationGUIController;
+import controllers.simulation.easy.EasySimulationMusicController;
 import controllers.simulation.hard.HardSimulationGUIController;
 import controllers.simulation.hard.HardSimulationMusicController;
 import controllers.simulation.hard.HardSimulationController;
@@ -11,6 +14,7 @@ import listeners.ClipInformationListener;
 import listeners.GameGUIListener;
 import listeners.GameProgressionListener;
 import listeners.TutorialGUIListener;
+import views.games.EasySimulationView;
 import views.games.HardSimulationView;
 import views.TutorialView;
 
@@ -34,9 +38,32 @@ public class MainApp {
 
                 // Setting up the controllers to listen to the model
                 main.setupHardSimulation(mainFrame, model);
+                main.setupEasySimulation(mainFrame, model);
                 main.setupTutorial(mainFrame, model);
             }
         });
+    }
+
+    public void setupEasySimulation(MainFrame mainFrame, SalsaModel salsaModel) {
+        // Isolating the simulation view
+        EasySimulationView easySimulationView = (EasySimulationView) mainFrame.getPanels().get("easy");
+
+        // Setting up the three controllers needed for the Game Simulation
+        SalsaController simulationController = new EasySimulationController(salsaModel,
+                "easy_simulation", easySimulationView);
+
+        SalsaController simulationGUIController = new EasySimulationGUIController(salsaModel,
+                "easy_simulation_gui", easySimulationView);
+        SalsaController simulationMusicController = new EasySimulationMusicController(salsaModel,
+                "easy_simulation_music");
+
+
+        // Casting as we only want the model to have the Listener version of the controller so that any methods
+        // that the SalsaController has will not be present in the model
+        salsaModel.addSimulationListener((GameProgressionListener) simulationGUIController);
+        salsaModel.addSimulationListener((GameProgressionListener) simulationMusicController);
+        salsaModel.addClipInformationListener((ClipInformationListener) simulationController);
+        salsaModel.addSimulationGUIListener((GameGUIListener) simulationGUIController);
     }
 
     public void setupHardSimulation(MainFrame mainFrame, SalsaModel salsaModel) {

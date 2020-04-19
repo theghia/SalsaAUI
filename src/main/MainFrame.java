@@ -3,6 +3,7 @@ package main;
 import views.GameLevelView;
 import views.JustifiedUserProfileView;
 import views.MenuView;
+import views.games.EasySimulationView;
 import views.games.HardSimulationView;
 import views.TutorialView;
 import javax.swing.*;
@@ -38,6 +39,7 @@ public class MainFrame extends JFrame {
     private final String JUP = "justified_user_profile";
     private final String LEVELS = "levels";
     private final String HARD = "hard";
+    private final String EASY = "easy";
 
 
     /**
@@ -125,6 +127,10 @@ public class MainFrame extends JFrame {
         return HARD;
     }
 
+    public String getEASY() {
+        return EASY;
+    }
+
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(WIDTH,HEIGHT);
@@ -137,6 +143,9 @@ public class MainFrame extends JFrame {
 
         SalsaView hard = new HardSimulationView(HARD, this.getContentPane().getSize());
         setupOneView(hard);
+
+        SalsaView easy = new EasySimulationView(EASY, this.getContentPane().getSize());
+        setupOneView(easy);
 
         SalsaView tutorial = new TutorialView(TUTORIAL, this.getContentPane().getSize());
         setupOneView(tutorial);

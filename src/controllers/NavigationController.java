@@ -5,6 +5,7 @@ import main.MainFrame;
 import main.SalsaController;
 import main.SalsaModel;
 import views.GameLevelView;
+import views.games.EasySimulationView;
 import views.games.HardSimulationView;
 import views.JustifiedUserProfileView;
 import views.MenuView;
@@ -60,12 +61,15 @@ public class NavigationController extends SalsaController {
 
     }
 
-    /* Helper method to initialise the navigation buttons in the HardSimulationView */
+    /* Helper method to initialise the navigation buttons in the Simulation Views */
     private void initSimulationNavigationButtonActionListeners() {
         HardSimulationView hardSimulationView =
                 (HardSimulationView) this.mainFrame.getPanels().get(mainFrame.getHARD());
-
         goToView(hardSimulationView.getNavigationButtons().get(mainFrame.getMAIN()), mainFrame.getMAIN());
+
+        EasySimulationView easySimulationView =
+                (EasySimulationView) this.mainFrame.getPanels().get(mainFrame.getEASY());
+        goToView(easySimulationView.getNavigationButtons().get(mainFrame.getMAIN()), mainFrame.getMAIN());
     }
 
     /* Helper method to initialise the navigation buttons in the MenuView */
@@ -79,7 +83,8 @@ public class NavigationController extends SalsaController {
         beforePlayingTheGame(main.getNavigationButtons().get(mainFrame.getTUTORIAL()), mainFrame.getTUTORIAL());
 
         // Initialises the ActionListener for the "justified_user_profile" button
-        goToView(main.getNavigationButtons().get(mainFrame.getJUP()), mainFrame.getJUP());
+        buttonUnderConstruction(main.getNavigationButtons().get(mainFrame.getJUP()), mainFrame.getJUP());
+        //goToView(main.getNavigationButtons().get(mainFrame.getJUP()), mainFrame.getJUP());
 
         // Caching the result of the current view
         this.getSalsaModel().setCurrentView(mainFrame.getMAIN());
@@ -89,7 +94,8 @@ public class NavigationController extends SalsaController {
         GameLevelView gameLevelView = (GameLevelView) this.mainFrame.getPanels().get(mainFrame.getLEVELS());
 
         // Initialises the ActionListener for the "easy" button
-        buttonUnderConstruction(gameLevelView.getNavigationButtons().get("easy"), mainFrame.getLEVELS());
+        //buttonUnderConstruction(gameLevelView.getNavigationButtons().get("easy"), mainFrame.getLEVELS());
+        goToView(gameLevelView.getNavigationButtons().get("easy"), mainFrame.getEASY());
 
         // Initialises the ActionListener for the "medium" button
         buttonUnderConstruction(gameLevelView.getNavigationButtons().get("medium"), mainFrame.getLEVELS());
