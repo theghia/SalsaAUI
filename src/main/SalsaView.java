@@ -2,6 +2,7 @@ package main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,10 @@ public abstract class SalsaView extends JPanel{
     private String MAIN = "main";
 
     // File path
-    private final String GRAPHICS = "src/assets/graphics/";
+    private final String GRAPHICS = "assets/graphics/";//"src/assets/graphics/";
+
+    // To load up the images
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
     // Home Button dimensions
     private final int WIDTH_HOME = 100;
@@ -159,6 +163,10 @@ public abstract class SalsaView extends JPanel{
         return buffer;
     }
 
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(800,800);
@@ -178,7 +186,9 @@ public abstract class SalsaView extends JPanel{
     private void setupHomeButton() {
         if (!this.isMenuView) {
             // Scaling the home png file
-            ImageIcon home = new ImageIcon(GRAPHICS + "home.png");
+            //ImageIcon home = new ImageIcon(GRAPHICS + "home.png");
+            URL resource = classLoader.getResource(GRAPHICS + "home.png");
+            ImageIcon home = new ImageIcon(resource);
             Image scaled = home.getImage().getScaledInstance(WIDTH_HOME - 40,HEIGHT_HOME - 40, Image.SCALE_SMOOTH);
             ImageIcon scaledHome = new ImageIcon(scaled);
 

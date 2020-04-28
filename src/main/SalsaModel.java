@@ -8,7 +8,6 @@ import listeners.GameGUIListener;
 import listeners.GameProgressionListener;
 import listeners.TutorialGUIListener;
 
-import javax.sound.sampled.Clip;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -292,9 +291,9 @@ public class SalsaModel implements Serializable {
 
     public void fireEasyNewStateEvent() {
         GameEvent e = new GameEvent(this);
-
         for (int i = 2; i < 4; i ++) {
             this.simListeners.get(i).onNewStateEvent(e);
+            System.out.println("Fire Easy New State -> Model");
         }
     }
 

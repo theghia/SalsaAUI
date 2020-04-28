@@ -2,6 +2,8 @@ package components;
 
 import javax.sound.sampled.*;
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * PlayFile class that extends the Thread class. This has been done to allow multiple sounds be played at the same
@@ -27,6 +29,7 @@ public class PlayFile implements Runnable {
 
         // This converts the WAV into a clip
         initiateClip();
+        //initiateClip(this);
     }
 
     /**
@@ -58,6 +61,10 @@ public class PlayFile implements Runnable {
         return clip;
     }
 
+    public void setClip(Clip clip) {
+        this.clip = clip;
+    }
+
     /**
      * Method to get the length of the WAV file being played in Milliseconds
      *
@@ -68,8 +75,12 @@ public class PlayFile implements Runnable {
         return this.clip.getMicrosecondLength()/1000;
     }
 
-    /* Method to convert the WAV file into a clip */
-    private void initiateClip() {
+    public String getFilename() {
+        return filename;
+    }
+
+    /* Method to convert the WAV file into a clip */ // PUT THIS IN A THREAD
+    /*private void initiateClip() {
         try {
             File file = new File(this.filename);
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file);
@@ -80,14 +91,29 @@ public class PlayFile implements Runnable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }*/
+    private void initiateClip() {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            URL url = classLoader.getResource(filename);
+            Clip salsaClip = AudioSystem.getClip();
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
+            salsaClip.open(audioInputStream);
+            clip = salsaClip;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
-        PlayFile testing = new PlayFile("src/assets/sounds/countdown/countdown_5-0.wav");
-        PlayFile test = new PlayFile("src/assets/sounds/countdown/countdown_5-0.wav");
+        PlayFile testing = new PlayFile("assets/sounds/countdown/countdown_5-0.wav");
+        //PlayFile test = new PlayFile("src/assets/sounds/countdown/countdown_5-0.wav");
+        PlayFile testing2 = new PlayFile("assets/sounds/180/piano/piano1.wav");
 
-        System.out.println(testing.getClip().equals(test.getClip()));
-        testing.getClip().addLineListener(new LineListener() {
+
+
+        //System.out.println(testing.getClip().equals(test.getClip()));
+        testing2.getClip().addLineListener(new LineListener() {
             @Override
             public void update(LineEvent event) {
                 if(event.getType() == LineEvent.Type.STOP)
@@ -97,6 +123,6 @@ public class PlayFile implements Runnable {
             }
         });
 
-        testing.run();
+        testing2.run();
     }
 }

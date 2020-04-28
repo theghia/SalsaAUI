@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * RotateImage Class that extends the JPanel Class. This JPanel will be used to hold the the needle png file for the
@@ -26,7 +27,11 @@ public class RotateImage extends JPanel {
      */
     public RotateImage(String filePath) {
         try {
-            master = ImageIO.read(new File(filePath));
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            URL resourceNeedle = classLoader.getResource(filePath);
+            //ImageIcon imgGauge = new ImageIcon(resourceGauge);
+            master = ImageIO.read(resourceNeedle);
+            //master = ImageIO.read(new File(filePath));
         }
         catch (IOException ex) {
             ex.printStackTrace();

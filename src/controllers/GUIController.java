@@ -130,6 +130,11 @@ public abstract class GUIController extends SalsaController implements GameProgr
 
         // Make the home button visible again
         gameView.getNavigationButtons().get(gameView.getMAIN()).setVisible(true);
+
+        // Making the last light go off
+        JPanel lastLight = gameView.getLights().get(7);
+        CardLayout cardLayout = (CardLayout) lastLight.getLayout();
+        cardLayout.show(lastLight, "off_light");
     }
 
     @Override

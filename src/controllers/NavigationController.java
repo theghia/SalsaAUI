@@ -15,6 +15,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
  * NavigationController Class that extends the SalsaController Class. This controller will be in charge of the logic
@@ -167,17 +170,36 @@ public class NavigationController extends SalsaController {
     }
 
     public void loadGameProgress() {
-        String filename = getSalsaModel().getDATA() +
-                getSalsaModel().getNameOfUser() + ".ser";
+
+        String filename = "";
+
         FileInputStream fileInputStream = null;
         ObjectInputStream objectInputStream = null;
 
         try {
+            // Getting the path of the .ser file in the same directory as the JAR file
+            String jarPathFile = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+            final File jarFile = new File(jarPathFile);
+
+            // To be able to load the data for when the JAR file is being executed
+            if (jarFile.isFile()) {
+                filename = jarPathFile.substring(0, jarPathFile.length() - 12) +
+                        getSalsaModel().getNameOfUser() + ".ser";
+                // This stream can load data from within the JAR file
+                //InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename);
+            }
+
+            // Loading the data when running the application in an IDE - This is only for testing purposes
+            else {
+                filename = getSalsaModel().getDATA() +
+                        getSalsaModel().getNameOfUser() + ".ser";
+            }
             fileInputStream = new FileInputStream(filename);
             objectInputStream = new ObjectInputStream(fileInputStream);
 
             UserProfile userProfile = (UserProfile) objectInputStream.readObject();
             getSalsaModel().setUserProfile(userProfile);
+            System.out.println("File has been loaded");
         }
         catch (IOException e) {
             System.out.println("There is no file to load");

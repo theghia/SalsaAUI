@@ -6,6 +6,7 @@ import main.SalsaView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -264,7 +265,9 @@ public abstract class GameView extends SalsaView {
     /* Helper method to set up the buttons in this view */
     private void setupButtons() {
         // Scaling the "Clicker" png file
-        ImageIcon clicker = new ImageIcon(getGRAPHICS() + "finger_icon.png");
+        URL resourceClicker = getClassLoader().getResource(getGRAPHICS() + "finger_icon.png");
+        ImageIcon clicker = new ImageIcon(resourceClicker);
+        //ImageIcon clicker = new ImageIcon(getGRAPHICS() + "finger_icon.png");
         Image scaled1 = clicker.getImage().getScaledInstance(CLICKER_WIDTH - 40,
                 CLICKER_HEIGHT - 40, Image.SCALE_SMOOTH);
         ImageIcon scaledClicker = new ImageIcon(scaled1);
@@ -278,16 +281,22 @@ public abstract class GameView extends SalsaView {
         this.add(beatClicker); beatClicker.setBackground(null);
 
         // Scaling the "Start" png file
-        ImageIcon start = new ImageIcon(getGRAPHICS() + "start.png");
+        URL resourceStart = getClassLoader().getResource(getGRAPHICS() + "start.png");
+        ImageIcon start = new ImageIcon(resourceStart);
+        //ImageIcon start = new ImageIcon(getGRAPHICS() + "start.png");
         Image scaled2 = start.getImage().getScaledInstance(START_WIDTH - 20,
                 START_HEIGHT - 20, Image.SCALE_SMOOTH);
         ImageIcon scaledStart = new ImageIcon(scaled2);
 
         // Button to be used by the user to start the simulation
+        //this.startButton = new JButton(scaledStart);
         this.startButton = new JButton(scaledStart);
         startButton.setPreferredSize(new Dimension(START_WIDTH, START_HEIGHT));
         startButton.setEnabled(true);
         this.add(startButton); startButton.setBackground(null);
+        // Taking away the blue background that JButtons usually have
+        startButton.setOpaque(false); startButton.setContentAreaFilled(false);
+        startButton.setBorderPainted(false);
     }
 
     /* Helper method sets up the JLabels for the instrument GUI */
@@ -297,7 +306,9 @@ public abstract class GameView extends SalsaView {
         Instrument[] possibleValues = aInstrument.getDeclaringClass().getEnumConstants();
         for (Instrument instrument: possibleValues) {
             // Scaling the image as it is very big in size
-            ImageIcon instrumentGUI = new ImageIcon(getGRAPHICS() + instrument.getName() + ".png");
+            URL resourceInstrument = getClassLoader().getResource(getGRAPHICS() + instrument.getName() + ".png");
+            ImageIcon instrumentGUI = new ImageIcon(resourceInstrument);
+            //ImageIcon instrumentGUI = new ImageIcon(getGRAPHICS() + instrument.getName() + ".png");
             Image scaled = instrumentGUI.getImage().getScaledInstance(125,125, Image.SCALE_SMOOTH);
             ImageIcon scaledInsGUI = new ImageIcon(scaled);
             JLabel insGUI = new JLabel(scaledInsGUI);
@@ -320,7 +331,9 @@ public abstract class GameView extends SalsaView {
         this.add(rotateNeedle);
 
         // Adding the Gauge image to this view
-        ImageIcon imgGauge = new ImageIcon(getGRAPHICS() + "gauge.png");
+        URL resourceGauge = getClassLoader().getResource(getGRAPHICS() + "gauge.png");
+        ImageIcon imgGauge = new ImageIcon(resourceGauge);
+        //ImageIcon imgGauge = new ImageIcon(getGRAPHICS() + "gauge.png");
         Image scaled = imgGauge.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         ImageIcon scaledImgGUI = new ImageIcon(scaled);
         this.gaugeGUI = new JLabel(scaledImgGUI);
@@ -335,11 +348,15 @@ public abstract class GameView extends SalsaView {
             JPanel light = new JPanel(new CardLayout());
 
             // Adding the off light to a JLabel
-            ImageIcon light1 = new ImageIcon(getGRAPHICS() + "off_light.png");
+            URL resourceOffLight = getClassLoader().getResource(getGRAPHICS() + "off_light.png");
+            ImageIcon light1 = new ImageIcon(resourceOffLight);
+            //ImageIcon light1 = new ImageIcon(getGRAPHICS() + "off_light.png");
             JLabel off_light = new JLabel(light1);
 
             // Adding the on light to a JLabel
-            ImageIcon light2 = new ImageIcon(getGRAPHICS() + "on_light.png");
+            URL resourceOnLight = getClassLoader().getResource(getGRAPHICS() + "on_light.png");
+            ImageIcon light2 = new ImageIcon(resourceOnLight);
+            //ImageIcon light2 = new ImageIcon(getGRAPHICS() + "on_light.png");
             JLabel on_light = new JLabel(light2);
 
             // Adding the JLabels to the JPanel using the CardLayout()
@@ -361,7 +378,9 @@ public abstract class GameView extends SalsaView {
     private void setupCountdown() {
         // Looping 6 times for each of the numbered png files
         for (int i = 5; i > -1; i--) {
-            ImageIcon number = new ImageIcon(getGRAPHICS() + "num_" + i + ".png");
+            URL resourceNumber = getClassLoader().getResource(getGRAPHICS() + "num_" + i + ".png");
+            ImageIcon number = new ImageIcon(resourceNumber);
+            //ImageIcon number = new ImageIcon(getGRAPHICS() + "num_" + i + ".png");
             Image scaled = number.getImage().getScaledInstance(COUNTDOWN_WIDTH, COUNTDOWN_HEIGHT, Image.SCALE_SMOOTH);
             ImageIcon scaledNumber = new ImageIcon(scaled);
             JLabel countdownNum = new JLabel(scaledNumber);
@@ -519,7 +538,9 @@ public abstract class GameView extends SalsaView {
         for (int i = 0; i < 9; i++) {
             if (i == 0) {
                 // The default png file before the Simulation starts
-                ImageIcon digitalNum = new ImageIcon(getGRAPHICS() + "no_beat.png");
+                URL resourceDigitalNum = getClassLoader().getResource(getGRAPHICS() + "no_beat.png");
+                ImageIcon digitalNum = new ImageIcon(resourceDigitalNum);
+                //ImageIcon digitalNum = new ImageIcon(getGRAPHICS() + "no_beat.png");
                 JLabel digNum = new JLabel(digitalNum);
 
                 // Adding the JLabel to the JPanel using the CardLayout()
@@ -527,7 +548,9 @@ public abstract class GameView extends SalsaView {
             }
             else {
                 // The digital numbers that will display the current and next beats during the simulation
-                ImageIcon digitalNum = new ImageIcon(getGRAPHICS() + i + ".png");
+                URL resourceDigitalNum = getClassLoader().getResource(getGRAPHICS() + i + ".png");
+                ImageIcon digitalNum = new ImageIcon(resourceDigitalNum);
+                //ImageIcon digitalNum = new ImageIcon(getGRAPHICS() + i + ".png");
                 JLabel digNum = new JLabel(digitalNum);
 
                 // Adding the JLabel to the JPanel using the CardLayout()

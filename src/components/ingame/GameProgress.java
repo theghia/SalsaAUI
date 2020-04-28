@@ -3,9 +3,7 @@ package components.ingame;
 import components.State;
 import controllers.GameController;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -172,18 +170,43 @@ public abstract class GameProgress {
         }
     }
 
+    /**
+     * Method saves the data of the user in a .ser file in the same directory as the application's directory since JAR
+     * files are read only and we will only be able to write to a file outside of the JAR file
+     *
+     * This also takes into account running this on an IDE and will save the data in a .ser file in the data folder
+     * of this project.
+     */
     public void saveGameProgress() {
-        String filename = gameController.getSalsaModel().getDATA() +
-                gameController.getSalsaModel().getNameOfUser() + ".ser";
+        String filename = "";
+
         FileOutputStream fileOutput = null;
         ObjectOutputStream objectOutput = null;
 
         try {
+            // Getting the path of the .ser file in the same directory as the JAR file
+            String jarPathFile = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+            final File jarFile = new File(jarPathFile);
+
+            // To be able to save the data in the .ser file in the JAR file's directory
+            if (jarFile.isFile()) {
+                filename = jarPathFile.substring(0, jarPathFile.length() - 12) +
+                        gameController.getSalsaModel().getNameOfUser() + ".ser";
+
+            }
+
+            // Saving the data when running the application in an IDE - This is only for testing purposes
+            else {
+                filename = gameController.getSalsaModel().getDATA() +
+                        gameController.getSalsaModel().getNameOfUser() + ".ser";
+            }
+
             fileOutput = new FileOutputStream(filename);
             objectOutput = new ObjectOutputStream(fileOutput);
 
             objectOutput.writeObject(gameController.getSalsaModel().getUserProfile());
             objectOutput.close();
+            System.out.println("The file has been saved");
         }
         catch (IOException e) {
             e.printStackTrace();
