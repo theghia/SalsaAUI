@@ -11,7 +11,7 @@ class MoveGaugeNeedleTest {
 
     @Test
     void setStartingPosition() {
-        RotateImage rotateImage = new RotateImage("src/assets/graphics/" + "pointer_turning.png");
+        RotateImage rotateImage = new RotateImage("assets/graphics/" + "pointer_turning.png");
         MoveGaugeNeedle moveGaugeNeedle = new MoveGaugeNeedle(rotateImage);
         moveGaugeNeedle.setStartingPosition();
 
@@ -20,7 +20,7 @@ class MoveGaugeNeedleTest {
 
     @Test
     void moveNeedle() {
-        RotateImage rotateImage = new RotateImage("src/assets/graphics/" + "pointer_turning.png");
+        RotateImage rotateImage = new RotateImage("assets/graphics/" + "pointer_turning.png");
         MoveGaugeNeedle moveGaugeNeedle = new MoveGaugeNeedle(rotateImage);
         moveGaugeNeedle.setStartingPosition();
         moveGaugeNeedle.moveNeedle(0.5);
